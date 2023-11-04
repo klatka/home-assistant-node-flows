@@ -1,0 +1,200 @@
+- id: b5a3758db57cc10b
+  type: tab
+  label: Extension_Area_WallPanel
+  disabled: false
+  info: ''
+  env: []
+- id: ccd5188c3fff8314
+  type: comment
+  z: b5a3758db57cc10b
+  name: Toggle screen of WallPanels
+  info: ''
+  x: 120
+  'y': 40
+  wires: []
+- id: 341109efc0d72c7b
+  type: link in
+  z: b5a3758db57cc10b
+  name: Activate WallPanel (msg.area_id)
+  links:
+    - a1ea38efcb00da80
+  x: 35
+  'y': 80
+  wires:
+    - - 4d0ae342849c7352
+- id: 7db8f9cda0946b52
+  type: ha-get-entities
+  z: b5a3758db57cc10b
+  name: Foreach WallPanel
+  server: 72832130.5db8f
+  version: 0
+  rules:
+    - property: entity_id
+      logic: starts_with
+      value: media_player.wallpanel_
+      valueType: str
+  output_type: split
+  output_empty_results: false
+  output_location_type: msg
+  output_location: payload
+  output_results_count: 1
+  x: 510
+  'y': 80
+  wires:
+    - - d80e0e05d1abe4df
+- id: 143af68772b309dd
+  type: 'subflow:0a93237bafa3cedf'
+  z: b5a3758db57cc10b
+  name: ''
+  x: 890
+  'y': 80
+  wires:
+    - - 40a84054923d29d8
+    - []
+- id: 40a84054923d29d8
+  type: switch
+  z: b5a3758db57cc10b
+  name: Area match
+  property: area_id
+  propertyType: msg
+  rules:
+    - t: eq
+      v: active_area
+      vt: msg
+  checkall: 'false'
+  repair: false
+  outputs: 1
+  x: 1090
+  'y': 80
+  wires:
+    - - bd8d20170a5b6f8b
+- id: ca348c18256e5e8c
+  type: change
+  z: b5a3758db57cc10b
+  name: Set active area
+  rules:
+    - t: move
+      p: area_id
+      pt: msg
+      to: active_area
+      tot: msg
+  action: ''
+  property: ''
+  from: ''
+  to: ''
+  reg: false
+  x: 320
+  'y': 80
+  wires:
+    - - 7db8f9cda0946b52
+- id: 9547bbbfb832d897
+  type: api-call-service
+  z: b5a3758db57cc10b
+  name: Turn WallPanel Screen
+  server: 72832130.5db8f
+  version: 5
+  debugenabled: false
+  domain: switch
+  service: 'turn_{{ action }}'
+  areaId: []
+  deviceId: []
+  entityId:
+    - '{{ entity }}'
+  data: ''
+  dataType: json
+  mergeContext: ''
+  mustacheAltTags: false
+  outputProperties: []
+  queue: none
+  output_location: payload
+  output_location_type: none
+  x: 1420
+  'y': 80
+  wires:
+    - []
+- id: bd8d20170a5b6f8b
+  type: change
+  z: b5a3758db57cc10b
+  name: Set entity
+  rules:
+    - t: set
+      p: entity
+      pt: msg
+      to: '"switch." & $substringAfter(payload, ".") & "_screen"'
+      tot: jsonata
+  action: ''
+  property: ''
+  from: ''
+  to: ''
+  reg: false
+  x: 1240
+  'y': 80
+  wires:
+    - - 9547bbbfb832d897
+- id: 4d0ae342849c7352
+  type: change
+  z: b5a3758db57cc10b
+  name: Set action
+  rules:
+    - t: set
+      p: action
+      pt: msg
+      to: 'on'
+      tot: str
+  action: ''
+  property: ''
+  from: ''
+  to: ''
+  reg: false
+  x: 140
+  'y': 80
+  wires:
+    - - ca348c18256e5e8c
+- id: 70166db1d19c2b56
+  type: change
+  z: b5a3758db57cc10b
+  name: Set action
+  rules:
+    - t: set
+      p: action
+      pt: msg
+      to: 'off'
+      tot: str
+  action: ''
+  property: ''
+  from: ''
+  to: ''
+  reg: false
+  x: 140
+  'y': 140
+  wires:
+    - - ca348c18256e5e8c
+- id: fe343961f9d5d89a
+  type: link in
+  z: b5a3758db57cc10b
+  name: Deactivate WallPanel (msg.area_id)
+  links:
+    - 4be08b6a1d142db3
+  x: 35
+  'y': 140
+  wires:
+    - - 70166db1d19c2b56
+- id: d80e0e05d1abe4df
+  type: change
+  z: b5a3758db57cc10b
+  name: Set entity_id
+  rules:
+    - t: set
+      p: payload
+      pt: msg
+      to: payload.entity_id
+      tot: msg
+  action: ''
+  property: ''
+  from: ''
+  to: ''
+  reg: false
+  x: 690
+  'y': 80
+  wires:
+    - - 143af68772b309dd
