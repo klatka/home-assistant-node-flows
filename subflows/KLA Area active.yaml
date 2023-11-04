@@ -1,0 +1,131 @@
+- id: b5f5e83ddce73814
+  type: subflow
+  name: KLA Area active
+  info: "# Requirements\r\n\r\nFlow `Module_Area` enabled\r\n\r\n# Input\r\n\r\n## `msg.area_id` _string_\r\n\r\nId of an area in Home Assistant\r\n\r\n# Output\r\n\r\n1. `area_id` is considered active\r\n2. else\r\n\r\n## `msg.area_state` _boolean_\r\n\r\n`true` if `msg.kla_areas` contains\r\n`area_id` in `areas_active` else `false`\r\n"
+  category: ''
+  in:
+    - x: 50
+      'y': 30
+      wires:
+        - id: bcd1725e41e973fd
+  out:
+    - x: 580
+      'y': 40
+      wires:
+        - id: 0a2a1590d3952c3c
+          port: 0
+    - x: 580
+      'y': 160
+      wires:
+        - id: 345300e3907efd5b
+          port: 0
+  env: []
+  meta:
+    module: klahome
+    version: 1.0.0
+    author: KlaHome <dev@klahome.de>
+    license: Apache-2.0
+  color: '#DDAA99'
+  status:
+    x: 800
+    'y': 140
+    wires:
+      - id: 78369ac3563abe93
+        port: 0
+      - id: d9f6b6c7812681d2
+        port: 0
+- id: bcd1725e41e973fd
+  type: switch
+  z: b5f5e83ddce73814
+  name: Area in active areas
+  property: kla_areas_active
+  propertyType: global
+  rules:
+    - t: cont
+      v: area_id
+      vt: msg
+    - t: else
+  checkall: 'false'
+  repair: false
+  outputs: 2
+  x: 200
+  'y': 120
+  wires:
+    - - 0a2a1590d3952c3c
+    - - 345300e3907efd5b
+- id: 0a2a1590d3952c3c
+  type: change
+  z: b5f5e83ddce73814
+  name: Set msg.area_state
+  rules:
+    - t: set
+      p: area_state
+      pt: msg
+      to: 'true'
+      tot: bool
+  action: ''
+  property: ''
+  from: ''
+  to: ''
+  reg: false
+  x: 430
+  'y': 60
+  wires:
+    - - d9f6b6c7812681d2
+- id: 345300e3907efd5b
+  type: change
+  z: b5f5e83ddce73814
+  name: Set msg.area_state
+  rules:
+    - t: set
+      p: area_state
+      pt: msg
+      to: 'false'
+      tot: bool
+  action: ''
+  property: ''
+  from: ''
+  to: ''
+  reg: false
+  x: 430
+  'y': 180
+  wires:
+    - - 78369ac3563abe93
+- id: 78369ac3563abe93
+  type: change
+  z: b5f5e83ddce73814
+  name: Set status red
+  rules:
+    - t: set
+      p: payload
+      pt: msg
+      to: '{"fill":"red","shape":"ring","text":msg.area_id}'
+      tot: jsonata
+  action: ''
+  property: ''
+  from: ''
+  to: ''
+  reg: false
+  x: 640
+  'y': 200
+  wires:
+    - []
+- id: d9f6b6c7812681d2
+  type: change
+  z: b5f5e83ddce73814
+  name: Set status green
+  rules:
+    - t: set
+      p: payload
+      pt: msg
+      to: '{"fill":"green","shape":"dot","text":msg.area_id}'
+      tot: jsonata
+  action: ''
+  property: ''
+  from: ''
+  to: ''
+  reg: false
+  x: 640
+  'y': 80
+  wires:
+    - []
