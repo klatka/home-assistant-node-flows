@@ -1,0 +1,1477 @@
+- id: e4c8b5c6603e36fc
+  type: tab
+  label: Extension_Area_Light Control
+  disabled: false
+  info: ''
+  env: []
+- id: ade07de7b55799aa
+  type: link in
+  z: e4c8b5c6603e36fc
+  name: Turn off Light Control
+  links:
+    - 1a2f7f80ca51617e
+    - 1b62584dcb045aef
+  x: 35
+  'y': 1360
+  wires:
+    - - eb190153fbe92d66
+- id: 2957c49aad3fd6e6
+  type: comment
+  z: e4c8b5c6603e36fc
+  name: Reset Area Light Control
+  info: ''
+  x: 110
+  'y': 1260
+  wires: []
+- id: 16b5183bdaab201d
+  type: api-call-service
+  z: e4c8b5c6603e36fc
+  name: Turn Light Control
+  server: 72832130.5db8f
+  version: 5
+  debugenabled: false
+  domain: switch
+  service: 'turn_{{ payload }}'
+  areaId: []
+  deviceId: []
+  entityId:
+    - switch.kla_area_light_control
+  data: ''
+  dataType: jsonata
+  mergeContext: ''
+  mustacheAltTags: false
+  outputProperties: []
+  queue: none
+  output_location: payload
+  output_location_type: none
+  x: 390
+  'y': 1340
+  wires:
+    - []
+- id: 74c683237f5c5199
+  type: ha-switch
+  z: e4c8b5c6603e36fc
+  name: Lighting Accented state
+  version: 0
+  debugenabled: false
+  inputs: 0
+  outputs: 2
+  entityConfig: 45f2023ef276d9a6
+  enableInput: false
+  outputOnStateChange: false
+  outputProperties:
+    - property: outputType
+      propertyType: msg
+      value: state change
+      valueType: str
+    - property: payload
+      propertyType: msg
+      value: ''
+      valueType: entityState
+  x: 920
+  'y': 80
+  wires:
+    - []
+    - []
+- id: 4a8ad317131ccc2a
+  type: comment
+  z: e4c8b5c6603e36fc
+  name: Akzentmodus
+  info: ''
+  x: 870
+  'y': 40
+  wires: []
+- id: db5fba9bf6368f80
+  type: link in
+  z: e4c8b5c6603e36fc
+  name: Turn on Light Control
+  links: []
+  x: 35
+  'y': 1300
+  wires:
+    - - ccb689c711a8144e
+- id: ccb689c711a8144e
+  type: change
+  z: e4c8b5c6603e36fc
+  name: Set payload to on
+  rules:
+    - t: set
+      p: payload
+      pt: msg
+      to: 'on'
+      tot: str
+  action: ''
+  property: ''
+  from: ''
+  to: ''
+  reg: false
+  x: 170
+  'y': 1300
+  wires:
+    - - 16b5183bdaab201d
+- id: eb190153fbe92d66
+  type: change
+  z: e4c8b5c6603e36fc
+  name: Set payload to off
+  rules:
+    - t: set
+      p: payload
+      pt: msg
+      to: 'off'
+      tot: str
+  action: ''
+  property: ''
+  from: ''
+  to: ''
+  reg: false
+  x: 170
+  'y': 1360
+  wires:
+    - - 16b5183bdaab201d
+- id: aee26832556b4721
+  type: link in
+  z: e4c8b5c6603e36fc
+  name: Switch lights by area (msg.area_id & msg.action)
+  links:
+    - ae60a3a57ca3f4e6
+    - 85c3a4824489aac1
+  x: 35
+  'y': 740
+  wires:
+    - - 3749b62c01d79198
+- id: 1e8b7fb2901f0569
+  type: ha-number
+  z: e4c8b5c6603e36fc
+  name: Brightness Step
+  version: 1
+  debugenabled: false
+  inputs: 0
+  outputs: 1
+  entityConfig: 6458e7288fb23705
+  mode: listen
+  value: payload
+  valueType: msg
+  outputProperties:
+    - property: brightness_step
+      propertyType: flow
+      value: ''
+      valueType: value
+  x: 900
+  'y': 200
+  wires:
+    - []
+- id: f266c4777bb6bb06
+  type: link in
+  z: e4c8b5c6603e36fc
+  name: Dim lights in area (msg.area_id & msg.dim)
+  links:
+    - 1865310518d74fc7
+    - 3a401386cd176ce6
+  x: 35
+  'y': 1040
+  wires:
+    - - d0e7c5d7803955da
+- id: 5f0ef085ed844833
+  type: split
+  z: e4c8b5c6603e36fc
+  name: Foreach light
+  splt: ','
+  spltType: str
+  arraySplt: 1
+  arraySpltType: len
+  stream: false
+  addname: ''
+  x: 770
+  'y': 1080
+  wires:
+    - - 2a98770be14263f3
+- id: 2a98770be14263f3
+  type: api-current-state
+  z: e4c8b5c6603e36fc
+  name: Get light
+  server: 72832130.5db8f
+  version: 3
+  outputs: 1
+  halt_if: ''
+  halt_if_type: str
+  halt_if_compare: is
+  entity_id: '{{ payload }}'
+  state_type: str
+  blockInputOverrides: true
+  outputProperties:
+    - property: light
+      propertyType: msg
+      value: ''
+      valueType: entity
+  for: '0'
+  forType: num
+  forUnits: minutes
+  override_topic: false
+  state_location: payload
+  override_payload: msg
+  entity_location: data
+  override_data: msg
+  x: 280
+  'y': 1180
+  wires:
+    - - 13cd309c731fb857
+- id: 592ed492b679f8c7
+  type: switch
+  z: e4c8b5c6603e36fc
+  name: Light brighter than dim?
+  property: light.attributes.brightness
+  propertyType: msg
+  rules:
+    - t: gt
+      v: $ceil(brightness_step*2.55)
+      vt: jsonata
+    - t: gt
+      v: '0'
+      vt: num
+  checkall: 'false'
+  repair: false
+  outputs: 2
+  x: 610
+  'y': 1160
+  wires:
+    - - 472853d9461e80ce
+    - - 479652993e7ab3ef
+- id: 13cd309c731fb857
+  type: switch
+  z: e4c8b5c6603e36fc
+  name: Dim?
+  property: dim
+  propertyType: msg
+  rules:
+    - t: 'true'
+    - t: else
+  checkall: 'false'
+  repair: false
+  outputs: 2
+  x: 410
+  'y': 1180
+  wires:
+    - - 592ed492b679f8c7
+    - - 3710199d19fe3393
+- id: 472853d9461e80ce
+  type: change
+  z: e4c8b5c6603e36fc
+  name: Calc new brightness
+  rules:
+    - t: set
+      p: payload
+      pt: msg
+      to: light.attributes.brightness-$ceil(brightness_step*2.55)+1
+      tot: jsonata
+  action: ''
+  property: ''
+  from: ''
+  to: ''
+  reg: false
+  x: 860
+  'y': 1140
+  wires:
+    - - 0b9c5fc6a8829d3e
+- id: 479652993e7ab3ef
+  type: change
+  z: e4c8b5c6603e36fc
+  name: Calc new brightness
+  rules:
+    - t: set
+      p: payload
+      pt: msg
+      to: '1'
+      tot: num
+  action: ''
+  property: ''
+  from: ''
+  to: ''
+  reg: false
+  x: 860
+  'y': 1180
+  wires:
+    - - 0b9c5fc6a8829d3e
+- id: 0b9c5fc6a8829d3e
+  type: api-call-service
+  z: e4c8b5c6603e36fc
+  name: Set brightness
+  server: 72832130.5db8f
+  version: 5
+  debugenabled: false
+  domain: light
+  service: turn_on
+  areaId: []
+  deviceId: []
+  entityId: []
+  data: '{"entity_id": msg.light.entity_id, "brightness": msg.payload}'
+  dataType: jsonata
+  mergeContext: ''
+  mustacheAltTags: false
+  outputProperties: []
+  queue: none
+  x: 1080
+  'y': 1200
+  wires:
+    - []
+- id: 67813c2ca9864ec3
+  type: comment
+  z: e4c8b5c6603e36fc
+  name: Linear Dim
+  info: ''
+  x: 60
+  'y': 1000
+  wires: []
+- id: 3710199d19fe3393
+  type: change
+  z: e4c8b5c6603e36fc
+  name: Calc new brightness
+  rules:
+    - t: set
+      p: payload
+      pt: msg
+      to: light.attributes.brightness+$ceil(brightness_step*2.55)
+      tot: jsonata
+  action: ''
+  property: ''
+  from: ''
+  to: ''
+  reg: false
+  x: 600
+  'y': 1200
+  wires:
+    - - 0b9c5fc6a8829d3e
+- id: fe0415c26fde9e74
+  type: api-call-service
+  z: e4c8b5c6603e36fc
+  name: Turn on scene from msg.scene
+  server: 72832130.5db8f
+  version: 5
+  debugenabled: false
+  domain: scene
+  service: turn_on
+  areaId: []
+  deviceId: []
+  entityId: []
+  data: '{"entity_id": msg.scene.entity_id}'
+  dataType: jsonata
+  mergeContext: ''
+  mustacheAltTags: false
+  outputProperties: []
+  queue: none
+  output_location: payload
+  output_location_type: none
+  x: 750
+  'y': 1480
+  wires:
+    - []
+- id: 809cdc84d1406a17
+  type: comment
+  z: e4c8b5c6603e36fc
+  name: Random scene
+  info: ''
+  x: 80
+  'y': 1440
+  wires: []
+- id: e14171d92bdf8a2a
+  type: link in
+  z: e4c8b5c6603e36fc
+  name: Activate random scene in area (msg.area_id)
+  links:
+    - 3a401386cd176ce6
+    - f70881da778e39b8
+  x: 35
+  'y': 1480
+  wires:
+    - - 514a6ca93eb9d629
+- id: f7a194c441ceb7bc
+  type: comment
+  z: e4c8b5c6603e36fc
+  name: Control lights manually
+  info: ''
+  x: 100
+  'y': 680
+  wires: []
+- id: d0e7c5d7803955da
+  type: switch
+  z: e4c8b5c6603e36fc
+  name: Brightness step given?
+  property: brightness_step
+  propertyType: msg
+  rules:
+    - t: nnull
+    - t: else
+  checkall: 'false'
+  repair: false
+  outputs: 2
+  x: 180
+  'y': 1040
+  wires:
+    - - 0e9f0ef0bb4f2b7f
+    - - 9402fedd1a63b0b9
+- id: efd00aa90177f496
+  type: switch
+  z: e4c8b5c6603e36fc
+  name: Switch action
+  property: action
+  propertyType: msg
+  rules:
+    - t: eq
+      v: 'on'
+      vt: str
+    - t: eq
+      v: on_all
+      vt: str
+    - t: eq
+      v: on_all_100
+      vt: str
+    - t: eq
+      v: 'off'
+      vt: str
+    - t: eq
+      v: off_slow
+      vt: str
+  checkall: 'false'
+  repair: false
+  outputs: 5
+  x: 160
+  'y': 880
+  wires:
+    - - 735e876ae55f4e18
+    - - f04f9c27000130f7
+    - - e7fd8ac1b291ed4d
+    - - 1c3336afb0ceed4e
+    - - 6cb6ba4d1587a189
+- id: 514a6ca93eb9d629
+  type: ha-get-entities
+  z: e4c8b5c6603e36fc
+  name: Get random scene in area
+  server: 72832130.5db8f
+  version: 0
+  rules:
+    - property: entity_id
+      logic: starts_with
+      value: '"scene." & area_id & "_"'
+      valueType: jsonata
+  output_type: random
+  output_empty_results: false
+  output_location_type: msg
+  output_location: scene
+  output_results_count: 1
+  x: 210
+  'y': 1480
+  wires:
+    - - 3c9e4175b9c70a16
+- id: 3c9e4175b9c70a16
+  type: api-current-state
+  z: e4c8b5c6603e36fc
+  name: Scene already activated?
+  server: 72832130.5db8f
+  version: 3
+  outputs: 2
+  halt_if: scene.entity_id
+  halt_if_type: msg
+  halt_if_compare: is
+  entity_id: sensor.scene_last_activated
+  state_type: str
+  blockInputOverrides: true
+  outputProperties: []
+  for: '0'
+  forType: num
+  forUnits: minutes
+  override_topic: false
+  state_location: payload
+  override_payload: msg
+  entity_location: data
+  override_data: msg
+  x: 450
+  'y': 1480
+  wires:
+    - - cdea31dc1aad507c
+    - - fe0415c26fde9e74
+- id: 608bf34d26b73536
+  type: switch
+  z: e4c8b5c6603e36fc
+  name: '>1 scenes'
+  property: count_scenes
+  propertyType: msg
+  rules:
+    - t: gt
+      v: '1'
+      vt: num
+  checkall: 'true'
+  repair: false
+  outputs: 1
+  x: 410
+  'y': 1540
+  wires:
+    - - 514a6ca93eb9d629
+- id: cdea31dc1aad507c
+  type: ha-get-entities
+  z: e4c8b5c6603e36fc
+  name: Count scenes in area
+  server: 72832130.5db8f
+  version: 0
+  rules:
+    - property: entity_id
+      logic: starts_with
+      value: '"scene." & area_id & "_"'
+      valueType: jsonata
+  output_type: count
+  output_empty_results: false
+  output_location_type: msg
+  output_location: count_scenes
+  output_results_count: 1
+  x: 220
+  'y': 1540
+  wires:
+    - - 608bf34d26b73536
+- id: 0e9f0ef0bb4f2b7f
+  type: 'subflow:c7fb159f2ed649a3'
+  z: e4c8b5c6603e36fc
+  name: ''
+  x: 560
+  'y': 1080
+  wires:
+    - - 5f0ef085ed844833
+    - []
+- id: 647500102dfdd461
+  type: ha-switch
+  z: e4c8b5c6603e36fc
+  name: Light Control
+  version: 0
+  debugenabled: false
+  inputs: 1
+  outputs: 2
+  entityConfig: 036a94250a7a62d1
+  enableInput: true
+  outputOnStateChange: false
+  outputProperties:
+    - property: outputType
+      propertyType: msg
+      value: state change
+      valueType: str
+    - property: payload
+      propertyType: msg
+      value: ''
+      valueType: entityState
+  x: 650
+  'y': 80
+  wires:
+    - []
+    - []
+- id: 7b73585431ce531e
+  type: link in
+  z: e4c8b5c6603e36fc
+  name: Init Area Light Control
+  links:
+    - 9db5e781e04a0719
+  x: 35
+  'y': 80
+  wires:
+    - - b76cd4e53cc3f18f
+      - 27c845d867f0b637
+      - 944eb4ad9a962030
+- id: de6725fc8d045ea4
+  type: comment
+  z: e4c8b5c6603e36fc
+  name: Area Light Control Switch
+  info: ''
+  x: 110
+  'y': 40
+  wires: []
+- id: b76cd4e53cc3f18f
+  type: api-current-state
+  z: e4c8b5c6603e36fc
+  name: Is Light Control Switch unknown?
+  server: 72832130.5db8f
+  version: 3
+  outputs: 2
+  halt_if: unknown
+  halt_if_type: str
+  halt_if_compare: is
+  entity_id: switch.kla_area_light_control
+  state_type: str
+  blockInputOverrides: true
+  outputProperties: []
+  for: '0'
+  forType: num
+  forUnits: minutes
+  override_topic: false
+  state_location: payload
+  override_payload: msg
+  entity_location: data
+  override_data: msg
+  x: 240
+  'y': 80
+  wires:
+    - - fa3c572a2bd8382d
+    - []
+- id: fa3c572a2bd8382d
+  type: change
+  z: e4c8b5c6603e36fc
+  name: Set state to off
+  rules:
+    - t: set
+      p: areas_dark.state
+      pt: msg
+      to: 'off'
+      tot: str
+  action: ''
+  property: ''
+  from: ''
+  to: ''
+  reg: false
+  x: 480
+  'y': 80
+  wires:
+    - - 647500102dfdd461
+- id: f109c8195f30b166
+  type: 'subflow:7551147dd66fb7ac'
+  z: e4c8b5c6603e36fc
+  name: ''
+  x: 620
+  'y': 560
+  wires:
+    - - c9b4fa3085750738
+    - []
+- id: 6cb6ba4d1587a189
+  type: api-call-service
+  z: e4c8b5c6603e36fc
+  name: Turn off lights in area
+  server: 72832130.5db8f
+  version: 5
+  debugenabled: false
+  domain: light
+  service: turn_off
+  areaId: []
+  deviceId: []
+  entityId: []
+  data: '{"entity_id": payload, "transition": 10}'
+  dataType: jsonata
+  mergeContext: ''
+  mustacheAltTags: false
+  outputProperties: []
+  queue: none
+  x: 400
+  'y': 960
+  wires:
+    - []
+- id: 1f0d403d501a4b14
+  type: link in
+  z: e4c8b5c6603e36fc
+  name: Turn on lights when area became active (msg.area_id & msg.topic)
+  links:
+    - a1ea38efcb00da80
+    - d4980994d61d569e
+  x: 35
+  'y': 560
+  wires:
+    - - 0ac029f4cf2e2c15
+- id: c9b4fa3085750738
+  type: 'subflow:5a54e3ce6cf424e8'
+  z: e4c8b5c6603e36fc
+  name: ''
+  x: 820
+  'y': 560
+  wires:
+    - - fe6c25628ba1c7c8
+    - []
+- id: 209df665926f1a45
+  type: comment
+  z: e4c8b5c6603e36fc
+  name: Control lights by occupancy
+  info: ''
+  x: 120
+  'y': 400
+  wires: []
+- id: 3749b62c01d79198
+  type: 'subflow:5a54e3ce6cf424e8'
+  z: e4c8b5c6603e36fc
+  name: ''
+  x: 160
+  'y': 740
+  wires:
+    - - 83ae960b615b2570
+    - []
+- id: 8b07940e2c341f3d
+  type: api-call-service
+  z: e4c8b5c6603e36fc
+  name: Turn on lights in area
+  server: 72832130.5db8f
+  version: 5
+  debugenabled: false
+  domain: light
+  service: turn_on
+  areaId: []
+  deviceId: []
+  entityId:
+    - '{{ payload }}'
+  data: ''
+  dataType: jsonata
+  mergeContext: ''
+  mustacheAltTags: false
+  outputProperties: []
+  queue: none
+  x: 960
+  'y': 800
+  wires:
+    - []
+- id: 1c3336afb0ceed4e
+  type: api-call-service
+  z: e4c8b5c6603e36fc
+  name: Turn off lights in area
+  server: 72832130.5db8f
+  version: 5
+  debugenabled: false
+  domain: light
+  service: turn_off
+  areaId: []
+  deviceId: []
+  entityId:
+    - '{{ payload }}'
+  data: ''
+  dataType: jsonata
+  mergeContext: ''
+  mustacheAltTags: false
+  outputProperties: []
+  queue: none
+  x: 400
+  'y': 900
+  wires:
+    - []
+- id: 27c845d867f0b637
+  type: api-current-state
+  z: e4c8b5c6603e36fc
+  name: Is Brightness Step unknown?
+  server: 72832130.5db8f
+  version: 3
+  outputs: 2
+  halt_if: unknown
+  halt_if_type: str
+  halt_if_compare: is
+  entity_id: number.kla_lighting_brightness_step_pct
+  state_type: str
+  blockInputOverrides: true
+  outputProperties: []
+  for: '0'
+  forType: num
+  forUnits: minutes
+  override_topic: false
+  state_location: payload
+  override_payload: msg
+  entity_location: data
+  override_data: msg
+  x: 220
+  'y': 160
+  wires:
+    - - 4543058c08aba38f
+    - - 0647ba79f575a0ca
+- id: 4543058c08aba38f
+  type: ha-number
+  z: e4c8b5c6603e36fc
+  name: Set Brightness Step
+  version: 1
+  debugenabled: false
+  inputs: 1
+  outputs: 1
+  entityConfig: 6458e7288fb23705
+  mode: set
+  value: '10'
+  valueType: num
+  outputProperties:
+    - property: brightness_step
+      propertyType: flow
+      value: ''
+      valueType: value
+  x: 470
+  'y': 140
+  wires:
+    - []
+- id: 94f0e3c7c9feb32c
+  type: comment
+  z: e4c8b5c6603e36fc
+  name: Brightness step
+  info: ''
+  x: 880
+  'y': 160
+  wires: []
+- id: 9402fedd1a63b0b9
+  type: change
+  z: e4c8b5c6603e36fc
+  name: Get brigtness step from flow
+  rules:
+    - t: set
+      p: brightness_step
+      pt: msg
+      to: brightness_step
+      tot: flow
+  action: ''
+  property: ''
+  from: ''
+  to: ''
+  reg: false
+  x: 240
+  'y': 1100
+  wires:
+    - - 0e9f0ef0bb4f2b7f
+- id: cec51188f387a6bc
+  type: function
+  z: e4c8b5c6603e36fc
+  name: Remove lights from ignored entities
+  func: >
+    let autoLights = global.get("kla_areas_entities_ignored") || [];
+
+    const lights = msg.payload.split(',');
+
+
+    autoLights = autoLights.filter(item => !lights.includes(item) && item !==
+    "");
+
+    global.set("kla_areas_entities_ignored", autoLights);
+
+
+    return msg;
+  outputs: 1
+  timeout: 0
+  noerr: 0
+  initialize: ''
+  finalize: ''
+  libs: []
+  x: 1220
+  'y': 620
+  wires:
+    - - 33c6126da641027a
+- id: 2e6f6d61a43c739f
+  type: function
+  z: e4c8b5c6603e36fc
+  name: Append lights to ignored entities
+  func: |
+    const autoLights = global.get("kla_areas_entities_ignored") || [];
+    const lights = msg.payload.split(',');
+
+    lights.forEach(function(l) {
+        if (!autoLights.includes(l)) {
+            autoLights.push(l);
+        }
+    });
+
+    global.set("kla_areas_entities_ignored", autoLights);
+
+    return msg;
+  outputs: 1
+  timeout: 0
+  noerr: 0
+  initialize: ''
+  finalize: ''
+  libs: []
+  x: 1210
+  'y': 560
+  wires:
+    - - 33c6126da641027a
+- id: 2eb08a47c698b014
+  type: api-current-state
+  z: e4c8b5c6603e36fc
+  name: Area Light Control on?
+  server: 72832130.5db8f
+  version: 3
+  outputs: 2
+  halt_if: 'on'
+  halt_if_type: str
+  halt_if_compare: is
+  entity_id: switch.kla_area_light_control
+  state_type: str
+  blockInputOverrides: true
+  outputProperties: []
+  for: '0'
+  forType: num
+  forUnits: minutes
+  override_topic: false
+  state_location: payload
+  override_payload: msg
+  entity_location: data
+  override_data: msg
+  x: 400
+  'y': 560
+  wires:
+    - - f109c8195f30b166
+    - []
+- id: c12a690c5088628b
+  type: comment
+  z: e4c8b5c6603e36fc
+  name: Auto Lights handling
+  info: ''
+  x: 1150
+  'y': 520
+  wires: []
+- id: bdcacfd6a85c5dfa
+  type: link in
+  z: e4c8b5c6603e36fc
+  name: Dim lights (msg.area_id & msg.delay)
+  links:
+    - bdf3be4ebac330e7
+  x: 35
+  'y': 1660
+  wires:
+    - - 141fdf7f759677d4
+      - c8f2dc787aac7086
+- id: de02503727ecd900
+  type: 'subflow:c7fb159f2ed649a3'
+  z: e4c8b5c6603e36fc
+  name: ''
+  x: 1060
+  'y': 1680
+  wires:
+    - - 16c50b8c7e821b8a
+    - []
+- id: 16c50b8c7e821b8a
+  type: api-call-service
+  z: e4c8b5c6603e36fc
+  name: Dim turned on lights in area
+  server: 72832130.5db8f
+  version: 5
+  debugenabled: false
+  domain: light
+  service: turn_on
+  areaId: []
+  deviceId: []
+  entityId: []
+  data: '{"entity_id": $join(payload, ","), "brightness_step_pct": -50}'
+  dataType: jsonata
+  mergeContext: ''
+  mustacheAltTags: false
+  outputProperties: []
+  queue: none
+  x: 1320
+  'y': 1680
+  wires:
+    - []
+- id: 795832061fdd65f9
+  type: comment
+  z: e4c8b5c6603e36fc
+  name: Dim lights if area is going to be inactive
+  info: ''
+  x: 150
+  'y': 1620
+  wires: []
+- id: 7ec7e031fb1411ec
+  type: switch
+  z: e4c8b5c6603e36fc
+  name: Active area
+  property: kla_areas_active
+  propertyType: global
+  rules:
+    - t: cont
+      v: area_id
+      vt: msg
+    - t: else
+  checkall: 'false'
+  repair: false
+  outputs: 2
+  x: 690
+  'y': 1680
+  wires:
+    - - c7411ae124a9bf66
+    - []
+- id: 48550a90336ab4d4
+  type: 'subflow:c7fb159f2ed649a3'
+  z: e4c8b5c6603e36fc
+  name: ''
+  x: 660
+  'y': 620
+  wires:
+    - - 3978d120b37bb976
+    - []
+- id: 141fdf7f759677d4
+  type: api-current-state
+  z: e4c8b5c6603e36fc
+  name: Area Light Control on?
+  server: 72832130.5db8f
+  version: 3
+  outputs: 2
+  halt_if: 'on'
+  halt_if_type: str
+  halt_if_compare: is
+  entity_id: switch.kla_area_light_control
+  state_type: str
+  blockInputOverrides: true
+  outputProperties: []
+  for: '0'
+  forType: num
+  forUnits: minutes
+  override_topic: false
+  state_location: payload
+  override_payload: msg
+  entity_location: data
+  override_data: msg
+  x: 180
+  'y': 1660
+  wires:
+    - - b96b1677513dd9ca
+    - []
+- id: 0ac029f4cf2e2c15
+  type: switch
+  z: e4c8b5c6603e36fc
+  name: Area triggered by light
+  property: topic
+  propertyType: msg
+  rules:
+    - t: cont
+      v: '"light."'
+      vt: jsonata
+    - t: else
+  checkall: 'false'
+  repair: false
+  outputs: 2
+  x: 180
+  'y': 560
+  wires:
+    - []
+    - - 2eb08a47c698b014
+- id: 99f9864ca39958eb
+  type: link in
+  z: e4c8b5c6603e36fc
+  name: Control lights (msg.payload & msg.action)
+  links:
+    - 33c6126da641027a
+    - 83ae960b615b2570
+    - 160dce7a7f789adc
+  x: 35
+  'y': 880
+  wires:
+    - - efd00aa90177f496
+- id: 33dda5a1b24f0bde
+  type: comment
+  z: e4c8b5c6603e36fc
+  name: Call light service
+  info: ''
+  x: 80
+  'y': 800
+  wires: []
+- id: 83ae960b615b2570
+  type: link out
+  z: e4c8b5c6603e36fc
+  name: Control Lights manually
+  mode: link
+  links:
+    - 99f9864ca39958eb
+  x: 295
+  'y': 740
+  wires: []
+- id: fe6c25628ba1c7c8
+  type: change
+  z: e4c8b5c6603e36fc
+  name: Set action
+  rules:
+    - t: set
+      p: action
+      pt: msg
+      to: 'on'
+      tot: str
+  action: ''
+  property: ''
+  from: ''
+  to: ''
+  reg: false
+  x: 980
+  'y': 560
+  wires:
+    - - 2e6f6d61a43c739f
+- id: 3978d120b37bb976
+  type: change
+  z: e4c8b5c6603e36fc
+  name: Set action
+  rules:
+    - t: set
+      p: action
+      pt: msg
+      to: 'off'
+      tot: str
+  action: ''
+  property: ''
+  from: ''
+  to: ''
+  reg: false
+  x: 980
+  'y': 620
+  wires:
+    - - cec51188f387a6bc
+- id: 33c6126da641027a
+  type: link out
+  z: e4c8b5c6603e36fc
+  name: Control Lights by occupancy
+  mode: link
+  links:
+    - 99f9864ca39958eb
+  x: 1405
+  'y': 580
+  wires: []
+- id: 79444cc4ee148924
+  type: link in
+  z: e4c8b5c6603e36fc
+  name: Turn off lights when area became active (msg.area_id)
+  links:
+    - 4be08b6a1d142db3
+  x: 35
+  'y': 620
+  wires:
+    - - 676187dd54565a9e
+- id: 676187dd54565a9e
+  type: api-current-state
+  z: e4c8b5c6603e36fc
+  name: Area Light Control on?
+  server: 72832130.5db8f
+  version: 3
+  outputs: 2
+  halt_if: 'on'
+  halt_if_type: str
+  halt_if_compare: is
+  entity_id: switch.kla_area_light_control
+  state_type: str
+  blockInputOverrides: true
+  outputProperties: []
+  for: '0'
+  forType: num
+  forUnits: minutes
+  override_topic: false
+  state_location: payload
+  override_payload: msg
+  entity_location: data
+  override_data: msg
+  x: 400
+  'y': 620
+  wires:
+    - - 48550a90336ab4d4
+    - []
+- id: 0647ba79f575a0ca
+  type: ha-number
+  z: e4c8b5c6603e36fc
+  name: Get Brightness Step
+  version: 1
+  debugenabled: false
+  inputs: 1
+  outputs: 1
+  entityConfig: 6458e7288fb23705
+  mode: get
+  value: payload
+  valueType: msg
+  outputProperties:
+    - property: brightness_step
+      propertyType: flow
+      value: ''
+      valueType: value
+  x: 470
+  'y': 200
+  wires:
+    - []
+- id: 31060b8f31a73ca2
+  type: ha-number
+  z: e4c8b5c6603e36fc
+  name: Lights Brightness Init
+  version: 1
+  debugenabled: false
+  inputs: 0
+  outputs: 1
+  entityConfig: 49043b8825ddfcc9
+  mode: listen
+  value: payload
+  valueType: msg
+  outputProperties:
+    - property: brightness_init
+      propertyType: flow
+      value: ''
+      valueType: value
+  x: 920
+  'y': 260
+  wires:
+    - []
+- id: 944eb4ad9a962030
+  type: api-current-state
+  z: e4c8b5c6603e36fc
+  name: Is Brightness Init unknown?
+  server: 72832130.5db8f
+  version: 3
+  outputs: 2
+  halt_if: unknown
+  halt_if_type: str
+  halt_if_compare: is
+  entity_id: number.kla_area_light_control_brightness_init
+  state_type: str
+  blockInputOverrides: true
+  outputProperties: []
+  for: '0'
+  forType: num
+  forUnits: minutes
+  override_topic: false
+  state_location: payload
+  override_payload: msg
+  entity_location: data
+  override_data: msg
+  x: 220
+  'y': 280
+  wires:
+    - - 60a98583a1120822
+    - - 402073987c40a4a0
+- id: 60a98583a1120822
+  type: ha-number
+  z: e4c8b5c6603e36fc
+  name: Set Lights Brightness Init
+  version: 1
+  debugenabled: false
+  inputs: 1
+  outputs: 1
+  entityConfig: 49043b8825ddfcc9
+  mode: set
+  value: '50'
+  valueType: num
+  outputProperties:
+    - property: brightness_init
+      propertyType: flow
+      value: ''
+      valueType: value
+  x: 490
+  'y': 260
+  wires:
+    - []
+- id: 402073987c40a4a0
+  type: ha-number
+  z: e4c8b5c6603e36fc
+  name: Get Lights Brightness Init
+  version: 1
+  debugenabled: false
+  inputs: 1
+  outputs: 1
+  entityConfig: 49043b8825ddfcc9
+  mode: get
+  value: payload
+  valueType: msg
+  outputProperties:
+    - property: brightness_init
+      propertyType: flow
+      value: ''
+      valueType: value
+  x: 490
+  'y': 320
+  wires:
+    - []
+- id: f04f9c27000130f7
+  type: api-call-service
+  z: e4c8b5c6603e36fc
+  name: Turn on lights in area with init brightness
+  server: 72832130.5db8f
+  version: 5
+  debugenabled: false
+  domain: light
+  service: turn_on
+  areaId: []
+  deviceId: []
+  entityId:
+    - '{{ payload }}'
+  data: '{"brightness_pct":$flowContext(''brightness_init'')}'
+  dataType: jsonata
+  mergeContext: ''
+  mustacheAltTags: false
+  outputProperties: []
+  queue: none
+  x: 1020
+  'y': 860
+  wires:
+    - []
+- id: 735e876ae55f4e18
+  type: link call
+  z: e4c8b5c6603e36fc
+  name: ''
+  links:
+    - 4b57dd31fb57961d
+  linkType: static
+  timeout: '30'
+  x: 510
+  'y': 800
+  wires:
+    - - 9bc359459838e7da
+- id: 9bc359459838e7da
+  type: switch
+  z: e4c8b5c6603e36fc
+  name: Failed
+  property: exitcode
+  propertyType: msg
+  rules:
+    - t: lt
+      v: '0'
+      vt: num
+  checkall: 'false'
+  repair: false
+  outputs: 1
+  x: 790
+  'y': 800
+  wires:
+    - - 8b07940e2c341f3d
+- id: b9d63ce4901c35bc
+  type: delay
+  z: e4c8b5c6603e36fc
+  name: Wait
+  pauseType: delayv
+  timeout: '30'
+  timeoutUnits: seconds
+  rate: '1'
+  nbRateUnits: '1'
+  rateUnits: second
+  randomFirst: '1'
+  randomLast: '5'
+  randomUnits: seconds
+  drop: false
+  allowrate: false
+  outputs: 1
+  x: 690
+  'y': 1620
+  wires:
+    - - 7ec7e031fb1411ec
+- id: e012d0cbf2877ebe
+  type: api-current-state
+  z: e4c8b5c6603e36fc
+  name: Area Light Control on?
+  server: 72832130.5db8f
+  version: 3
+  outputs: 2
+  halt_if: 'on'
+  halt_if_type: str
+  halt_if_compare: is
+  entity_id: switch.kla_area_light_control
+  state_type: str
+  blockInputOverrides: true
+  outputProperties: []
+  for: '0'
+  forType: num
+  forUnits: minutes
+  override_topic: false
+  state_location: payload
+  override_payload: msg
+  entity_location: data
+  override_data: msg
+  x: 400
+  'y': 480
+  wires:
+    - - 7eef5cfde3caabd1
+    - []
+- id: 7eef5cfde3caabd1
+  type: 'subflow:b5f5e83ddce73814'
+  z: e4c8b5c6603e36fc
+  name: ''
+  x: 620
+  'y': 480
+  wires:
+    - - 34dcc42f733942a8
+    - []
+- id: fb37e6646181d369
+  type: link in
+  z: e4c8b5c6603e36fc
+  name: Toggle lights when active area became dark (msg.area_id)
+  links:
+    - c5d9bf29d62644d9
+  x: 35
+  'y': 480
+  wires:
+    - - e012d0cbf2877ebe
+- id: 34dcc42f733942a8
+  type: 'subflow:c7fb159f2ed649a3'
+  z: e4c8b5c6603e36fc
+  name: ''
+  x: 860
+  'y': 480
+  wires:
+    - []
+    - - c9b4fa3085750738
+- id: b96b1677513dd9ca
+  type: switch
+  z: e4c8b5c6603e36fc
+  name: Delay > 10s
+  property: delay
+  propertyType: msg
+  rules:
+    - t: gt
+      v: '10000'
+      vt: num
+    - t: else
+  checkall: 'false'
+  repair: false
+  outputs: 2
+  x: 370
+  'y': 1660
+  wires:
+    - - 48853d1495ddeafc
+    - - 7ec7e031fb1411ec
+- id: 48853d1495ddeafc
+  type: change
+  z: e4c8b5c6603e36fc
+  name: Calc time to wait
+  rules:
+    - t: set
+      p: delay
+      pt: msg
+      to: delay - 10000
+      tot: jsonata
+  action: ''
+  property: ''
+  from: ''
+  to: ''
+  reg: false
+  x: 540
+  'y': 1620
+  wires:
+    - - b9d63ce4901c35bc
+- id: e7fd8ac1b291ed4d
+  type: api-call-service
+  z: e4c8b5c6603e36fc
+  name: Turn on lights in area with full brightness
+  server: 72832130.5db8f
+  version: 5
+  debugenabled: false
+  domain: light
+  service: turn_on
+  areaId: []
+  deviceId: []
+  entityId:
+    - '{{ payload }}'
+  data: '{"brightness_pct":100}'
+  dataType: jsonata
+  mergeContext: ''
+  mustacheAltTags: false
+  outputProperties: []
+  queue: none
+  x: 1020
+  'y': 920
+  wires:
+    - []
+- id: c7411ae124a9bf66
+  type: switch
+  z: e4c8b5c6603e36fc
+  name: Area delayed
+  property: kla_areas_delayed
+  propertyType: global
+  rules:
+    - t: cont
+      v: area_id
+      vt: msg
+    - t: else
+  checkall: 'false'
+  repair: false
+  outputs: 2
+  x: 850
+  'y': 1680
+  wires:
+    - - de02503727ecd900
+    - []
+- id: c8f2dc787aac7086
+  type: debug
+  z: e4c8b5c6603e36fc
+  name: Dim lights if area is going to be inactive
+  active: true
+  tosidebar: true
+  console: false
+  tostatus: false
+  complete: 'true'
+  targetType: full
+  statusVal: ''
+  statusType: auto
+  x: 230
+  'y': 1740
+  wires: []
