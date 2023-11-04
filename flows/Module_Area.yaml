@@ -1,1 +1,2548 @@
+- id: 1e0b234b31c32d2d
+  type: tab
+  label: Module_Area
+  disabled: false
+  info: ''
+  env: []
+- id: 5ac0ef5bf4bbf269
+  type: server-events
+  z: 1e0b234b31c32d2d
+  name: ''
+  server: 72832130.5db8f
+  version: 3
+  exposeAsEntityConfig: 85197789a1127d18
+  eventType: state_changed
+  eventData: ''
+  waitForRunning: true
+  outputProperties:
+    - property: data
+      propertyType: msg
+      value: ''
+      valueType: eventData
+    - property: topic
+      propertyType: msg
+      value: $outputData("eventData").entity_id
+      valueType: jsonata
+    - property: payload
+      propertyType: msg
+      value: $outputData("eventData").entity_id
+      valueType: jsonata
+  event_type: ''
+  x: 120
+  'y': 380
+  wires:
+    - - bc6fb9519bea6125
+- id: ce2bda172e2f462d
+  type: switch
+  z: 1e0b234b31c32d2d
+  name: Validate device class
+  property: data.event.new_state.attributes.device_class
+  propertyType: msg
+  rules:
+    - t: regex
+      v: '\b(?:door|motion|presence|occupancy)\b'
+      vt: str
+      case: false
+    - t: else
+  checkall: 'false'
+  repair: false
+  outputs: 2
+  x: 1600
+  'y': 380
+  wires:
+    - - dc93a192607380ce
+    - - 34e7bc2f95c6ceaf
+- id: a75ee81ecbf5bce2
+  type: switch
+  z: 1e0b234b31c32d2d
+  name: Check domain
+  property: '$substringBefore(topic, ''.'')'
+  propertyType: jsonata
+  rules:
+    - t: eq
+      v: binary_sensor
+      vt: str
+    - t: eq
+      v: light
+      vt: str
+    - t: eq
+      v: media_player
+      vt: str
+    - t: else
+  checkall: 'false'
+  repair: false
+  outputs: 4
+  x: 1380
+  'y': 400
+  wires:
+    - - ce2bda172e2f462d
+    - - aeccd9690c0659f8
+    - - dc93a192607380ce
+    - - 34e7bc2f95c6ceaf
+- id: aa8966924933b06b
+  type: 'subflow:0a93237bafa3cedf'
+  z: 1e0b234b31c32d2d
+  name: ''
+  env:
+    - name: check_not_hidden
+      type: bool
+      value: 'true'
+  x: 910
+  'y': 400
+  wires:
+    - - 0196ba62ef625ae1
+    - - 34e7bc2f95c6ceaf
+- id: 283ad62c871d73b4
+  type: comment
+  z: 1e0b234b31c32d2d
+  name: Entity must be assigned to area
+  info: ''
+  x: 910
+  'y': 360
+  wires: []
+- id: 5282667bf9818b9c
+  type: comment
+  z: 1e0b234b31c32d2d
+  name: Filter specific domains and device classes
+  info: ''
+  x: 1440
+  'y': 340
+  wires: []
+- id: 5e3130c426d5647c
+  type: comment
+  z: 1e0b234b31c32d2d
+  name: Listen for state changed events
+  info: ''
+  x: 130
+  'y': 340
+  wires: []
+- id: 75128b350928fe41
+  type: comment
+  z: 1e0b234b31c32d2d
+  name: Areas Sensor
+  info: ''
+  x: 70
+  'y': 40
+  wires: []
+- id: 546e9f38aace9400
+  type: switch
+  z: 1e0b234b31c32d2d
+  name: Switch event
+  property: event
+  propertyType: msg
+  rules:
+    - t: eq
+      v: from_off_to_on
+      vt: str
+    - t: eq
+      v: from_on_to_off
+      vt: str
+  checkall: 'false'
+  repair: false
+  outputs: 2
+  x: 2210
+  'y': 360
+  wires:
+    - - 6b9d46e04f302d5d
+    - - a12b221b5a09504f
+- id: 76e789372a797426
+  type: ha-binary-sensor
+  z: 1e0b234b31c32d2d
+  name: Areas Sensor
+  entityConfig: 9d9c225810839d72
+  version: 0
+  state: areas_state
+  stateType: msg
+  attributes:
+    - property: area_map
+      value: area_map
+      valueType: flow
+    - property: areas_active
+      value: kla_areas_active
+      valueType: global
+    - property: areas_active_last
+      value: areas_active_last
+      valueType: flow
+    - property: areas_active_last_timestamp
+      value: areas_active_last_timestamp
+      valueType: flow
+    - property: areas_active_overwritten
+      value: areas_active_overwritten
+      valueType: flow
+    - property: areas_locked
+      value: areas_locked
+      valueType: flow
+    - property: entities_active
+      value: entities_active
+      valueType: flow
+    - property: area_next_inactive
+      value: area_next_inactive
+      valueType: flow
+    - property: area_next_inactive_time_local
+      value: area_next_inactive_time_local
+      valueType: flow
+    - property: area_next_inactive_timestamp
+      value: area_next_inactive_timestamp
+      valueType: flow
+    - property: activity_score
+      value: activity_score
+      valueType: flow
+    - property: area_delayed
+      value: kla_areas_delayed
+      valueType: global
+  inputOverride: allow
+  outputProperties: []
+  x: 1030
+  'y': 80
+  wires:
+    - - f83b717a46312b73
+- id: 73370ca867c85797
+  type: comment
+  z: 1e0b234b31c32d2d
+  name: Update active entities
+  info: ''
+  x: 2200
+  'y': 300
+  wires: []
+- id: 1fff6234646d410f
+  type: moment
+  z: 1e0b234b31c32d2d
+  name: ''
+  topic: ''
+  input: area_next_inactive_timestamp
+  inputType: flow
+  inTz: Europe/Berlin
+  adjAmount: '0'
+  adjType: seconds
+  adjDir: add
+  format: 'HH:mm:ss'
+  locale: C
+  output: area_next_inactive_time_local
+  outputType: flow
+  outTz: Europe/Berlin
+  x: 3800
+  'y': 600
+  wires:
+    - - 9b3eed38c10211d3
+- id: 7dd82319b3c92587
+  type: link in
+  z: 1e0b234b31c32d2d
+  name: Update Areas Sensor
+  links:
+    - 8be832412b74a340
+    - 9b3eed38c10211d3
+    - 3f1e4c0b4a9bafc1
+  x: 35
+  'y': 80
+  wires:
+    - - dd08ac4fb716645a
+- id: 9b3eed38c10211d3
+  type: link out
+  z: 1e0b234b31c32d2d
+  name: Update after state changed event
+  mode: link
+  links:
+    - 7dd82319b3c92587
+  x: 3995
+  'y': 620
+  wires: []
+- id: 115e8fcc99bf7e89
+  type: change
+  z: 1e0b234b31c32d2d
+  name: Update last active area
+  rules:
+    - t: set
+      p: areas_active_last
+      pt: flow
+      to: area_id
+      tot: msg
+    - t: set
+      p: areas_active_last_timestamp
+      pt: flow
+      to: ''
+      tot: date
+  action: ''
+  property: ''
+  from: ''
+  to: ''
+  reg: false
+  x: 2790
+  'y': 320
+  wires:
+    - - 90325513fc3c56b9
+- id: f32742b02cb787fa
+  type: change
+  z: 1e0b234b31c32d2d
+  name: Add area_id to payload
+  rules:
+    - t: set
+      p: payload
+      pt: msg
+      to: 'area_id & '':'' & payload'
+      tot: jsonata
+  action: ''
+  property: ''
+  from: ''
+  to: ''
+  reg: false
+  x: 1170
+  'y': 400
+  wires:
+    - - a75ee81ecbf5bce2
+- id: ec22c8c8db453c46
+  type: change
+  z: 1e0b234b31c32d2d
+  name: Get area_ids
+  rules:
+    - t: set
+      p: template
+      pt: msg
+      to: '{{ areas() | sort() | join('','') }}'
+      tot: str
+  action: ''
+  property: ''
+  from: ''
+  to: ''
+  reg: false
+  x: 4050
+  'y': 320
+  wires:
+    - - 91641ad50c991620
+- id: 91641ad50c991620
+  type: api-render-template
+  z: 1e0b234b31c32d2d
+  name: Render template
+  server: 72832130.5db8f
+  version: 0
+  template: ''
+  resultsLocation: area_list
+  resultsLocationType: msg
+  templateLocation: template
+  templateLocationType: msg
+  x: 4230
+  'y': 320
+  wires:
+    - - eb7aac3ccda89cb7
+- id: 5a9621e58c6ce1a1
+  type: switch
+  z: 1e0b234b31c32d2d
+  name: Area in entity list
+  property: entities_active
+  propertyType: flow
+  rules:
+    - t: jsonata_exp
+      v: >-
+        $flowContext('entities_active') ~> $filter(function($v, $k) {
+        $substringBefore($v, ':') = area_id }) ~> $exists()
+      vt: jsonata
+    - t: else
+  checkall: 'false'
+  repair: false
+  outputs: 2
+  x: 2560
+  'y': 380
+  wires:
+    - - 37c8d6779042b7b7
+    - - 60f76ef6b327641a
+- id: 1c12630454875182
+  type: change
+  z: 1e0b234b31c32d2d
+  name: Set area timestamp
+  rules:
+    - t: set
+      p: delay
+      pt: msg
+      to: $flowContext('off_delay') * 4 * 1000
+      tot: jsonata
+    - t: set
+      p: area_timestamp
+      pt: msg
+      to: $millis() + delay
+      tot: jsonata
+  action: ''
+  property: ''
+  from: ''
+  to: ''
+  reg: false
+  x: 3590
+  'y': 360
+  wires:
+    - - 36b0c20fdc4ee953
+- id: dd08ac4fb716645a
+  type: switch
+  z: 1e0b234b31c32d2d
+  name: List not empty
+  property: kla_areas_active
+  propertyType: global
+  rules:
+    - t: nempty
+    - t: else
+  checkall: 'false'
+  repair: false
+  outputs: 2
+  x: 160
+  'y': 80
+  wires:
+    - - e08f6ac004e76e23
+    - - 67f7a34504ec6c1b
+- id: e08f6ac004e76e23
+  type: change
+  z: 1e0b234b31c32d2d
+  name: Set state to on
+  rules:
+    - t: set
+      p: areas_state
+      pt: msg
+      to: 'on'
+      tot: str
+  action: ''
+  property: ''
+  from: ''
+  to: ''
+  reg: false
+  x: 360
+  'y': 40
+  wires:
+    - - 76e789372a797426
+- id: 67f7a34504ec6c1b
+  type: change
+  z: 1e0b234b31c32d2d
+  name: Set state to off
+  rules:
+    - t: set
+      p: areas_state
+      pt: msg
+      to: 'off'
+      tot: str
+  action: ''
+  property: ''
+  from: ''
+  to: ''
+  reg: false
+  x: 360
+  'y': 120
+  wires:
+    - - 76e789372a797426
+- id: 8be832412b74a340
+  type: link out
+  z: 1e0b234b31c32d2d
+  name: Init Areas Sensor
+  mode: link
+  links:
+    - 7dd82319b3c92587
+  x: 675
+  'y': 180
+  wires: []
+- id: 9cc443f41d0a3245
+  type: comment
+  z: 1e0b234b31c32d2d
+  name: Update area map
+  info: ''
+  x: 4040
+  'y': 280
+  wires: []
+- id: eb7aac3ccda89cb7
+  type: function
+  z: 1e0b234b31c32d2d
+  name: Update areas
+  func: >
+    const areaList = msg.area_list.split(",");
 
+    let areaMap = flow.get("area_map") || [];
+
+    const activeEntities = flow.get("entities_active") || [];
+
+    let activeAreas = global.get("kla_areas_active") || [];
+
+
+    var areaMapArray = areaMap ? areaMap.reduce((acc, area) => {
+        const [areaName, ts] = area.split(":");
+        acc[areaName] = ts;
+        return acc;
+    }, {}) : {};
+
+
+    // Identify the areas to remove
+
+    let areasToRemove = Object.keys(areaMapArray).filter(areaName =>
+    !areaList.includes(areaName));
+
+
+    areaMap = areaList.map(area_name => {
+        if (areaMapArray[area_name] !== undefined) {
+            return `${area_name}:${areaMapArray[area_name]}`;
+        }
+        return `${area_name}:-1`;
+    }).filter(area => areaList.includes(area.split(":")[0]));
+
+
+    // Remove entries from activeEntities for areas that were removed
+
+    for (const area of areasToRemove) {
+        for (let i = activeEntities.length - 1; i >= 0; i--) {
+            const [entityAreaName, entityId] = activeEntities[i].split(':');
+            if (entityAreaName === area) {
+                activeEntities.splice(i, 1);
+            }
+        }
+    }
+
+
+    // Remove areasToRemove from activeAreas
+
+    activeAreas = activeAreas.filter(area => !areasToRemove.includes(area));
+
+
+    // Set the modified activeEntities and activeAreas back to their respective
+    storages
+
+    flow.set("entities_active", activeEntities);
+
+    global.set("kla_areas_active", activeAreas);
+
+
+    areaMap.sort();
+
+    flow.set("area_map", areaMap);
+
+
+    return msg;
+  outputs: 1
+  timeout: 0
+  noerr: 0
+  initialize: ''
+  finalize: ''
+  libs: []
+  x: 4420
+  'y': 320
+  wires:
+    - - d0f42e7c1b3bb5ae
+- id: cb0a50b8f0eca68d
+  type: comment
+  z: 1e0b234b31c32d2d
+  name: Set state
+  info: ''
+  x: 4020
+  'y': 580
+  wires: []
+- id: af619e381247542b
+  type: comment
+  z: 1e0b234b31c32d2d
+  name: Set inactive area timer
+  info: ''
+  x: 3360
+  'y': 580
+  wires: []
+- id: 2edcb1742faba0f4
+  type: switch
+  z: 1e0b234b31c32d2d
+  name: Timestamp valid
+  property: area_next_inactive_timestamp
+  propertyType: flow
+  rules:
+    - t: gt
+      v: '0'
+      vt: num
+    - t: else
+  checkall: 'false'
+  repair: false
+  outputs: 2
+  x: 3600
+  'y': 620
+  wires:
+    - - 1fff6234646d410f
+    - - 91cbfa516f35875d
+- id: 0bb33e56ea7434cb
+  type: switch
+  z: 1e0b234b31c32d2d
+  name: Old state
+  property: data.event.old_state.state
+  propertyType: msg
+  rules:
+    - t: eq
+      v: 'off'
+      vt: str
+    - t: eq
+      v: 'on'
+      vt: str
+    - t: else
+  checkall: 'false'
+  repair: false
+  outputs: 3
+  x: 360
+  'y': 400
+  wires:
+    - - 052d0e6a41fc64cb
+    - - 5e118cab06555c63
+    - - 34e7bc2f95c6ceaf
+- id: 052d0e6a41fc64cb
+  type: switch
+  z: 1e0b234b31c32d2d
+  name: New state on
+  property: data.event.new_state.state
+  propertyType: msg
+  rules:
+    - t: eq
+      v: 'on'
+      vt: str
+    - t: else
+  checkall: 'false'
+  repair: false
+  outputs: 2
+  x: 510
+  'y': 380
+  wires:
+    - - 1f038a2b59e373fa
+    - - 34e7bc2f95c6ceaf
+- id: 5e118cab06555c63
+  type: switch
+  z: 1e0b234b31c32d2d
+  name: New state off
+  property: data.event.new_state.state
+  propertyType: msg
+  rules:
+    - t: eq
+      v: 'off'
+      vt: str
+    - t: else
+  checkall: 'false'
+  repair: false
+  outputs: 2
+  x: 510
+  'y': 420
+  wires:
+    - - c8df8955eda69da0
+    - - 34e7bc2f95c6ceaf
+- id: c8df8955eda69da0
+  type: change
+  z: 1e0b234b31c32d2d
+  name: Set event
+  rules:
+    - t: set
+      p: event
+      pt: msg
+      to: from_on_to_off
+      tot: str
+  action: ''
+  property: ''
+  from: ''
+  to: ''
+  reg: false
+  x: 660
+  'y': 420
+  wires:
+    - - aa8966924933b06b
+- id: 1f038a2b59e373fa
+  type: change
+  z: 1e0b234b31c32d2d
+  name: Set event
+  rules:
+    - t: set
+      p: event
+      pt: msg
+      to: from_off_to_on
+      tot: str
+  action: ''
+  property: ''
+  from: ''
+  to: ''
+  reg: false
+  x: 660
+  'y': 380
+  wires:
+    - - aa8966924933b06b
+- id: 9e5fb0e10458d6ae
+  type: comment
+  z: 1e0b234b31c32d2d
+  name: 'Filter only on->off, off->on'
+  info: ''
+  x: 390
+  'y': 340
+  wires: []
+- id: a1ea38efcb00da80
+  type: link out
+  z: 1e0b234b31c32d2d
+  name: Area became active
+  mode: link
+  links:
+    - 1f0d403d501a4b14
+    - 341109efc0d72c7b
+  x: 3295
+  'y': 220
+  wires: []
+- id: 7f08a27dbd03f8b6
+  type: comment
+  z: 1e0b234b31c32d2d
+  name: Listen for overwritten areas
+  info: ''
+  x: 110
+  'y': 500
+  wires: []
+- id: c29cc6385f9cf689
+  type: comment
+  z: 1e0b234b31c32d2d
+  name: No need to listen for change from HA
+  info: ''
+  x: 1080
+  'y': 40
+  wires: []
+- id: 68755ae6c19204ae
+  type: link in
+  z: 1e0b234b31c32d2d
+  name: Init Areas
+  links:
+    - 9db5e781e04a0719
+  x: 35
+  'y': 180
+  wires:
+    - - ee36d35a7f1e5b3a
+      - 4330177fc9ba723e
+- id: 76e66b96fce957e8
+  type: api-current-state
+  z: 1e0b234b31c32d2d
+  name: Get Areas Sensor
+  server: 72832130.5db8f
+  version: 3
+  outputs: 1
+  halt_if: ''
+  halt_if_type: str
+  halt_if_compare: is
+  entity_id: binary_sensor.kla_areas
+  state_type: str
+  blockInputOverrides: true
+  outputProperties:
+    - property: areas
+      propertyType: msg
+      value: ''
+      valueType: entity
+  for: '0'
+  forType: num
+  forUnits: minutes
+  override_topic: false
+  state_location: payload
+  override_payload: msg
+  entity_location: data
+  override_data: msg
+  x: 310
+  'y': 180
+  wires:
+    - - 82f664c5c25861ec
+- id: 6b9d46e04f302d5d
+  type: function
+  z: 1e0b234b31c32d2d
+  name: Append entitiy
+  func: |
+    const activeEntities = flow.get("entities_active") || [];
+    if (!activeEntities.includes(msg.payload) ) {
+        activeEntities.push(msg.payload);
+        flow.set("entities_active", activeEntities);
+    }
+
+    return msg;
+  outputs: 1
+  timeout: 0
+  noerr: 0
+  initialize: ''
+  finalize: ''
+  libs: []
+  x: 2380
+  'y': 340
+  wires:
+    - - a3211970d6ac41c8
+- id: a12b221b5a09504f
+  type: function
+  z: 1e0b234b31c32d2d
+  name: Remove entity
+  func: >
+    let activeEntities = flow.get("entities_active") || [];
+
+    activeEntities = activeEntities.filter(item => item !== msg.payload && item
+    !== "");
+
+    flow.set("entities_active", activeEntities);
+
+
+    return msg;
+  outputs: 1
+  timeout: 0
+  noerr: 0
+  initialize: ''
+  finalize: ''
+  libs: []
+  x: 2380
+  'y': 380
+  wires:
+    - - 5a9621e58c6ce1a1
+- id: 8cf2c8d768666eb5
+  type: function
+  z: 1e0b234b31c32d2d
+  name: Update area map entry
+  func: |
+    let areaMap = flow.get("area_map") || [];
+
+     for (let i = 0; i < areaMap.length; i++) {
+            const [area_name, timestamp] = areaMap[i].split(':');
+            
+            if (area_name === msg.area_id) {
+                areaMap[i] = `${area_name}:${msg.area_timestamp}`;
+                break; // Exit the loop once the area is updated
+            }
+        }
+
+    flow.set("area_map", areaMap);
+
+    return msg;
+  outputs: 1
+  timeout: 0
+  noerr: 0
+  initialize: ''
+  finalize: ''
+  libs: []
+  x: 4180
+  'y': 380
+  wires:
+    - - 37c8d6779042b7b7
+- id: 91cbfa516f35875d
+  type: change
+  z: 1e0b234b31c32d2d
+  name: Empty inactive time local
+  rules:
+    - t: set
+      p: area_next_inactive_time_local
+      pt: flow
+      to: ''
+      tot: str
+  action: ''
+  property: ''
+  from: ''
+  to: ''
+  reg: false
+  x: 3810
+  'y': 640
+  wires:
+    - - 9b3eed38c10211d3
+- id: bdf3be4ebac330e7
+  type: link out
+  z: 1e0b234b31c32d2d
+  name: Area is going to became inactive
+  mode: link
+  links:
+    - bdcacfd6a85c5dfa
+  x: 4085
+  'y': 500
+  wires: []
+- id: 40e5c2ef55206ed2
+  type: comment
+  z: 1e0b234b31c32d2d
+  name: Use event to mark area inactive
+  info: ''
+  x: 1390
+  'y': 520
+  wires: []
+- id: 91899b1459b10a39
+  type: change
+  z: 1e0b234b31c32d2d
+  name: Set area id to next inactive
+  rules:
+    - t: set
+      p: area_id
+      pt: msg
+      to: area_next_inactive
+      tot: flow
+  action: ''
+  property: ''
+  from: ''
+  to: ''
+  reg: false
+  x: 2380
+  'y': 560
+  wires:
+    - - 794d5afc9b197d8c
+- id: 7e65ecb922ab9ce4
+  type: comment
+  z: 1e0b234b31c32d2d
+  name: Area is going to became inactive
+  info: ''
+  x: 4170
+  'y': 460
+  wires: []
+- id: 1d32227c7acc38cf
+  type: link in
+  z: 1e0b234b31c32d2d
+  name: Overwrite area state (msg.area_id & msg.area_overwritten)
+  links:
+    - 160a44b5a2a8b865
+    - bbff44590078f9ab
+  x: 35
+  'y': 620
+  wires:
+    - - 9f882098cae4cd28
+- id: 9f882098cae4cd28
+  type: switch
+  z: 1e0b234b31c32d2d
+  name: Switch area overwritten
+  property: area_overwritten
+  propertyType: msg
+  rules:
+    - t: 'true'
+    - t: 'false'
+  checkall: 'false'
+  repair: false
+  outputs: 2
+  x: 190
+  'y': 620
+  wires:
+    - - 6a86ca4abb0cb5d0
+    - - 74eecfc243cb0d5c
+- id: 6a86ca4abb0cb5d0
+  type: function
+  z: 1e0b234b31c32d2d
+  name: Append overwritten area
+  func: |
+    const overwrittenAreas = flow.get("areas_active_overwritten") || [];
+    if (!overwrittenAreas.includes(msg.area_id) ) {
+        overwrittenAreas.push(msg.area_id);
+        flow.set("areas_active_overwritten", overwrittenAreas);
+
+        node.status({ fill: 'green', shape: 'ring', text: 'Area: ' + msg.area_id + " overwritten"});
+    } else {
+        node.status({ fill: 'yellow', shape: 'square', text: 'Area: ' + msg.area_id + " already overwritten"});
+    }
+
+    return msg;
+  outputs: 1
+  timeout: 0
+  noerr: 0
+  initialize: ''
+  finalize: ''
+  libs: []
+  x: 610
+  'y': 540
+  wires:
+    - - 7f1d80e0410bbe87
+- id: 74eecfc243cb0d5c
+  type: function
+  z: 1e0b234b31c32d2d
+  name: Remove overwritten area
+  func: >
+    let overwrittenAreas = flow.get("areas_active_overwritten") || [];
+
+    overwrittenAreas = overwrittenAreas.filter(item => item !== msg.area_id &&
+    item !== "");
+
+    flow.set("areas_active_overwritten", overwrittenAreas);
+
+
+    node.status({ fill: 'green', shape: 'ring', text: 'Area: ' + msg.area_id + "
+    removed"});
+
+
+    return msg;
+  outputs: 1
+  timeout: 0
+  noerr: 0
+  initialize: ''
+  finalize: ''
+  libs: []
+  x: 610
+  'y': 600
+  wires:
+    - - 34e7bc2f95c6ceaf
+- id: 60f76ef6b327641a
+  type: switch
+  z: 1e0b234b31c32d2d
+  name: Area is overwritten
+  property: areas_active_overwritten
+  propertyType: flow
+  rules:
+    - t: cont
+      v: area_id
+      vt: msg
+    - t: else
+  checkall: 'false'
+  repair: false
+  outputs: 2
+  x: 2770
+  'y': 380
+  wires:
+    - - 37c8d6779042b7b7
+    - - 3bd15e0554bdcff6
+- id: d2d501ea50db62d3
+  type: api-current-state
+  z: 1e0b234b31c32d2d
+  name: Get areas sensor
+  server: 72832130.5db8f
+  version: 3
+  outputs: 1
+  halt_if: ''
+  halt_if_type: str
+  halt_if_compare: is
+  entity_id: binary_sensor.kla_areas
+  state_type: str
+  blockInputOverrides: true
+  outputProperties:
+    - property: areas_state_old
+      propertyType: msg
+      value: ''
+      valueType: entityState
+    - property: areas_old
+      propertyType: msg
+      value: ''
+      valueType: entity
+  for: '0'
+  forType: num
+  forUnits: minutes
+  override_topic: false
+  state_location: payload
+  override_payload: msg
+  entity_location: data
+  override_data: msg
+  x: 570
+  'y': 80
+  wires:
+    - - d5587fcffc161d4b
+- id: 9b566d453d681348
+  type: switch
+  z: 1e0b234b31c32d2d
+  name: Area removed
+  property: area_state_change
+  propertyType: msg
+  rules:
+    - t: eq
+      v: 'off'
+      vt: str
+    - t: else
+  checkall: 'false'
+  repair: false
+  outputs: 2
+  x: 3000
+  'y': 600
+  wires:
+    - - 4be08b6a1d142db3
+      - 0d63abb3acb0f052
+    - - f1e0ec9cc26f8127
+- id: d5587fcffc161d4b
+  type: function
+  z: 1e0b234b31c32d2d
+  name: Check if update needed
+  func: |-
+
+    return msg;
+  outputs: 1
+  timeout: 0
+  noerr: 0
+  initialize: ''
+  finalize: ''
+  libs: []
+  x: 790
+  'y': 80
+  wires:
+    - - 76e789372a797426
+- id: 794d5afc9b197d8c
+  type: function
+  z: 1e0b234b31c32d2d
+  name: Remove if area in context is not active anymore
+  func: >
+    function getAreaTimestamp(areaId, areaMap) {
+        for (const entry of areaMap) {
+            const [area, timestamp] = entry.split(':');
+            if (areaId === area) {
+                return parseInt(timestamp) || 0;
+            }
+        }
+
+        return 0;
+    }
+
+
+    function isAreaActive(areaId, areaMap, areasOverwritten, activeEntities,
+    currentTime) {
+        if (areasOverwritten.includes(areaId)) {
+            return true; // If the area is overwritten, it's active
+        }
+
+        // If entities in this area are listed, it's active
+        for (const e of activeEntities) {
+            const [area, entity] = e.split(':');
+            if (areaId === area) {
+                return true; // If there's a matching entity, the area is active
+            }
+        }
+
+        // If the area timestamp is in the future, it's active
+        const areaTimestamp = getAreaTimestamp(areaId, areaMap);
+        if (areaTimestamp > currentTime) {
+            return true;
+        }
+
+        return false; // If none of the conditions are met, the area is not active
+    }
+
+
+    const area = msg.area_id;
+
+
+    let activeAreas = global.get("kla_areas_active") || [];
+
+    let delayedAreas = global.get("kla_areas_delayed") || [];
+
+    const areaMap = flow.get("area_map") || [];
+
+    const areasLocked = flow.get("areas_locked") || [];
+
+    const areasOverwritten = flow.get("areas_active_overwritten") || [];
+
+    const activeEntities = flow.get("entities_active") || [];
+
+    const currentTime = Date.now();
+
+
+    const isAreaCurrentlyActive = isAreaActive(
+        area, areaMap, areasOverwritten, activeEntities, currentTime);
+
+    if (!isAreaCurrentlyActive) {
+        if (activeAreas.includes(area) && !areasLocked.includes(area)) {
+            const index = activeAreas.indexOf(area);
+            if (index !== -1) {
+                activeAreas.splice(index, 1);
+                msg.area_state_change = "off";
+
+                global.set("kla_areas_active", activeAreas);
+
+                if (delayedAreas.includes(area)) {
+                    delayedAreas = delayedAreas.filter(item => item !== area && item !== "");
+                    global.set("kla_areas_delayed", delayedAreas);
+                }
+            }
+        }
+    }
+
+
+    return msg;
+  outputs: 1
+  timeout: 0
+  noerr: 0
+  initialize: ''
+  finalize: ''
+  libs: []
+  x: 2700
+  'y': 580
+  wires:
+    - - 9b566d453d681348
+- id: 0d63abb3acb0f052
+  type: function
+  z: 1e0b234b31c32d2d
+  name: Update next inactive area
+  func: |
+    function getAreaTimestamp(areaMap, areaName) {
+        for (const entry of areaMap) {
+            const [currentAreaName, timestamp] = entry.split(':');
+            if (currentAreaName === areaName) {
+                return parseInt(timestamp) || 0;
+            }
+        }
+
+        return 0;
+    }
+
+    const activeAreas = global.get("kla_areas_active") || [];
+    const areaMap = flow.get("area_map") || [];
+    const currentTime = Date.now();
+
+    let nextInactiveTimestamp = Infinity;
+    let nextInactiveArea = "";
+
+    // Find the next inactive area
+    for (const area of activeAreas) {
+        const areaTimestamp = getAreaTimestamp(areaMap, area);
+        if (areaTimestamp > currentTime && areaTimestamp < nextInactiveTimestamp) {
+            nextInactiveTimestamp = areaTimestamp;
+            nextInactiveArea = area;
+        }
+    }
+
+    if (nextInactiveTimestamp === Infinity) {
+        nextInactiveTimestamp = -1;
+    }
+
+    flow.set("area_next_inactive", nextInactiveArea);
+    flow.set("area_next_inactive_timestamp", nextInactiveTimestamp);
+
+    return msg;
+  outputs: 1
+  timeout: 0
+  noerr: 0
+  initialize: ''
+  finalize: ''
+  libs: []
+  x: 3390
+  'y': 620
+  wires:
+    - - 2edcb1742faba0f4
+- id: b9c8adc2511bb41e
+  type: switch
+  z: 1e0b234b31c32d2d
+  name: Area in area map
+  property: area_map
+  propertyType: flow
+  rules:
+    - t: jsonata_exp
+      v: >-
+        $flowContext('area_map') ~> $filter(function($v, $k) {
+        $substringBefore($v, ':') = area_id }) ~> $exists()
+      vt: jsonata
+    - t: else
+  checkall: 'false'
+  repair: false
+  outputs: 2
+  x: 3570
+  'y': 300
+  wires:
+    - - 8cf2c8d768666eb5
+    - - ec22c8c8db453c46
+- id: 90325513fc3c56b9
+  type: switch
+  z: 1e0b234b31c32d2d
+  name: Area already active
+  property: kla_areas_active
+  propertyType: global
+  rules:
+    - t: cont
+      v: area_id
+      vt: msg
+    - t: else
+  checkall: 'false'
+  repair: false
+  outputs: 2
+  x: 3010
+  'y': 320
+  wires:
+    - - d2b5c782409fcdf4
+    - - 8fc90f0e10722a45
+- id: 8fc90f0e10722a45
+  type: function
+  z: 1e0b234b31c32d2d
+  name: Append area
+  func: |
+    const activeAreas = global.get("kla_areas_active") || [];
+    if (!activeAreas.includes(msg.area_id) ) {
+        activeAreas.push(msg.area_id);
+        // activeAreas.sort();
+        global.set("kla_areas_active", activeAreas);
+
+        node.status({ fill: 'green', shape: 'ring', text: 'Area: ' + msg.area_id + " active"});
+    } else {
+        node.status({ fill: 'yellow', shape: 'square', text: 'Area: ' + msg.area_id + " already active"});
+    }
+
+    return msg;
+  outputs: 1
+  timeout: 0
+  noerr: 0
+  initialize: ''
+  finalize: ''
+  libs: []
+  x: 3190
+  'y': 260
+  wires:
+    - - cf21028135675059
+      - a1ea38efcb00da80
+- id: cf21028135675059
+  type: change
+  z: 1e0b234b31c32d2d
+  name: Set area timestamp
+  rules:
+    - t: set
+      p: area_timestamp
+      pt: msg
+      to: ''
+      tot: date
+  action: ''
+  property: ''
+  from: ''
+  to: ''
+  reg: false
+  x: 3370
+  'y': 300
+  wires:
+    - - b9c8adc2511bb41e
+- id: f83b717a46312b73
+  type: change
+  z: 1e0b234b31c32d2d
+  name: Delete hold flow flag
+  rules:
+    - t: delete
+      p: hold
+      pt: flow
+  action: ''
+  property: ''
+  from: ''
+  to: ''
+  reg: false
+  x: 1240
+  'y': 80
+  wires:
+    - []
+- id: ee36d35a7f1e5b3a
+  type: change
+  z: 1e0b234b31c32d2d
+  name: Hold flow
+  rules:
+    - t: set
+      p: hold
+      pt: flow
+      to: 'true'
+      tot: bool
+  action: ''
+  property: ''
+  from: ''
+  to: ''
+  reg: false
+  x: 140
+  'y': 180
+  wires:
+    - - 76e66b96fce957e8
+- id: 34e7bc2f95c6ceaf
+  type: delay
+  z: 1e0b234b31c32d2d
+  name: ''
+  pauseType: rate
+  timeout: '10'
+  timeoutUnits: seconds
+  rate: '1'
+  nbRateUnits: '5'
+  rateUnits: second
+  randomFirst: '1'
+  randomLast: '5'
+  randomUnits: seconds
+  drop: true
+  allowrate: false
+  outputs: 1
+  x: 1140
+  'y': 560
+  wires:
+    - - 103b411f5c16b719
+- id: 103b411f5c16b719
+  type: switch
+  z: 1e0b234b31c32d2d
+  name: Check if flow is on hold
+  property: hold
+  propertyType: msg
+  rules:
+    - t: 'null'
+  checkall: 'false'
+  repair: false
+  outputs: 1
+  x: 1380
+  'y': 560
+  wires:
+    - - 1b95334490832dd3
+- id: 37c8d6779042b7b7
+  type: switch
+  z: 1e0b234b31c32d2d
+  name: Check if next inactive area set
+  property: area_next_inactive
+  propertyType: flow
+  rules:
+    - t: neq
+      v: ''
+      vt: str
+    - t: else
+  checkall: 'false'
+  repair: false
+  outputs: 2
+  x: 2110
+  'y': 580
+  wires:
+    - - 91899b1459b10a39
+    - - 3c64993688dcb442
+- id: 4be08b6a1d142db3
+  type: link out
+  z: 1e0b234b31c32d2d
+  name: Area became inactive
+  mode: link
+  links:
+    - 79444cc4ee148924
+    - fe343961f9d5d89a
+  x: 3155
+  'y': 560
+  wires: []
+- id: 1b95334490832dd3
+  type: change
+  z: 1e0b234b31c32d2d
+  name: Hold flow
+  rules:
+    - t: set
+      p: hold
+      pt: flow
+      to: 'true'
+      tot: bool
+  action: ''
+  property: ''
+  from: ''
+  to: ''
+  reg: false
+  x: 1560
+  'y': 560
+  wires:
+    - - 39cb5d4969b0ee48
+- id: 8482bd3eb06b45a6
+  type: change
+  z: 1e0b234b31c32d2d
+  name: Delete hold flow flag
+  rules:
+    - t: delete
+      p: hold
+      pt: flow
+  action: ''
+  property: ''
+  from: ''
+  to: ''
+  reg: false
+  x: 3020
+  'y': 720
+  wires:
+    - []
+- id: 3c64993688dcb442
+  type: function
+  z: 1e0b234b31c32d2d
+  name: Remove first orphaned active area
+  func: >
+    function getAreaTimestamp(areaId, areaMap) {
+        for (const entry of areaMap) {
+            const [area, timestamp] = entry.split(':');
+            if (areaId === area) {
+                return parseInt(timestamp) || 0;
+            }
+        }
+
+        return 0;
+    }
+
+
+    function isAreaActive(areaId, areaMap, areasOverwritten, activeEntities,
+    currentTime) {
+        if (areasOverwritten.includes(areaId)) {
+            return true; // If the area is overwritten, it's active
+        }
+
+        // If entities in this area are listed, it's active
+        for (const e of activeEntities) {
+            const [area, entity] = e.split(':');
+            if (areaId === area) {
+                return true; // If there's a matching entity, the area is active
+            }
+        }
+
+        // If the area timestamp is in the future, it's active
+        const areaTimestamp = getAreaTimestamp(areaId, areaMap);
+        if (areaTimestamp > currentTime) {
+            return true;
+        }
+
+        return false; // If none of the conditions are met, the area is not active
+    }
+
+
+    let activeAreas = global.get("kla_areas_active") || [];
+
+    let delayedAreas = global.get("kla_areas_delayed") || [];
+
+    const areaMap = flow.get("area_map") || [];
+
+    const areasLocked = flow.get("areas_locked") || [];
+
+    const areasOverwritten = flow.get("areas_active_overwritten") || [];
+
+    const activeEntities = flow.get("entities_active") || [];
+
+    const currentTime = Date.now();
+
+
+    for (const area of activeAreas) {
+        const isAreaCurrentlyActive = isAreaActive(
+            area, areaMap, areasOverwritten, activeEntities, currentTime);
+
+        if (!isAreaCurrentlyActive) {
+            if (activeAreas.includes(area) && !areasLocked.includes(area)) {
+                const index = activeAreas.indexOf(area);
+                if (index !== -1) {
+                    activeAreas.splice(index, 1);
+                    msg.area_state_change = "off";
+                    msg.area_id = area;
+
+                    global.set("kla_areas_active", activeAreas);
+
+                    if (delayedAreas.includes(area)) {
+                        delayedAreas = delayedAreas.filter(item => item !== area && item !== "");
+                        global.set("kla_areas_delayed", delayedAreas);
+                    }
+
+                    break;
+                }
+            }
+        }
+    }
+
+
+    return msg;
+  outputs: 1
+  timeout: 0
+  noerr: 0
+  initialize: ''
+  finalize: ''
+  libs: []
+  x: 2660
+  'y': 620
+  wires:
+    - - 9b566d453d681348
+- id: 539b18378383a599
+  type: comment
+  z: 1e0b234b31c32d2d
+  name: ToDo Check if area update needed
+  info: ''
+  x: 700
+  'y': 40
+  wires: []
+- id: 82f664c5c25861ec
+  type: function
+  z: 1e0b234b31c32d2d
+  name: Save sensor to flow var
+  func: >
+    if(!msg.areas) msg.areas = {};
+
+    if(!msg.areas.attributes) msg.areas.attributes = {};
+
+    global.set("kla_areas_entities_ignored",
+    global.get("kla_areas_entities_ignored") || []);
+
+
+    global.set("kla_areas_active", msg.areas.attributes.areas_active ||
+    global.get("kla_areas_active") || []);
+
+    global.set("kla_areas_delayed", msg.areas.attributes.areas_delayed ||
+    global.get("kla_areas_delayed") || []);
+
+
+    flow.set("activity_score", msg.areas.attributes.activity_score ||
+    flow.get("activity_score") || 0);
+
+    flow.set("area_next_inactive", msg.areas.attributes.area_next_inactive ||
+    flow.get("area_next_inactive") || "");
+
+    flow.set("area_next_inactive_time_local",
+    msg.areas.attributes.area_next_inactive_time_local ||
+    flow.get("area_next_inactive_time_local") || "");
+
+    flow.set("area_next_inactive_timestamp",
+    msg.areas.attributes.area_next_inactive_timestamp ||
+    flow.get("area_next_inactive_timestamp") || -1);
+
+    flow.set("area_map", msg.areas.attributes.area_map || flow.get("area_map")
+    || []);
+
+    flow.set("areas_active_last", msg.areas.attributes.areas_active_last ||
+    flow.get("areas_active_last") || "");
+
+    flow.set("areas_active_last_timestamp",
+    msg.areas.attributes.areas_active_last_timestamp ||
+    flow.get("areas_active_last_timestamp") || -1);
+
+    flow.set("areas_active_overwritten",
+    msg.areas.attributes.areas_active_overwritten ||
+    flow.get("areas_active_overwritten") || []);
+
+    flow.set("areas_locked", msg.areas.attributes.areas_locked ||
+    flow.get("areas_locked") || []);
+
+    flow.set("entities_active", msg.areas.attributes.entities_active ||
+    flow.get("entities_active") || []);
+
+
+    return msg;
+  outputs: 1
+  timeout: 0
+  noerr: 0
+  initialize: ''
+  finalize: ''
+  libs: []
+  x: 530
+  'y': 180
+  wires:
+    - - 8be832412b74a340
+- id: 29e139b64d1e2980
+  type: comment
+  z: 1e0b234b31c32d2d
+  name: Listen for locked areas
+  info: ''
+  x: 100
+  'y': 760
+  wires: []
+- id: 8e58950baf32ab44
+  type: link in
+  z: 1e0b234b31c32d2d
+  name: Lock area (msg.area_id & msg.area_locked)
+  links:
+    - ae60a3a57ca3f4e6
+  x: 35
+  'y': 820
+  wires:
+    - - aaf21fe299ca2f59
+- id: aaf21fe299ca2f59
+  type: switch
+  z: 1e0b234b31c32d2d
+  name: Switch area lock
+  property: area_locked
+  propertyType: msg
+  rules:
+    - t: 'true'
+    - t: 'false'
+  checkall: 'false'
+  repair: false
+  outputs: 2
+  x: 160
+  'y': 820
+  wires:
+    - - fbe2560f1e19ad54
+    - - f768b7feda2faff1
+- id: fbe2560f1e19ad54
+  type: function
+  z: 1e0b234b31c32d2d
+  name: Append locked area
+  func: |
+    const lockedAreas = flow.get("areas_locked") || [];
+    if (!lockedAreas.includes(msg.area_id) ) {
+        lockedAreas.push(msg.area_id);
+        flow.set("areas_locked", lockedAreas);
+
+        node.status({ fill: 'green', shape: 'ring', text: 'Area: ' + msg.area_id + " locked"});
+    } else {
+        node.status({ fill: 'yellow', shape: 'square', text: 'Area: ' + msg.area_id + " already locked"});
+    }
+
+    return msg;
+  outputs: 1
+  timeout: 0
+  noerr: 0
+  initialize: ''
+  finalize: ''
+  libs: []
+  x: 360
+  'y': 780
+  wires:
+    - []
+- id: f768b7feda2faff1
+  type: function
+  z: 1e0b234b31c32d2d
+  name: Remove locked area
+  func: >
+    let lockedAreas = flow.get("areas_locked") || [];
+
+    lockedAreas = lockedAreas.filter(item => item !== msg.area_id && item !==
+    "");
+
+    flow.set("areas_locked", lockedAreas);
+
+
+    node.status({ fill: 'green', shape: 'ring', text: 'Area: ' + msg.area_id + "
+    removed" });
+
+
+    return msg;
+  outputs: 1
+  timeout: 0
+  noerr: 0
+  initialize: ''
+  finalize: ''
+  libs: []
+  x: 360
+  'y': 860
+  wires:
+    - []
+- id: 7f1d80e0410bbe87
+  type: switch
+  z: 1e0b234b31c32d2d
+  name: Check if flow is on hold
+  property: hold
+  propertyType: msg
+  rules:
+    - t: 'null'
+    - t: else
+  checkall: 'false'
+  repair: false
+  outputs: 2
+  x: 910
+  'y': 640
+  wires:
+    - - 46110610fa71e4ab
+    - - cd6c9ebafd16b875
+- id: cd6c9ebafd16b875
+  type: delay
+  z: 1e0b234b31c32d2d
+  name: ''
+  pauseType: rate
+  timeout: '1'
+  timeoutUnits: seconds
+  rate: '1'
+  nbRateUnits: '1'
+  rateUnits: second
+  randomFirst: '1'
+  randomLast: '5'
+  randomUnits: seconds
+  drop: false
+  allowrate: false
+  outputs: 1
+  x: 910
+  'y': 700
+  wires:
+    - - 7f1d80e0410bbe87
+- id: 46110610fa71e4ab
+  type: change
+  z: 1e0b234b31c32d2d
+  name: Hold flow
+  rules:
+    - t: set
+      p: hold
+      pt: flow
+      to: 'true'
+      tot: bool
+  action: ''
+  property: ''
+  from: ''
+  to: ''
+  reg: false
+  x: 1110
+  'y': 640
+  wires:
+    - - a3211970d6ac41c8
+- id: dc93a192607380ce
+  type: switch
+  z: 1e0b234b31c32d2d
+  name: Check if flow is on hold
+  property: hold
+  propertyType: msg
+  rules:
+    - t: 'null'
+    - t: else
+  checkall: 'false'
+  repair: false
+  outputs: 2
+  x: 1840
+  'y': 440
+  wires:
+    - - b97f066d3e489f07
+    - - 4dc6a4b66b474920
+- id: 4dc6a4b66b474920
+  type: delay
+  z: 1e0b234b31c32d2d
+  name: ''
+  pauseType: rate
+  timeout: '1'
+  timeoutUnits: seconds
+  rate: '4'
+  nbRateUnits: '1'
+  rateUnits: second
+  randomFirst: '1'
+  randomLast: '5'
+  randomUnits: seconds
+  drop: false
+  allowrate: false
+  outputs: 1
+  x: 1840
+  'y': 500
+  wires:
+    - - dc93a192607380ce
+- id: b97f066d3e489f07
+  type: change
+  z: 1e0b234b31c32d2d
+  name: Hold flow
+  rules:
+    - t: set
+      p: hold
+      pt: flow
+      to: 'true'
+      tot: bool
+  action: ''
+  property: ''
+  from: ''
+  to: ''
+  reg: false
+  x: 2040
+  'y': 360
+  wires:
+    - - 546e9f38aace9400
+- id: f1e0ec9cc26f8127
+  type: switch
+  z: 1e0b234b31c32d2d
+  name: Event not null
+  property: event
+  propertyType: msg
+  rules:
+    - t: nnull
+    - t: else
+  checkall: 'false'
+  repair: false
+  outputs: 2
+  x: 3000
+  'y': 660
+  wires:
+    - - 0d63abb3acb0f052
+    - - 8482bd3eb06b45a6
+- id: cb10e4c0cb307c7f
+  type: comment
+  z: 1e0b234b31c32d2d
+  name: Handle areas to remove
+  info: ''
+  x: 2100
+  'y': 520
+  wires: []
+- id: 63ecdea3e67df074
+  type: eztimer
+  z: 1e0b234b31c32d2d
+  name: Midnight trigger
+  debug: false
+  autoname: '24:00:00'
+  tag: eztimer
+  topic: eztimer
+  suspended: false
+  sendEventsOnSuspend: false
+  latLongSource: haZone
+  latLongHaZone: zone.home
+  lat: '51.47799186545104'
+  lon: '7.219063639640809'
+  timerType: '2'
+  startupMessage: false
+  ontype: '2'
+  ontimesun: dawn
+  ontimetod: '24:00:00'
+  onpropertytype: msg
+  onproperty: payload
+  onvaluetype: str
+  onvalue: time
+  onoffset: 0
+  onrandomoffset: 0
+  onsuppressrepeats: false
+  offtype: '1'
+  offtimesun: dusk
+  offtimetod: dusk
+  offduration: '00:01:00'
+  offpropertytype: msg
+  offproperty: payload
+  offvaluetype: num
+  offvalue: 0
+  offoffset: 0
+  offrandomoffset: 0
+  offsuppressrepeats: false
+  resend: false
+  resendInterval: 0s
+  mon: true
+  tue: true
+  wed: true
+  thu: true
+  fri: true
+  sat: true
+  sun: true
+  x: 3800
+  'y': 160
+  wires:
+    - - 47a9742a38609215
+- id: d0f42e7c1b3bb5ae
+  type: switch
+  z: 1e0b234b31c32d2d
+  name: Trigger is eztimer
+  property: topic
+  propertyType: msg
+  rules:
+    - t: eq
+      v: eztimer
+      vt: str
+    - t: else
+  checkall: 'false'
+  repair: false
+  outputs: 2
+  x: 4610
+  'y': 320
+  wires:
+    - - 0d63abb3acb0f052
+    - - 8cf2c8d768666eb5
+- id: 47a9742a38609215
+  type: switch
+  z: 1e0b234b31c32d2d
+  name: Check if flow is on hold
+  property: hold
+  propertyType: msg
+  rules:
+    - t: 'null'
+    - t: else
+  checkall: 'false'
+  repair: false
+  outputs: 2
+  x: 4070
+  'y': 160
+  wires:
+    - - d7ef1bad26ba9a33
+    - - d17133509fe316c1
+- id: d17133509fe316c1
+  type: delay
+  z: 1e0b234b31c32d2d
+  name: ''
+  pauseType: rate
+  timeout: '1'
+  timeoutUnits: seconds
+  rate: '1'
+  nbRateUnits: '1'
+  rateUnits: second
+  randomFirst: '1'
+  randomLast: '5'
+  randomUnits: seconds
+  drop: false
+  allowrate: false
+  outputs: 1
+  x: 4070
+  'y': 220
+  wires:
+    - - 47a9742a38609215
+- id: d7ef1bad26ba9a33
+  type: change
+  z: 1e0b234b31c32d2d
+  name: Hold flow
+  rules:
+    - t: set
+      p: hold
+      pt: flow
+      to: 'true'
+      tot: bool
+  action: ''
+  property: ''
+  from: ''
+  to: ''
+  reg: false
+  x: 4280
+  'y': 160
+  wires:
+    - - ec22c8c8db453c46
+- id: cf3860a1608b5469
+  type: comment
+  z: 1e0b234b31c32d2d
+  name: Update areas at midnight
+  info: ''
+  x: 3810
+  'y': 120
+  wires: []
+- id: 39cb5d4969b0ee48
+  type: function
+  z: 1e0b234b31c32d2d
+  name: Remove orphaned entities
+  func: |
+    function removeInvalidEntities(activeEntities, homeassistant) {
+        // Extract the entityNames from Home Assistant's states object
+        const haStates = global.get("homeassistant").homeAssistant.states;
+
+        // Filter activeEntities to only include those present in Home Assistant and not in the "unavailable" state
+        return activeEntities.filter(entity => {
+            const [, entityId] = entity.split(':'); // Destructuring to get the entityName part
+
+            // Check if the entity exists in Home Assistant and its state is not "unavailable"
+            return haStates[entityId] && haStates[entityId].state !== 'unavailable';
+        });
+    }
+
+    const activeEntities = flow.get("entities_active") || [];
+    const homeassistant = global.get("homeassistant");
+
+    const validEntities = removeInvalidEntities(activeEntities, homeassistant);
+    const removedItemsCount = activeEntities.length - validEntities.length;
+
+    // Update the entities_active in flow with the valid entities
+    flow.set("entities_active", validEntities);
+
+    if(removedItemsCount > 0) {
+        node.status({ fill: 'yellow', shape: 'ring', text: removedItemsCount + ' entities removed'});
+    } else {
+        node.status({ fill: 'green', shape: 'square', text: 'No orphaned entities found'});
+    }
+
+    return msg;
+  outputs: 1
+  timeout: 0
+  noerr: 0
+  initialize: ''
+  finalize: ''
+  libs: []
+  x: 1760
+  'y': 560
+  wires:
+    - - 37c8d6779042b7b7
+- id: c631848c29278606
+  type: switch
+  z: 1e0b234b31c32d2d
+  name: Area extended
+  property: area_map
+  propertyType: flow
+  rules:
+    - t: jsonata_exp
+      v: >-
+        ($flowContext('area_map') ~> $single(function($v, $k) {
+        $substringBefore($v, ':') = area_id }) ~> $substringAfter(":") ~>
+        $number()) + ($flowContext('off_delay') * 2 * 1000) <= $millis()
+      vt: jsonata
+    - t: else
+  checkall: 'false'
+  repair: false
+  outputs: 2
+  x: 3380
+  'y': 340
+  wires:
+    - - 1c12630454875182
+    - - 3fecb1763f10c7ce
+- id: 3fecb1763f10c7ce
+  type: change
+  z: 1e0b234b31c32d2d
+  name: Set area timestamp
+  rules:
+    - t: set
+      p: delay
+      pt: msg
+      to: $flowContext('off_delay') * 1000
+      tot: jsonata
+    - t: set
+      p: area_timestamp
+      pt: msg
+      to: $millis() + delay
+      tot: jsonata
+  action: ''
+  property: ''
+  from: ''
+  to: ''
+  reg: false
+  x: 3590
+  'y': 400
+  wires:
+    - - 36b0c20fdc4ee953
+- id: 2226d7a751737ca0
+  type: switch
+  z: 1e0b234b31c32d2d
+  name: Area in area map
+  property: area_map
+  propertyType: flow
+  rules:
+    - t: jsonata_exp
+      v: >-
+        $flowContext('area_map') ~> $filter(function($v, $k) {
+        $substringBefore($v, ':') = area_id }) ~> $exists()
+      vt: jsonata
+    - t: else
+  checkall: 'false'
+  repair: false
+  outputs: 2
+  x: 3190
+  'y': 380
+  wires:
+    - - c631848c29278606
+    - - 3fecb1763f10c7ce
+- id: bc6fb9519bea6125
+  type: switch
+  z: 1e0b234b31c32d2d
+  name: Entity ignored
+  property: kla_areas_entities_ignored
+  propertyType: global
+  rules:
+    - t: cont
+      v: topic
+      vt: msg
+    - t: else
+  checkall: 'false'
+  repair: false
+  outputs: 2
+  x: 140
+  'y': 440
+  wires:
+    - - 2f7a990dd77913b2
+    - - 0bb33e56ea7434cb
+- id: aeccd9690c0659f8
+  type: switch
+  z: 1e0b234b31c32d2d
+  name: Switch event
+  property: event
+  propertyType: msg
+  rules:
+    - t: eq
+      v: from_off_to_on
+      vt: str
+    - t: eq
+      v: from_on_to_off
+      vt: str
+  checkall: 'false'
+  repair: false
+  outputs: 2
+  x: 130
+  'y': 540
+  wires:
+    - - 6a86ca4abb0cb5d0
+    - - db5486d25105ce1c
+- id: db5486d25105ce1c
+  type: 'subflow:c7fb159f2ed649a3'
+  z: 1e0b234b31c32d2d
+  name: ''
+  x: 340
+  'y': 560
+  wires:
+    - []
+    - - 74eecfc243cb0d5c
+- id: 0196ba62ef625ae1
+  type: msg-speed
+  z: 1e0b234b31c32d2d
+  name: 10min activity
+  frequency: min
+  interval: '10'
+  estimation: false
+  ignore: false
+  pauseAtStartup: false
+  topicDependent: false
+  x: 1180
+  'y': 280
+  wires:
+    - - d74fae04b428bc26
+    - - f32742b02cb787fa
+- id: d74fae04b428bc26
+  type: change
+  z: 1e0b234b31c32d2d
+  name: Set score to speed
+  rules:
+    - t: move
+      p: payload
+      pt: msg
+      to: activity_score
+      tot: flow
+  action: ''
+  property: ''
+  from: ''
+  to: ''
+  reg: false
+  x: 1390
+  'y': 280
+  wires:
+    - - c594b98ec31d0666
+- id: 0f1ddbb3183ab7be
+  type: link in
+  z: 1e0b234b31c32d2d
+  name: Reset overwritten areas
+  links: []
+  x: 35
+  'y': 680
+  wires:
+    - - 930dc78981855658
+- id: 930dc78981855658
+  type: change
+  z: 1e0b234b31c32d2d
+  name: Reset overwritten areas
+  rules:
+    - t: set
+      p: areas_active_overwritten
+      pt: flow
+      to: '[]'
+      tot: json
+  action: ''
+  property: ''
+  from: ''
+  to: ''
+  reg: false
+  x: 190
+  'y': 680
+  wires:
+    - - 34e7bc2f95c6ceaf
+- id: 8d6fdf6e50fe6418
+  type: link in
+  z: 1e0b234b31c32d2d
+  name: Reset locked areas
+  links: []
+  x: 35
+  'y': 920
+  wires:
+    - - dfe4a8675491b2ba
+- id: dfe4a8675491b2ba
+  type: change
+  z: 1e0b234b31c32d2d
+  name: Reset locked areas
+  rules:
+    - t: set
+      p: areas_locked
+      pt: flow
+      to: '[]'
+      tot: json
+  action: ''
+  property: ''
+  from: ''
+  to: ''
+  reg: false
+  x: 170
+  'y': 920
+  wires:
+    - []
+- id: a3211970d6ac41c8
+  type: switch
+  z: 1e0b234b31c32d2d
+  name: Area is locked
+  property: areas_locked
+  propertyType: flow
+  rules:
+    - t: cont
+      v: area_id
+      vt: msg
+    - t: else
+  checkall: 'false'
+  repair: false
+  outputs: 2
+  x: 2560
+  'y': 320
+  wires:
+    - - 37c8d6779042b7b7
+    - - 115e8fcc99bf7e89
+- id: 3bd15e0554bdcff6
+  type: switch
+  z: 1e0b234b31c32d2d
+  name: Area is locked
+  property: areas_locked
+  propertyType: flow
+  rules:
+    - t: cont
+      v: area_id
+      vt: msg
+    - t: else
+  checkall: 'false'
+  repair: false
+  outputs: 2
+  x: 2980
+  'y': 380
+  wires:
+    - - 37c8d6779042b7b7
+    - - 2226d7a751737ca0
+- id: d94a982eac1dc525
+  type: comment
+  z: 1e0b234b31c32d2d
+  name: Calculate activity based on events
+  info: ''
+  x: 1220
+  'y': 240
+  wires: []
+- id: ecbd98c312e5bdda
+  type: ha-number
+  z: 1e0b234b31c32d2d
+  name: Off Delay
+  version: 1
+  debugenabled: false
+  inputs: 0
+  outputs: 1
+  entityConfig: 6027d6ed2aa4a4bf
+  mode: listen
+  value: payload
+  valueType: msg
+  outputProperties:
+    - property: off_delay
+      propertyType: flow
+      value: ''
+      valueType: value
+  x: 1520
+  'y': 80
+  wires:
+    - []
+- id: 5bac9b69625c3ef4
+  type: comment
+  z: 1e0b234b31c32d2d
+  name: Off delay
+  info: ''
+  x: 1500
+  'y': 40
+  wires: []
+- id: 4330177fc9ba723e
+  type: api-current-state
+  z: 1e0b234b31c32d2d
+  name: Is Off delay unknown?
+  server: 72832130.5db8f
+  version: 3
+  outputs: 2
+  halt_if: unknown
+  halt_if_type: str
+  halt_if_compare: is
+  entity_id: number.kla_area_off_delay
+  state_type: str
+  blockInputOverrides: true
+  outputProperties: []
+  for: '0'
+  forType: num
+  forUnits: minutes
+  override_topic: false
+  state_location: payload
+  override_payload: msg
+  entity_location: data
+  override_data: msg
+  x: 180
+  'y': 260
+  wires:
+    - - 456f2e4de3abfd96
+    - - 622bb284456ba077
+- id: 456f2e4de3abfd96
+  type: ha-number
+  z: 1e0b234b31c32d2d
+  name: Set Off Delay
+  version: 1
+  debugenabled: false
+  inputs: 1
+  outputs: 1
+  entityConfig: 6027d6ed2aa4a4bf
+  mode: set
+  value: '30'
+  valueType: num
+  outputProperties:
+    - property: off_delay
+      propertyType: flow
+      value: ''
+      valueType: value
+  x: 410
+  'y': 240
+  wires:
+    - []
+- id: 622bb284456ba077
+  type: ha-number
+  z: 1e0b234b31c32d2d
+  name: Get Off Delay
+  version: 1
+  debugenabled: false
+  inputs: 1
+  outputs: 1
+  entityConfig: 6027d6ed2aa4a4bf
+  mode: get
+  value: '60'
+  valueType: num
+  outputProperties:
+    - property: off_delay
+      propertyType: flow
+      value: ''
+      valueType: value
+  x: 590
+  'y': 260
+  wires:
+    - []
+- id: 4f7d05c7bb0d1f4a
+  type: 'subflow:7ffc2d140cfdf258'
+  z: 1e0b234b31c32d2d
+  name: Debug
+  env:
+    - name: message
+      value: Hohe Aktivität festgestellt
+      type: str
+    - name: debug
+      type: bool
+      value: 'true'
+  x: 2110
+  'y': 240
+  wires: []
+- id: 1f6e939635d0e9d2
+  type: switch
+  z: 1e0b234b31c32d2d
+  name: High activity
+  property: activity_score
+  propertyType: flow
+  rules:
+    - t: gte
+      v: '50'
+      vt: str
+  checkall: 'true'
+  repair: false
+  outputs: 1
+  x: 1810
+  'y': 240
+  wires:
+    - - bb08f23a814965d2
+- id: d4980994d61d569e
+  type: link out
+  z: 1e0b234b31c32d2d
+  name: Area active and is not going to became inactive anymore
+  mode: link
+  links:
+    - 1f0d403d501a4b14
+  x: 3015
+  'y': 220
+  wires: []
+- id: c594b98ec31d0666
+  type: delay
+  z: 1e0b234b31c32d2d
+  name: ''
+  pauseType: rate
+  timeout: '5'
+  timeoutUnits: seconds
+  rate: '1'
+  nbRateUnits: '1'
+  rateUnits: minute
+  randomFirst: '1'
+  randomLast: '5'
+  randomUnits: seconds
+  drop: true
+  allowrate: false
+  outputs: 1
+  x: 1620
+  'y': 240
+  wires:
+    - - 1f6e939635d0e9d2
+- id: 36b0c20fdc4ee953
+  type: function
+  z: 1e0b234b31c32d2d
+  name: Append area in Areas Delayed
+  func: |
+    const areasDelayed = global.get("kla_areas_delayed") || [];
+
+    if (!areasDelayed.includes(msg.area_id)) {
+        areasDelayed.push(msg.area_id);
+
+        node.status({ fill: 'green', shape: 'ring', text: 'Area: ' + msg.area_id + " delayed" });
+    } else {
+        node.status({ fill: 'yellow', shape: 'square', text: 'Area: ' + msg.area_id + " already delayed" });
+    }
+
+    global.set("kla_areas_delayed", areasDelayed);
+
+    return msg;
+  outputs: 1
+  timeout: 0
+  noerr: 0
+  initialize: ''
+  finalize: ''
+  libs: []
+  x: 3850
+  'y': 380
+  wires:
+    - - bdf3be4ebac330e7
+      - 8cf2c8d768666eb5
+- id: fba1b23c0fd70340
+  type: function
+  z: 1e0b234b31c32d2d
+  name: Remove area from Areas Delayed
+  func: >
+    let areasDelayed = global.get("kla_areas_delayed") || [];
+
+
+    areasDelayed = areasDelayed.filter(item => item !== msg.area_id && item !==
+    "");
+
+    global.set("kla_areas_delayed", areasDelayed);
+
+
+    return msg;
+  outputs: 1
+  timeout: 0
+  noerr: 0
+  initialize: ''
+  finalize: ''
+  libs: []
+  x: 2840
+  'y': 260
+  wires:
+    - - d4980994d61d569e
+      - cf21028135675059
+- id: bb08f23a814965d2
+  type: change
+  z: 1e0b234b31c32d2d
+  name: Set message
+  rules:
+    - t: set
+      p: notify_message
+      pt: msg
+      to: >-
+        $flowContext('activity_score') ~> $number() + " events in last 10
+        minutes"
+      tot: jsonata
+  action: ''
+  property: ''
+  from: ''
+  to: ''
+  reg: false
+  x: 1970
+  'y': 240
+  wires:
+    - - 4f7d05c7bb0d1f4a
+- id: 2f7a990dd77913b2
+  type: function
+  z: 1e0b234b31c32d2d
+  name: Remove entity from ignored entities
+  func: |
+    let autoLights = global.get("kla_areas_entities_ignored") || [];
+
+    autoLights = autoLights.filter(item => item !== msg.topic && item !== "");
+    global.set("kla_areas_entities_ignored", autoLights);
+
+    return msg;
+  outputs: 1
+  timeout: 0
+  noerr: 0
+  initialize: ''
+  finalize: ''
+  libs: []
+  x: 440
+  'y': 460
+  wires:
+    - []
+- id: d2b5c782409fcdf4
+  type: switch
+  z: 1e0b234b31c32d2d
+  name: Area delayed
+  property: kla_areas_delayed
+  propertyType: global
+  rules:
+    - t: cont
+      v: area_id
+      vt: msg
+    - t: else
+  checkall: 'false'
+  repair: false
+  outputs: 2
+  x: 2610
+  'y': 260
+  wires:
+    - - fba1b23c0fd70340
+    - []
+- id: 7bdbcd17550624d9
+  type: switch
+  z: 1e0b234b31c32d2d
+  name: Check if flow is on hold
+  property: hold
+  propertyType: msg
+  rules:
+    - t: 'null'
+    - t: else
+  checkall: 'false'
+  repair: false
+  outputs: 2
+  x: 1630
+  'y': 280
+  wires:
+    - - a7fb9f323c4e61bc
+    - []
+- id: a7fb9f323c4e61bc
+  type: change
+  z: 1e0b234b31c32d2d
+  name: Hold flow
+  rules:
+    - t: set
+      p: hold
+      pt: flow
+      to: 'true'
+      tot: bool
+  action: ''
+  property: ''
+  from: ''
+  to: ''
+  reg: false
+  x: 1820
+  'y': 280
+  wires:
+    - - 3f1e4c0b4a9bafc1
+- id: 3f1e4c0b4a9bafc1
+  type: link out
+  z: 1e0b234b31c32d2d
+  name: Activity score decreases
+  mode: link
+  links:
+    - 7dd82319b3c92587
+  x: 1915
+  'y': 280
+  wires: []
