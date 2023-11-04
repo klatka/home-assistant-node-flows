@@ -1,0 +1,131 @@
+- id: 7551147dd66fb7ac
+  type: subflow
+  name: KLA Area dark
+  info: "# Requirements\r\n\r\nFlow `Extension_Area_Dark` needed\r\n\r\n# Input\r\n\r\n## `msg.area_id` _string_\r\n\r\nId of an area in Home Assistant\r\n\r\n# Output\r\n\r\n1. `area_id` is considered dark\r\n2. else\r\n\r\n## `msg.area_dark_state` _boolean_\r\n\r\n`true` if `msg.kla_areas_dark` contains\r\n`area_id` in `areas_dark` else `false`\r\n"
+  category: ''
+  in:
+    - x: 50
+      'y': 30
+      wires:
+        - id: 060e9f3453855cdf
+  out:
+    - x: 600
+      'y': 40
+      wires:
+        - id: 5d01b38a8d994827
+          port: 0
+    - x: 600
+      'y': 160
+      wires:
+        - id: ce3df40b5815c988
+          port: 0
+  env: []
+  meta:
+    module: klahome
+    version: 1.0.0
+    author: KlaHome <dev@klahome.de>
+    license: Apache-2.0
+  color: '#DDAA99'
+  status:
+    x: 820
+    'y': 140
+    wires:
+      - id: 72bd22221c7389dd
+        port: 0
+      - id: 7984c62febc430c6
+        port: 0
+- id: 060e9f3453855cdf
+  type: switch
+  z: 7551147dd66fb7ac
+  name: Area in dark areas
+  property: kla_areas_dark
+  propertyType: global
+  rules:
+    - t: cont
+      v: area_id
+      vt: msg
+    - t: else
+  checkall: 'false'
+  repair: false
+  outputs: 2
+  x: 190
+  'y': 120
+  wires:
+    - - 5d01b38a8d994827
+    - - ce3df40b5815c988
+- id: 5d01b38a8d994827
+  type: change
+  z: 7551147dd66fb7ac
+  name: Set msg.area_dark_state
+  rules:
+    - t: set
+      p: area_dark_state
+      pt: msg
+      to: 'true'
+      tot: bool
+  action: ''
+  property: ''
+  from: ''
+  to: ''
+  reg: false
+  x: 430
+  'y': 60
+  wires:
+    - - 72bd22221c7389dd
+- id: ce3df40b5815c988
+  type: change
+  z: 7551147dd66fb7ac
+  name: Set msg.area_dark_state
+  rules:
+    - t: set
+      p: area_dark_state
+      pt: msg
+      to: 'false'
+      tot: bool
+  action: ''
+  property: ''
+  from: ''
+  to: ''
+  reg: false
+  x: 430
+  'y': 180
+  wires:
+    - - 7984c62febc430c6
+- id: 7984c62febc430c6
+  type: change
+  z: 7551147dd66fb7ac
+  name: Set status red
+  rules:
+    - t: set
+      p: payload
+      pt: msg
+      to: '{"fill":"red","shape":"ring","text":area_id}'
+      tot: jsonata
+  action: ''
+  property: ''
+  from: ''
+  to: ''
+  reg: false
+  x: 660
+  'y': 200
+  wires:
+    - []
+- id: 72bd22221c7389dd
+  type: change
+  z: 7551147dd66fb7ac
+  name: Set status green
+  rules:
+    - t: set
+      p: payload
+      pt: msg
+      to: '{"fill":"green","shape":"dot","text":area_id}'
+      tot: jsonata
+  action: ''
+  property: ''
+  from: ''
+  to: ''
+  reg: false
+  x: 660
+  'y': 80
+  wires:
+    - []
