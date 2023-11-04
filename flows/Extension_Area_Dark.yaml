@@ -1,0 +1,829 @@
+- id: 3dca427c9082cb7d
+  type: tab
+  label: Extension_Area_Dark
+  disabled: false
+  info: ''
+  env: []
+- id: cc76b0f0b9758e76
+  type: comment
+  z: 3dca427c9082cb7d
+  name: Sync dark state
+  info: ''
+  x: 80
+  'y': 40
+  wires: []
+- id: fab69f489265d4ba
+  type: ha-binary-sensor
+  z: 3dca427c9082cb7d
+  name: Twilight started
+  entityConfig: 6f15f3fdf858c808
+  version: 0
+  state: payload
+  stateType: msg
+  attributes: []
+  inputOverride: allow
+  outputProperties: []
+  x: 440
+  'y': 80
+  wires:
+    - []
+- id: 97d9e697d898f4e6
+  type: eztimer
+  z: 3dca427c9082cb7d
+  name: Sun events
+  debug: false
+  autoname: sunset - sunriseEnd
+  tag: eztimer
+  topic: ''
+  suspended: false
+  sendEventsOnSuspend: false
+  latLongSource: manual
+  latLongHaZone: zone.home
+  lat: '51.478'
+  lon: '7.219'
+  timerType: '1'
+  startupMessage: true
+  ontype: '1'
+  ontimesun: sunset
+  ontimetod: '17:00'
+  onpropertytype: msg
+  onproperty: payload
+  onvaluetype: str
+  onvalue: 'on'
+  onoffset: 0
+  onrandomoffset: 0
+  onsuppressrepeats: false
+  offtype: '1'
+  offtimesun: sunriseEnd
+  offtimetod: dusk
+  offduration: '00:01:00'
+  offpropertytype: msg
+  offproperty: payload
+  offvaluetype: str
+  offvalue: 'off'
+  offoffset: 0
+  offrandomoffset: 0
+  offsuppressrepeats: false
+  resend: true
+  resendInterval: 1m
+  mon: true
+  tue: true
+  wed: true
+  thu: true
+  fri: true
+  sat: true
+  sun: true
+  x: 90
+  'y': 80
+  wires:
+    - - 406a06cb116c90b4
+- id: 406a06cb116c90b4
+  type: ha-wait-until
+  z: 3dca427c9082cb7d
+  name: Wait for HA
+  server: 72832130.5db8f
+  version: 2
+  outputs: 2
+  entityId: sensor.time
+  entityIdFilterType: exact
+  property: state
+  comparator: does_not_include
+  value: 'unavailable,unknown'
+  valueType: str
+  timeout: '1'
+  timeoutType: num
+  timeoutUnits: hours
+  checkCurrentState: true
+  blockInputOverrides: true
+  outputProperties: []
+  entityLocation: data
+  entityLocationType: none
+  x: 250
+  'y': 80
+  wires:
+    - - fab69f489265d4ba
+    - []
+- id: 895155f9e95f4460
+  type: ha-binary-sensor
+  z: 3dca427c9082cb7d
+  name: Areas Dark Sensor
+  entityConfig: 9e9f69797faad12b
+  version: 0
+  state: areas_dark_state
+  stateType: msg
+  attributes:
+    - property: areas_dark
+      value: kla_areas_dark
+      valueType: global
+  inputOverride: allow
+  outputProperties: []
+  x: 570
+  'y': 280
+  wires:
+    - []
+- id: 21eb800f3a232696
+  type: link in
+  z: 3dca427c9082cb7d
+  name: Init Areas Dark
+  links:
+    - 9db5e781e04a0719
+  x: 35
+  'y': 400
+  wires:
+    - - 0d50f6aff81b47f1
+      - d8b9db53ea8cd7ee
+- id: e882ca8d7b9d6b87
+  type: comment
+  z: 3dca427c9082cb7d
+  name: Areas Dark Sensor
+  info: ''
+  x: 90
+  'y': 240
+  wires: []
+- id: 62ec0b17b073dd13
+  type: link in
+  z: 3dca427c9082cb7d
+  name: Update Areas Dark Sensor
+  links:
+    - 1a31a3f89b7cf2dc
+    - 99ae129a2e258cd9
+  x: 35
+  'y': 280
+  wires:
+    - - dc9425dad4879d59
+- id: dc9425dad4879d59
+  type: switch
+  z: 3dca427c9082cb7d
+  name: List not empty
+  property: kla_areas_dark
+  propertyType: global
+  rules:
+    - t: nempty
+    - t: else
+  checkall: 'false'
+  repair: false
+  outputs: 2
+  x: 160
+  'y': 280
+  wires:
+    - - d3a7c88e979c1c81
+    - - 8a8dc265cd96a392
+- id: d3a7c88e979c1c81
+  type: change
+  z: 3dca427c9082cb7d
+  name: Set state to on
+  rules:
+    - t: set
+      p: areas_dark_state
+      pt: msg
+      to: 'on'
+      tot: str
+  action: ''
+  property: ''
+  from: ''
+  to: ''
+  reg: false
+  x: 360
+  'y': 260
+  wires:
+    - - 895155f9e95f4460
+- id: 8a8dc265cd96a392
+  type: change
+  z: 3dca427c9082cb7d
+  name: Set state to off
+  rules:
+    - t: set
+      p: areas_dark_state
+      pt: msg
+      to: 'off'
+      tot: str
+  action: ''
+  property: ''
+  from: ''
+  to: ''
+  reg: false
+  x: 360
+  'y': 300
+  wires:
+    - - 895155f9e95f4460
+- id: d8b9db53ea8cd7ee
+  type: change
+  z: 3dca427c9082cb7d
+  name: Get areas
+  rules:
+    - t: set
+      p: template
+      pt: msg
+      to: '{{ areas() | sort() | join('','') }}'
+      tot: str
+  action: ''
+  property: ''
+  from: ''
+  to: ''
+  reg: false
+  x: 360
+  'y': 560
+  wires:
+    - - 7c2e88d6a6f7d0a9
+- id: 7c2e88d6a6f7d0a9
+  type: api-render-template
+  z: 3dca427c9082cb7d
+  name: Render template
+  server: 72832130.5db8f
+  version: 0
+  template: ''
+  resultsLocation: areas
+  resultsLocationType: msg
+  templateLocation: template
+  templateLocationType: msg
+  x: 530
+  'y': 560
+  wires:
+    - - f7e526541c8919c0
+- id: 31d56f724647fe9f
+  type: server-state-changed
+  z: 3dca427c9082cb7d
+  name: Twilight started changed
+  server: 72832130.5db8f
+  version: 5
+  outputs: 2
+  exposeAsEntityConfig: ''
+  entityId: binary_sensor.kla_sun_twilight_started
+  entityIdType: exact
+  outputInitially: false
+  stateType: str
+  ifState: 'on,off'
+  ifStateType: str
+  ifStateOperator: includes
+  outputOnlyOnStateChange: true
+  for: '0'
+  forType: num
+  forUnits: minutes
+  ignorePrevStateNull: true
+  ignorePrevStateUnknown: true
+  ignorePrevStateUnavailable: true
+  ignoreCurrentStateUnknown: false
+  ignoreCurrentStateUnavailable: false
+  outputProperties:
+    - property: payload
+      propertyType: msg
+      value: ''
+      valueType: entityState
+    - property: topic
+      propertyType: msg
+      value: ''
+      valueType: triggerId
+  x: 130
+  'y': 560
+  wires:
+    - - d8b9db53ea8cd7ee
+    - []
+- id: 1a31a3f89b7cf2dc
+  type: link out
+  z: 3dca427c9082cb7d
+  name: Update after Twilight state changed
+  mode: link
+  links:
+    - 62ec0b17b073dd13
+    - 8b22168b04a0ba6d
+  x: 1455
+  'y': 760
+  wires: []
+- id: 023ca14e90a3055b
+  type: comment
+  z: 3dca427c9082cb7d
+  name: Make all areas dark
+  info: ''
+  x: 1030
+  'y': 540
+  wires: []
+- id: c9582140df1df963
+  type: api-current-state
+  z: 3dca427c9082cb7d
+  name: Twilight started?
+  server: 72832130.5db8f
+  version: 3
+  outputs: 2
+  halt_if: 'on'
+  halt_if_type: str
+  halt_if_compare: is
+  entity_id: binary_sensor.kla_sun_twilight_started
+  state_type: str
+  blockInputOverrides: true
+  outputProperties: []
+  for: '0'
+  forType: num
+  forUnits: minutes
+  override_topic: false
+  state_location: payload
+  override_payload: msg
+  entity_location: data
+  override_data: msg
+  x: 940
+  'y': 780
+  wires:
+    - []
+    - - 2745b27d1fb78fe4
+- id: 2745b27d1fb78fe4
+  type: 'subflow:3b70dea5bcdc7946'
+  z: 3dca427c9082cb7d
+  name: ''
+  x: 1170
+  'y': 760
+  wires:
+    - - 21dd2d4aa6e298bb
+    - - c8868cc5e2aea15d
+- id: 21dd2d4aa6e298bb
+  type: switch
+  z: 3dca427c9082cb7d
+  name: Switch current light level
+  property: area_light_level
+  propertyType: jsonata
+  rules:
+    - t: lte
+      v: area_dark_threshold
+      vt: flow
+    - t: else
+  checkall: 'false'
+  repair: false
+  outputs: 2
+  x: 810
+  'y': 900
+  wires:
+    - - c8868cc5e2aea15d
+    - - f98aace7fb87e950
+- id: f98aace7fb87e950
+  type: 'subflow:c7fb159f2ed649a3'
+  z: 3dca427c9082cb7d
+  name: ''
+  x: 820
+  'y': 1040
+  wires:
+    - []
+    - - 3555fbddc15d597f
+- id: 8da10c858d77a5dd
+  type: ha-number
+  z: 3dca427c9082cb7d
+  name: Set Area Dark Threshold
+  version: 1
+  debugenabled: false
+  inputs: 1
+  outputs: 1
+  entityConfig: 9e2a4a0eb03181b1
+  mode: set
+  value: '50'
+  valueType: num
+  outputProperties:
+    - property: area_dark_threshold
+      propertyType: flow
+      value: ''
+      valueType: value
+  x: 510
+  'y': 360
+  wires:
+    - []
+- id: 0d50f6aff81b47f1
+  type: api-current-state
+  z: 3dca427c9082cb7d
+  name: Is Area Dark Threshold unknown?
+  server: 72832130.5db8f
+  version: 3
+  outputs: 2
+  halt_if: unknown
+  halt_if_type: str
+  halt_if_compare: is
+  entity_id: number.kla_area_dark_threshold
+  state_type: str
+  blockInputOverrides: true
+  outputProperties:
+    - property: area_dark_threshold
+      propertyType: msg
+      value: ''
+      valueType: entityState
+  for: '0'
+  forType: num
+  forUnits: minutes
+  override_topic: false
+  state_location: payload
+  override_payload: msg
+  entity_location: data
+  override_data: msg
+  x: 220
+  'y': 380
+  wires:
+    - - 8da10c858d77a5dd
+    - - 5f2a9e64986d8bf9
+- id: 3e44fc84b0794ae7
+  type: ha-number
+  z: 3dca427c9082cb7d
+  name: Area Dark Threshold
+  version: 1
+  debugenabled: false
+  inputs: 0
+  outputs: 1
+  entityConfig: 9e2a4a0eb03181b1
+  mode: listen
+  value: '50'
+  valueType: num
+  outputProperties:
+    - property: area_dark_threshold
+      propertyType: flow
+      value: ''
+      valueType: value
+  x: 110
+  'y': 180
+  wires:
+    - []
+- id: c7fc03f199b51d20
+  type: split
+  z: 3dca427c9082cb7d
+  name: Foreach area
+  splt: ','
+  spltType: str
+  arraySplt: 1
+  arraySpltType: len
+  stream: false
+  addname: ''
+  x: 690
+  'y': 640
+  wires:
+    - - 4a6a9b36b924ab8b
+- id: 4a6a9b36b924ab8b
+  type: change
+  z: 3dca427c9082cb7d
+  name: Set current area_id
+  rules:
+    - t: move
+      p: payload
+      pt: msg
+      to: area_id
+      tot: msg
+  action: ''
+  property: ''
+  from: ''
+  to: ''
+  reg: false
+  x: 870
+  'y': 640
+  wires:
+    - - 2745b27d1fb78fe4
+- id: e3748f6702fb208f
+  type: comment
+  z: 3dca427c9082cb7d
+  name: Areas Dark Threshold Sensor
+  info: ''
+  x: 120
+  'y': 140
+  wires: []
+- id: 7a7618f9ae932b2a
+  type: comment
+  z: 3dca427c9082cb7d
+  name: Never mark an area dark if lights turned on
+  info: ''
+  x: 840
+  'y': 1000
+  wires: []
+- id: aa3306a3bd5c3b69
+  type: comment
+  z: 3dca427c9082cb7d
+  name: Dark per Twilight
+  info: ''
+  x: 80
+  'y': 520
+  wires: []
+- id: e4d425d42ea1e965
+  type: comment
+  z: 3dca427c9082cb7d
+  name: Dark per area from sensor event
+  info: ''
+  x: 130
+  'y': 680
+  wires: []
+- id: 64e710c13bf822f7
+  type: comment
+  z: 3dca427c9082cb7d
+  name: ToDo Implement check for orphaned areas
+  info: ''
+  x: 980
+  'y': 60
+  wires: []
+- id: c8868cc5e2aea15d
+  type: function
+  z: 3dca427c9082cb7d
+  name: Append area
+  func: |
+    const darkAreas = global.get("kla_areas_dark") || [];
+    if (!darkAreas.includes(msg.area_id) ) {
+        darkAreas.push(msg.area_id);
+        darkAreas.sort();
+        global.set("kla_areas_dark", darkAreas);
+    }
+
+    return msg;
+  outputs: 1
+  timeout: 0
+  noerr: 0
+  initialize: ''
+  finalize: ''
+  libs: []
+  x: 1090
+  'y': 900
+  wires:
+    - - fcac0c9796df8da5
+      - c5d9bf29d62644d9
+- id: 3555fbddc15d597f
+  type: function
+  z: 3dca427c9082cb7d
+  name: Remove area
+  func: |
+    let darkAreas = global.get("kla_areas_dark") || [];
+    darkAreas = darkAreas.filter(item => item !== msg.area_id && item !== "");
+    global.set("kla_areas_dark", darkAreas);
+
+    return msg;
+  outputs: 1
+  timeout: 0
+  noerr: 0
+  initialize: ''
+  finalize: ''
+  libs: []
+  x: 1100
+  'y': 960
+  wires:
+    - - fcac0c9796df8da5
+- id: 2186e72d09019839
+  type: comment
+  z: 3dca427c9082cb7d
+  name: Set state
+  info: ''
+  x: 1480
+  'y': 720
+  wires: []
+- id: 68a0cd6a2a4893e7
+  type: change
+  z: 3dca427c9082cb7d
+  name: Cast areas
+  rules:
+    - t: set
+      p: kla_areas_dark
+      pt: global
+      to: '$split(areas, ",")'
+      tot: jsonata
+  action: ''
+  property: ''
+  from: ''
+  to: ''
+  reg: false
+  x: 1030
+  'y': 580
+  wires:
+    - - 1a31a3f89b7cf2dc
+- id: 17a2de769457b668
+  type: inject
+  z: 3dca427c9082cb7d
+  name: ''
+  props:
+    - p: payload
+    - p: topic
+      vt: str
+  repeat: ''
+  crontab: ''
+  once: false
+  onceDelay: 0.1
+  topic: ''
+  payload: ''
+  payloadType: date
+  x: 100
+  'y': 620
+  wires:
+    - - d8b9db53ea8cd7ee
+- id: 776356a21ed06f18
+  type: change
+  z: 3dca427c9082cb7d
+  name: Prepare foreach
+  rules:
+    - t: set
+      p: payload
+      pt: msg
+      to: areas
+      tot: msg
+  action: ''
+  property: ''
+  from: ''
+  to: ''
+  reg: false
+  x: 520
+  'y': 640
+  wires:
+    - - c7fc03f199b51d20
+- id: f7e526541c8919c0
+  type: api-current-state
+  z: 3dca427c9082cb7d
+  name: Twilight not started?
+  server: 72832130.5db8f
+  version: 3
+  outputs: 2
+  halt_if: 'off'
+  halt_if_type: str
+  halt_if_compare: is
+  entity_id: binary_sensor.kla_sun_twilight_started
+  state_type: str
+  blockInputOverrides: true
+  outputProperties: []
+  for: '0'
+  forType: num
+  forUnits: minutes
+  override_topic: false
+  state_location: payload
+  override_payload: msg
+  entity_location: data
+  override_data: msg
+  x: 740
+  'y': 560
+  wires:
+    - - 776356a21ed06f18
+    - - 68a0cd6a2a4893e7
+- id: e51e38cdb198647f
+  type: join
+  z: 3dca427c9082cb7d
+  name: ''
+  mode: auto
+  build: object
+  property: payload
+  propertyType: msg
+  key: topic
+  joiner: \n
+  joinerType: str
+  accumulate: 'false'
+  timeout: ''
+  count: ''
+  reduceRight: false
+  x: 1390
+  'y': 860
+  wires:
+    - - 1a31a3f89b7cf2dc
+- id: fcac0c9796df8da5
+  type: switch
+  z: 3dca427c9082cb7d
+  name: Is loop
+  property: parts
+  propertyType: msg
+  rules:
+    - t: nnull
+    - t: else
+  checkall: 'false'
+  repair: false
+  outputs: 2
+  x: 1270
+  'y': 920
+  wires:
+    - - e51e38cdb198647f
+    - - 1a31a3f89b7cf2dc
+- id: 363d9d02c46cf02f
+  type: comment
+  z: 3dca427c9082cb7d
+  name: 'Filter only on->off, off->on'
+  info: ''
+  x: 390
+  'y': 680
+  wires: []
+- id: e734b1f2d38a771b
+  type: server-events
+  z: 3dca427c9082cb7d
+  name: ''
+  server: 72832130.5db8f
+  version: 3
+  exposeAsEntityConfig: 85197789a1127d18
+  eventType: state_changed
+  eventData: ''
+  waitForRunning: true
+  outputProperties:
+    - property: data
+      propertyType: msg
+      value: ''
+      valueType: eventData
+    - property: topic
+      propertyType: msg
+      value: $outputData("eventData").entity_id
+      valueType: jsonata
+    - property: payload
+      propertyType: msg
+      value: $outputData("eventData").entity_id
+      valueType: jsonata
+  event_type: ''
+  x: 120
+  'y': 720
+  wires:
+    - - a4d1b5b0ad1fde07
+- id: a4d1b5b0ad1fde07
+  type: switch
+  z: 3dca427c9082cb7d
+  name: Old state >0
+  property: data.event.old_state.state
+  propertyType: msg
+  rules:
+    - t: gt
+      v: '0'
+      vt: num
+  checkall: 'false'
+  repair: false
+  outputs: 1
+  x: 370
+  'y': 720
+  wires:
+    - - 35c3a183558ba2bc
+- id: 35c3a183558ba2bc
+  type: switch
+  z: 3dca427c9082cb7d
+  name: New state >0
+  property: data.event.new_state.state
+  propertyType: msg
+  rules:
+    - t: gt
+      v: '0'
+      vt: num
+  checkall: 'false'
+  repair: false
+  outputs: 1
+  x: 530
+  'y': 720
+  wires:
+    - - 843e4ed2b08f93b0
+- id: c3808fa2b3469b0b
+  type: 'subflow:0a93237bafa3cedf'
+  z: 3dca427c9082cb7d
+  name: ''
+  env:
+    - name: check_not_hidden
+      type: bool
+      value: 'true'
+  x: 730
+  'y': 780
+  wires:
+    - - c9582140df1df963
+    - []
+- id: 843e4ed2b08f93b0
+  type: switch
+  z: 3dca427c9082cb7d
+  name: Check domain
+  property: '$substringBefore(topic, ''.'')'
+  propertyType: jsonata
+  rules:
+    - t: eq
+      v: sensor
+      vt: str
+  checkall: 'false'
+  repair: false
+  outputs: 1
+  x: 700
+  'y': 720
+  wires:
+    - - 5f4338e1820c38a1
+- id: 5f4338e1820c38a1
+  type: switch
+  z: 3dca427c9082cb7d
+  name: Validate device class (illuminance)
+  property: data.event.new_state.attributes.device_class
+  propertyType: msg
+  rules:
+    - t: eq
+      v: illuminance
+      vt: str
+  checkall: 'false'
+  repair: false
+  outputs: 1
+  x: 460
+  'y': 780
+  wires:
+    - - c3808fa2b3469b0b
+- id: 5f2a9e64986d8bf9
+  type: ha-number
+  z: 3dca427c9082cb7d
+  name: Get Area Dark Threshold
+  version: 1
+  debugenabled: false
+  inputs: 1
+  outputs: 1
+  entityConfig: 9e2a4a0eb03181b1
+  mode: get
+  value: '50'
+  valueType: num
+  outputProperties:
+    - property: area_dark_threshold
+      propertyType: flow
+      value: ''
+      valueType: value
+  x: 510
+  'y': 420
+  wires:
+    - []
+- id: c5d9bf29d62644d9
+  type: link out
+  z: 3dca427c9082cb7d
+  name: Area becomes dark
+  mode: link
+  links:
+    - fb37e6646181d369
+  x: 1235
+  'y': 860
+  wires: []
