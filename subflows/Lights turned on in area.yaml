@@ -1,0 +1,268 @@
+- id: c7fb159f2ed649a3
+  type: subflow
+  name: Lights turned on in area
+  info: |
+    # Input
+
+    ## `msg.area_id` _string_
+
+    Id of an area in Home Assistant
+
+    # Output
+
+    1. `msg.lights_on_count` > 0
+    2. else
+
+    ## `msg.lights_on_count` _number_
+
+    Number of not hidden lights assigned to `area_id` with state `on`
+
+    ## `msg.payload` _string_
+
+    Ids of not hidden lights assigned to `area_id` with state `on` as csv
+
+    Note: Existing `msg.template` will be removed!
+  category: home_assistant
+  in:
+    - x: 50
+      'y': 30
+      wires:
+        - id: 6b2ab406ab5c0098
+  out:
+    - x: 970
+      'y': 200
+      wires:
+        - id: 6f8c014e269191d9
+          port: 0
+    - x: 1260
+      'y': 80
+      wires:
+        - id: 42b1d8cc3c5df27d
+          port: 1
+  env: []
+  meta:
+    module: klahome
+    version: 1.1.0
+    author: KlaHome <dev@klahome.de>
+    license: Apache-2.0
+  color: '#3FADB5'
+  inputLabels:
+    - area id
+  outputLabels:
+    - lights are turned on
+    - all lights are turned off
+  icon: node-red/light.svg
+  status:
+    x: 1420
+    'y': 160
+    wires:
+      - id: afbc85dbde0377eb
+        port: 0
+      - id: 50ea8287028f05ef
+        port: 0
+- id: 6b2ab406ab5c0098
+  type: change
+  z: c7fb159f2ed649a3
+  name: Count turned on lights in area
+  rules:
+    - t: set
+      p: template
+      pt: msg
+      to: >-
+        {% set ns = namespace(x=[]) %}{% for l in states.light |
+        selectattr('entity_id', 'in', area_entities('xxxxx')) |
+        selectattr('state', 'eq', 'on') | map(attribute='entity_id') |
+        reject('is_hidden_entity') | list %}{% set ns.x = ns.x + [l] %}{% endfor
+        %}{{ ns.x | count }}
+      tot: str
+    - t: change
+      p: template
+      pt: msg
+      from: xxxxx
+      fromt: str
+      to: area_id
+      tot: msg
+  action: ''
+  property: ''
+  from: ''
+  to: ''
+  reg: false
+  x: 230
+  'y': 80
+  wires:
+    - - 57755a69cef1cf30
+- id: 57755a69cef1cf30
+  type: api-render-template
+  z: c7fb159f2ed649a3
+  name: Render template
+  server: 72832130.5db8f
+  version: 0
+  template: ''
+  resultsLocation: lights_on_count
+  resultsLocationType: msg
+  templateLocation: template
+  templateLocationType: msg
+  x: 470
+  'y': 80
+  wires:
+    - - 231b4e029b0eae21
+- id: 2e3259da1e06262e
+  type: change
+  z: c7fb159f2ed649a3
+  name: Cast output
+  rules:
+    - t: set
+      p: lights_on_count
+      pt: msg
+      to: $number(lights_on_count)
+      tot: jsonata
+  action: ''
+  property: ''
+  from: ''
+  to: ''
+  reg: false
+  x: 850
+  'y': 80
+  wires:
+    - - 42b1d8cc3c5df27d
+- id: 42b1d8cc3c5df27d
+  type: switch
+  z: c7fb159f2ed649a3
+  name: Lights on?
+  property: lights_on_count
+  propertyType: msg
+  rules:
+    - t: gt
+      v: '0'
+      vt: num
+    - t: else
+  checkall: 'false'
+  repair: false
+  outputs: 2
+  x: 1010
+  'y': 80
+  wires:
+    - - 7d321ecb61017eed
+    - - afbc85dbde0377eb
+- id: 7d321ecb61017eed
+  type: change
+  z: c7fb159f2ed649a3
+  name: Get turned on lights in area as csv
+  rules:
+    - t: set
+      p: template
+      pt: msg
+      to: >-
+        {% set ns = namespace(x=[]) %}{% for l in states.light |
+        selectattr('entity_id', 'in', area_entities('xxxxx')) |
+        selectattr('state', 'eq', 'on') | map(attribute='entity_id') |
+        reject('is_hidden_entity') | list %}{% set ns.x = ns.x + [l] %}{% endfor
+        %}{{ ns.x | join(',') }}
+      tot: str
+    - t: change
+      p: template
+      pt: msg
+      from: xxxxx
+      fromt: str
+      to: area_id
+      tot: msg
+  action: ''
+  property: ''
+  from: ''
+  to: ''
+  reg: false
+  x: 300
+  'y': 160
+  wires:
+    - - d947c15f955af163
+- id: d947c15f955af163
+  type: api-render-template
+  z: c7fb159f2ed649a3
+  name: Render template
+  server: 72832130.5db8f
+  version: 0
+  template: ''
+  resultsLocation: payload
+  resultsLocationType: msg
+  templateLocation: template
+  templateLocationType: msg
+  x: 550
+  'y': 160
+  wires:
+    - - 6f8c014e269191d9
+- id: 231b4e029b0eae21
+  type: change
+  z: c7fb159f2ed649a3
+  name: Remove template
+  rules:
+    - t: delete
+      p: template
+      pt: msg
+  action: ''
+  property: ''
+  from: ''
+  to: ''
+  reg: false
+  x: 670
+  'y': 80
+  wires:
+    - - 2e3259da1e06262e
+- id: 6f8c014e269191d9
+  type: change
+  z: c7fb159f2ed649a3
+  name: Remove template
+  rules:
+    - t: delete
+      p: template
+      pt: msg
+  action: ''
+  property: ''
+  from: ''
+  to: ''
+  reg: false
+  x: 750
+  'y': 160
+  wires:
+    - - 50ea8287028f05ef
+- id: 50ea8287028f05ef
+  type: change
+  z: c7fb159f2ed649a3
+  name: Set status green
+  rules:
+    - t: set
+      p: payload
+      pt: msg
+      to: >-
+        {"fill":"green","shape":"dot","text":lights_on_count & " lights in " &
+        area_id & " at " & $now('[H01]:[m01]:[s01]')}
+      tot: jsonata
+  action: ''
+  property: ''
+  from: ''
+  to: ''
+  reg: false
+  x: 1260
+  'y': 180
+  wires:
+    - []
+- id: afbc85dbde0377eb
+  type: change
+  z: c7fb159f2ed649a3
+  name: Set status red
+  rules:
+    - t: set
+      p: payload
+      pt: msg
+      to: >-
+        {"fill":"red","shape":"ring","text":lights_on_count & " lights in " &
+        area_id & " at " & $now('[H01]:[m01]:[s01]')}
+      tot: jsonata
+  action: ''
+  property: ''
+  from: ''
+  to: ''
+  reg: false
+  x: 1260
+  'y': 140
+  wires:
+    - []

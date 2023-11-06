@@ -1,0 +1,126 @@
+- id: 9a693308.7ebaf
+  type: subflow
+  name: flow-timer
+  info: ''
+  category: ''
+  in:
+    - x: 80
+      'y': 100
+      wires:
+        - id: 7fc82258.93e36c
+  out:
+    - x: 440
+      'y': 100
+      wires:
+        - id: 7fc82258.93e36c
+          port: 0
+  env:
+    - name: name
+      type: str
+      value: measure
+      ui:
+        icon: font-awesome/fa-tag
+        label:
+          en-US: Timer Name
+        type: input
+        opts:
+          types:
+            - str
+            - env
+    - name: operation
+      type: str
+      value: start
+      ui:
+        icon: font-awesome/fa-cog
+        label:
+          en-US: Operation
+        type: select
+        opts:
+          opts:
+            - l:
+                en-US: start
+              v: start
+            - l:
+                en-US: stop
+              v: stop
+            - l:
+                en-US: msg.topic
+              v: msg.topic
+            - l:
+                en-US: msg.operation
+              v: msg.operation
+            - l:
+                en-US: msg.payload
+              v: msg.payload
+  meta:
+    module: node-red-contrib-flow-performance
+    type: flow-performance
+    version: 1.0.1
+    author: Steve-Mcl
+    desc: Inline flow performance measure node
+    keywords: node-red performance
+    license: MIT
+  color: '#DAEAAA'
+  icon: node-red/timer.svg
+  status:
+    x: 280
+    'y': 160
+    wires:
+      - id: 7fc82258.93e36c
+        port: 1
+- id: 7fc82258.93e36c
+  type: function
+  z: 9a693308.7ebaf
+  name: do operation
+  func: |-
+    // @ts-ignore
+    var name = msg.perfName || env.get("name");
+    // @ts-ignore
+    var operation = msg.perfOperation || env.get("operation");
+    var measures = global.get("flow_timers") || {};
+    var measure = measures[name] || {};
+
+    function doOp(measure, op){
+        if(operation === "start"){
+            measure.start = Date.now();//change to process.hrtime
+            measure.stop = null;
+            measure.durationMs = null;
+        } else if(operation === "stop") {
+            measure.stop = Date.now();//change to process.hrtime
+            measure.durationMs = measure.start ? measure.stop - measure.start : null;
+            msg._performance = measure;
+        }
+    }
+
+
+    if(operation === "start"){
+        doOp(measure, operation);
+    } else if(operation === "stop") {
+        doOp(measure, operation);
+        node.send([null, { payload: { text: name + ": " + measure.durationMs + "ms" }}]);
+    } else if(operation === "msg.topic") {
+        operation = msg.topic;
+        doOp(measure, operation);
+    } else if(operation === "msg.operation") {
+        operation = msg.operation;
+        doOp(measure, operation);
+    } else if(operation === "msg.payload") {
+        operation = msg.payload;
+        doOp(measure, operation);
+    } else {
+        return [msg, null];
+    }
+    measures[name] = measure;
+    global.set("flow_timers", measures);
+
+    return [msg, null];
+  outputs: 2
+  noerr: 0
+  initialize: ''
+  finalize: ''
+  libs: []
+  x: 250
+  'y': 100
+  wires:
+    - []
+    - []

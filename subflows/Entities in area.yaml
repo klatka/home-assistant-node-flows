@@ -1,0 +1,269 @@
+- id: 5a54e3ce6cf424e8
+  type: subflow
+  name: Entities in area
+  info: >
+    # Input
+
+
+    ## `msg.area_id` _string_
+
+
+    Id of an area in Home Assistant
+
+
+    ## `msg.domain` _string_
+
+
+    (Optional) Valid domain in Home Assistant
+
+    If not set alls domain are checked
+
+
+    # Output
+
+
+    1. entities found
+
+    2. else (no entities found or area/domain invalid)
+
+
+    ## `msg.payload` _string_
+
+
+    Ids of not hidden entities (of given domain if specified) assigned to
+    `area_id` as csv
+
+
+    Note: Existing `msg.template` will be removed!
+  category: home_assistant
+  in:
+    - x: 50
+      'y': 30
+      wires:
+        - id: b2da23d10ca46e25
+  out:
+    - x: 1470
+      'y': 40
+      wires:
+        - id: 6e0b4e049606a285
+          port: 0
+    - x: 1560
+      'y': 160
+      wires:
+        - id: 6e0b4e049606a285
+          port: 1
+  env: []
+  meta:
+    module: klahome
+    version: 1.1.0
+    author: KlaHome <dev@klahome.de>
+    license: Apache-2.0
+  color: '#3FADB5'
+  inputLabels:
+    - area id & domain
+  outputLabels:
+    - entities found
+    - entities not found or invalid area/domain
+  icon: node-red/light.svg
+  status:
+    x: 1940
+    'y': 200
+    wires:
+      - id: d8342247db9b9034
+        port: 0
+      - id: 680f1d033f193798
+        port: 0
+- id: c96f0818e4e144b7
+  type: change
+  z: 5a54e3ce6cf424e8
+  name: Get entities in area of domain
+  rules:
+    - t: set
+      p: template
+      pt: msg
+      to: >-
+        {% set ns = namespace(x=[]) %} {% for l in states.yyyyy |
+        selectattr('entity_id', 'in', area_entities('xxxxx')) |
+        map(attribute='entity_id') | reject('is_hidden_entity') | list %} {% set
+        ns.x = ns.x + [l] %} {% endfor %} {{ ns.x | join(',') }}
+      tot: str
+    - t: change
+      p: template
+      pt: msg
+      from: xxxxx
+      fromt: str
+      to: area_id
+      tot: msg
+    - t: change
+      p: template
+      pt: msg
+      from: yyyyy
+      fromt: str
+      to: domain
+      tot: msg
+  action: ''
+  property: ''
+  from: ''
+  to: ''
+  reg: false
+  x: 580
+  'y': 80
+  wires:
+    - - 475ac1d6df303314
+- id: 475ac1d6df303314
+  type: api-render-template
+  z: 5a54e3ce6cf424e8
+  name: Render template
+  server: 72832130.5db8f
+  version: 0
+  template: ''
+  resultsLocation: payload
+  resultsLocationType: msg
+  templateLocation: template
+  templateLocationType: msg
+  x: 850
+  'y': 120
+  wires:
+    - - 825d8ddcb4daa686
+- id: 825d8ddcb4daa686
+  type: change
+  z: 5a54e3ce6cf424e8
+  name: Remove template
+  rules:
+    - t: delete
+      p: template
+      pt: msg
+  action: ''
+  property: ''
+  from: ''
+  to: ''
+  reg: false
+  x: 1050
+  'y': 120
+  wires:
+    - - 6e0b4e049606a285
+- id: 6e0b4e049606a285
+  type: switch
+  z: 5a54e3ce6cf424e8
+  name: Area has entities
+  property: payload
+  propertyType: msg
+  rules:
+    - t: neq
+      v: ''
+      vt: str
+    - t: else
+  checkall: 'false'
+  repair: false
+  outputs: 2
+  x: 1250
+  'y': 120
+  wires:
+    - - d8342247db9b9034
+    - - 680f1d033f193798
+- id: d8342247db9b9034
+  type: change
+  z: 5a54e3ce6cf424e8
+  name: Set status green
+  rules:
+    - t: set
+      p: payload
+      pt: msg
+      to: >-
+        {"fill":"green","shape":"dot","text":area_id & " at " &
+        $now('[H01]:[m01]:[s01]')}
+      tot: jsonata
+  action: ''
+  property: ''
+  from: ''
+  to: ''
+  reg: false
+  x: 1480
+  'y': 80
+  wires:
+    - []
+- id: 680f1d033f193798
+  type: change
+  z: 5a54e3ce6cf424e8
+  name: Set status red
+  rules:
+    - t: set
+      p: payload
+      pt: msg
+      to: >-
+        {"fill":"red","shape":"ring","text":area_id & " at " &
+        $now('[H01]:[m01]:[s01]')}
+      tot: jsonata
+  action: ''
+  property: ''
+  from: ''
+  to: ''
+  reg: false
+  x: 1480
+  'y': 200
+  wires:
+    - []
+- id: b2da23d10ca46e25
+  type: switch
+  z: 5a54e3ce6cf424e8
+  name: Area id set
+  property: area_id
+  propertyType: msg
+  rules:
+    - t: nnull
+    - t: else
+  checkall: 'false'
+  repair: false
+  outputs: 2
+  x: 170
+  'y': 100
+  wires:
+    - - 41e5448cb26166be
+    - []
+- id: 41e5448cb26166be
+  type: switch
+  z: 5a54e3ce6cf424e8
+  name: Domain set
+  property: domain
+  propertyType: msg
+  rules:
+    - t: nnull
+    - t: else
+  checkall: 'false'
+  repair: false
+  outputs: 2
+  x: 330
+  'y': 100
+  wires:
+    - - c96f0818e4e144b7
+    - - 93c9a549187e2ee5
+- id: 93c9a549187e2ee5
+  type: change
+  z: 5a54e3ce6cf424e8
+  name: Get entities in area
+  rules:
+    - t: set
+      p: template
+      pt: msg
+      to: >-
+        {% set ns = namespace(x=[]) %} {% for l in states |
+        selectattr('entity_id', 'in', area_entities('xxxxx')) |
+        map(attribute='entity_id') | reject('is_hidden_entity') | list %} {% set
+        ns.x = ns.x + [l] %} {% endfor %} {{ ns.x | join(',') }}
+      tot: str
+    - t: change
+      p: template
+      pt: msg
+      from: xxxxx
+      fromt: str
+      to: area_id
+      tot: msg
+  action: ''
+  property: ''
+  from: ''
+  to: ''
+  reg: false
+  x: 550
+  'y': 140
+  wires:
+    - - 475ac1d6df303314

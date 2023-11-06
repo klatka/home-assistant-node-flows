@@ -1,0 +1,323 @@
+- id: 0a93237bafa3cedf
+  type: subflow
+  name: Entity has assigned area
+  info: "# Input\r\n\r\n## `msg.payload` _string_\r\n\r\nId of an entity or device in Home Assistant\r\n\r\n# Output\r\n\r\n1. `msg.area_id` not `null` or `None` and\r\nif `$check_not_hidden` is set to `true` and\r\n`msg.entity_is_hidden` is `false`\r\n2. else\r\n\r\n## `msg.area_id` _string_\r\n\r\nId of an area in Home Assistant which the given entity is assigned to\r\n\r\n## `msg.entity_is_hidden` _boolean_\r\nOnly if `$check_not_hidden` is set to `true`\r\n\r\n`true` if entity is hidden, else `false`\r\n\r\nNote: Existing `msg.template` will be removed!\r\n"
+  category: home_assistant
+  in:
+    - x: 40
+      'y': 40
+      wires:
+        - id: 485321f242091265
+  out:
+    - x: 1080
+      'y': 420
+      wires:
+        - id: 2580f44d6e482b96
+          port: 1
+    - x: 1090
+      'y': 300
+      wires:
+        - id: 1701d35afeaed583
+          port: 0
+        - id: 1701d35afeaed583
+          port: 1
+        - id: 2580f44d6e482b96
+          port: 0
+  env:
+    - name: check_not_hidden
+      type: bool
+      value: 'false'
+      ui:
+        icon: font-awesome/fa-low-vision
+        label:
+          de: Entity must not be hidden
+        type: checkbox
+  meta:
+    module: klahome
+    version: 1.2.0
+    author: KlaHome <nodered@klahome.de>
+  color: '#3FADB5'
+  inputLabels:
+    - entity or device
+  outputLabels:
+    - area assigned
+    - area not assigned
+  icon: font-awesome/fa-check-circle
+  status:
+    x: 1320
+    'y': 360
+    wires:
+      - id: 98038ae2541c19a4
+        port: 0
+      - id: ed94eaa7fb8490e5
+        port: 0
+- id: 1701d35afeaed583
+  type: switch
+  z: 0a93237bafa3cedf
+  name: Area not null?
+  property: area_id
+  propertyType: msg
+  rules:
+    - t: 'null'
+    - t: eq
+      v: None
+      vt: str
+    - t: else
+  checkall: 'false'
+  repair: false
+  outputs: 3
+  x: 720
+  'y': 320
+  wires:
+    - - 98038ae2541c19a4
+    - - 98038ae2541c19a4
+    - - 2580f44d6e482b96
+- id: d4b96dd585974814
+  type: api-render-template
+  z: 0a93237bafa3cedf
+  name: Render template
+  server: 72832130.5db8f
+  version: 0
+  template: ''
+  resultsLocation: area_id
+  resultsLocationType: msg
+  templateLocation: template
+  templateLocationType: msg
+  x: 330
+  'y': 320
+  wires:
+    - - 29334fab4a8d53e0
+- id: 762f6d54932c4e2a
+  type: change
+  z: 0a93237bafa3cedf
+  name: Get area_id
+  rules:
+    - t: set
+      p: template
+      pt: msg
+      to: '{{ area_id(''xxxxx'') }}'
+      tot: str
+    - t: change
+      p: template
+      pt: msg
+      from: xxxxx
+      fromt: str
+      to: payload
+      tot: msg
+  action: ''
+  property: ''
+  from: ''
+  to: ''
+  reg: false
+  x: 150
+  'y': 320
+  wires:
+    - - d4b96dd585974814
+- id: 29334fab4a8d53e0
+  type: change
+  z: 0a93237bafa3cedf
+  name: Remove template
+  rules:
+    - t: delete
+      p: template
+      pt: msg
+  action: ''
+  property: ''
+  from: ''
+  to: ''
+  reg: false
+  x: 530
+  'y': 320
+  wires:
+    - - 1701d35afeaed583
+- id: 485321f242091265
+  type: switch
+  z: 0a93237bafa3cedf
+  name: Check if not hidden
+  property: check_not_hidden
+  propertyType: env
+  rules:
+    - t: 'true'
+    - t: else
+  checkall: 'false'
+  repair: false
+  outputs: 2
+  x: 170
+  'y': 40
+  wires:
+    - - 2c7d308c81096fd7
+    - - 762f6d54932c4e2a
+- id: 2c7d308c81096fd7
+  type: change
+  z: 0a93237bafa3cedf
+  name: Check if entity is hidden
+  rules:
+    - t: set
+      p: template
+      pt: msg
+      to: '{{ is_hidden_entity(''xxxxx'') }}'
+      tot: str
+    - t: change
+      p: template
+      pt: msg
+      from: xxxxx
+      fromt: str
+      to: payload
+      tot: msg
+  action: ''
+  property: ''
+  from: ''
+  to: ''
+  reg: false
+  x: 270
+  'y': 140
+  wires:
+    - - 3915d9ab44a6e1e3
+- id: 3915d9ab44a6e1e3
+  type: api-render-template
+  z: 0a93237bafa3cedf
+  name: Render template
+  server: 72832130.5db8f
+  version: 0
+  template: ''
+  resultsLocation: entity_is_hidden
+  resultsLocationType: msg
+  templateLocation: template
+  templateLocationType: msg
+  x: 490
+  'y': 140
+  wires:
+    - - 8516f264dbb8a86d
+- id: 8516f264dbb8a86d
+  type: change
+  z: 0a93237bafa3cedf
+  name: Remove template
+  rules:
+    - t: delete
+      p: template
+      pt: msg
+  action: ''
+  property: ''
+  from: ''
+  to: ''
+  reg: false
+  x: 690
+  'y': 140
+  wires:
+    - - 4caaba429b38ea5b
+- id: 2580f44d6e482b96
+  type: switch
+  z: 0a93237bafa3cedf
+  name: Entity is hidden?
+  property: entity_is_hidden
+  propertyType: msg
+  rules:
+    - t: 'true'
+    - t: else
+  checkall: 'false'
+  repair: false
+  outputs: 2
+  x: 810
+  'y': 400
+  wires:
+    - - 98038ae2541c19a4
+    - - ed94eaa7fb8490e5
+- id: 5f1bd274c35dbd90
+  type: change
+  z: 0a93237bafa3cedf
+  name: Cast msg.entity_is_hidden
+  rules:
+    - t: set
+      p: entity_is_hidden
+      pt: msg
+      to: 'true'
+      tot: bool
+  action: ''
+  property: ''
+  from: ''
+  to: ''
+  reg: false
+  x: 1120
+  'y': 120
+  wires:
+    - - 762f6d54932c4e2a
+- id: 627ae536bc3ef184
+  type: change
+  z: 0a93237bafa3cedf
+  name: Cast msg.entity_is_hidden
+  rules:
+    - t: set
+      p: entity_is_hidden
+      pt: msg
+      to: 'false'
+      tot: bool
+  action: ''
+  property: ''
+  from: ''
+  to: ''
+  reg: false
+  x: 1120
+  'y': 160
+  wires:
+    - - 762f6d54932c4e2a
+- id: 4caaba429b38ea5b
+  type: switch
+  z: 0a93237bafa3cedf
+  name: Entity is hidden?
+  property: entity_is_hidden
+  propertyType: msg
+  rules:
+    - t: eq
+      v: 'True'
+      vt: str
+    - t: else
+  checkall: 'false'
+  repair: false
+  outputs: 2
+  x: 890
+  'y': 140
+  wires:
+    - - 5f1bd274c35dbd90
+    - - 627ae536bc3ef184
+- id: 98038ae2541c19a4
+  type: change
+  z: 0a93237bafa3cedf
+  name: Set status red
+  rules:
+    - t: set
+      p: payload
+      pt: msg
+      to: >-
+        {"fill":"red","shape":"ring","text":payload & " at " &
+        $now('[H01]:[m01]:[s01]')}
+      tot: jsonata
+  action: ''
+  property: ''
+  from: ''
+  to: ''
+  reg: false
+  x: 1160
+  'y': 340
+  wires:
+    - []
+- id: ed94eaa7fb8490e5
+  type: change
+  z: 0a93237bafa3cedf
+  name: Set status green
+  rules:
+    - t: set
+      p: payload
+      pt: msg
+      to: >-
+        {"fill":"green","shape":"dot","text":area_id & " at " &
+        $now('[H01]:[m01]:[s01]')}
+      tot: jsonata
+  action: ''
+  property: ''
+  from: ''
+  to: ''
+  reg: false
+  x: 1160
+  'y': 380
+  wires:
+    - []

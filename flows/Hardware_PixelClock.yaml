@@ -1,0 +1,117 @@
+- id: e2b4dbe1843ec6d3
+  type: tab
+  label: Hardware_PixelClock
+  disabled: false
+  info: ''
+  env: []
+- id: d47d5dd5564bc167
+  type: mqtt out
+  z: e2b4dbe1843ec6d3
+  name: ''
+  topic: awtrix_a5e090/custom/bitcoin
+  qos: ''
+  retain: ''
+  respTopic: ''
+  contentType: ''
+  userProps: ''
+  correl: ''
+  expiry: ''
+  broker: 8c11d84eddfc3993
+  x: 930
+  'y': 80
+  wires: []
+- id: d9c33d1f02954660
+  type: function
+  z: e2b4dbe1843ec6d3
+  name: Create Message
+  func: |-
+    var id = msg.id;
+    var currency = msg.currency;
+
+    var price = msg.payload[id][currency];
+
+    //msg.payload = price;
+
+    msg.payload = { 
+        "text": String(price), 
+        "icon": 12460, 
+        "duration": 10, 
+        "pushIcon": 3 
+    };
+
+    node.status({ fill: 'green', shape: 'ring', text: 'Price: ' +  price});
+
+    return msg;
+  outputs: 1
+  noerr: 0
+  initialize: ''
+  finalize: ''
+  libs: []
+  x: 680
+  'y': 80
+  wires:
+    - - d47d5dd5564bc167
+- id: a7544a6b7ee9f8ed
+  type: change
+  z: e2b4dbe1843ec6d3
+  name: BTC to USD
+  rules:
+    - t: set
+      p: id
+      pt: msg
+      to: bitcoin
+      tot: str
+    - t: set
+      p: currency
+      pt: msg
+      to: usd
+      tot: str
+    - t: set
+      p: headers
+      pt: msg
+      to: >-
+        {"USER-AGENT":"Mozilla/5.0 (Windows NT 6.1; Win64; x64)
+        AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.163
+        Safari/537.36"}
+      tot: jsonata
+  action: ''
+  property: ''
+  from: ''
+  to: ''
+  reg: false
+  x: 250
+  'y': 80
+  wires:
+    - - 2cad191e8152d41c
+- id: 2cad191e8152d41c
+  type: http request
+  z: e2b4dbe1843ec6d3
+  name: Get CoinGecko Price
+  method: GET
+  ret: obj
+  paytoqs: ignore
+  url: >-
+    https://api.coingecko.com/api/v3/simple/price?ids={{{id}}}&amp;amp;amp;amp;amp;amp;amp;amp;amp;amp;amp;amp;amp;amp;vs_currencies={{{currency}}}
+  tls: ''
+  persist: false
+  proxy: ''
+  authType: ''
+  senderr: false
+  x: 460
+  'y': 80
+  wires:
+    - - d9c33d1f02954660
+- id: 4ee9e3555739095c
+  type: inject
+  z: e2b4dbe1843ec6d3
+  name: ''
+  props: []
+  repeat: '3600'
+  crontab: ''
+  once: true
+  onceDelay: '10'
+  topic: ''
+  x: 90
+  'y': 80
+  wires:
+    - - a7544a6b7ee9f8ed

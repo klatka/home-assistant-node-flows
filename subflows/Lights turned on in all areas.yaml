@@ -1,0 +1,167 @@
+- id: 3780181f87eb29d1
+  type: subflow
+  name: Lights turned on in all areas
+  info: |
+    # Output
+
+    1. lights found
+    2. else (no lights found)
+
+    ## `msg.payload` _string_
+
+    Ids of not hidden lights assigned to an area with state `on` as csv
+
+    Note: Existing `msg.template` will be removed!
+  category: home_assistant
+  in:
+    - x: 50
+      'y': 30
+      wires:
+        - id: 91662afd7f3d2f68
+  out:
+    - x: 970
+      'y': 40
+      wires:
+        - id: 1756cf57e6e68b3c
+          port: 0
+    - x: 980
+      'y': 140
+      wires:
+        - id: 1756cf57e6e68b3c
+          port: 1
+  env: []
+  meta:
+    module: klahome
+    version: 1.1.0
+    author: KlaHome <dev@klahome.de>
+    license: Apache-2.0
+  color: '#3FADB5'
+  outputLabels:
+    - lights found
+    - lights not found
+  icon: node-red/light.svg
+  status:
+    x: 1160
+    'y': 120
+    wires:
+      - id: c4e13e1157f784ad
+        port: 0
+      - id: 69246e6a039ce7dd
+        port: 0
+- id: 91662afd7f3d2f68
+  type: change
+  z: 3780181f87eb29d1
+  name: Get lights in all areas
+  rules:
+    - t: set
+      p: template
+      pt: msg
+      to: >-
+        {% set ns = namespace(x=[]) %} {% for e in states.light     |
+        selectattr('state', 'eq', 'on')     | sort(attribute="name")     |
+        map(attribute='entity_id')     | reject('is_hidden_entity')     if
+        area_name(e) != None %}   {% set ns.x = ns.x + [e] %} {% endfor %} {{
+        ns.x | join(',') }}
+      tot: str
+  action: ''
+  property: ''
+  from: ''
+  to: ''
+  reg: false
+  x: 200
+  'y': 100
+  wires:
+    - - 023543a3e325d7a8
+- id: 023543a3e325d7a8
+  type: api-render-template
+  z: 3780181f87eb29d1
+  name: Render template
+  server: 72832130.5db8f
+  version: 0
+  template: ''
+  resultsLocation: payload
+  resultsLocationType: msg
+  templateLocation: template
+  templateLocationType: msg
+  x: 410
+  'y': 100
+  wires:
+    - - 100455787766e01a
+- id: 100455787766e01a
+  type: change
+  z: 3780181f87eb29d1
+  name: Remove template
+  rules:
+    - t: delete
+      p: template
+      pt: msg
+  action: ''
+  property: ''
+  from: ''
+  to: ''
+  reg: false
+  x: 610
+  'y': 100
+  wires:
+    - - 1756cf57e6e68b3c
+- id: 1756cf57e6e68b3c
+  type: switch
+  z: 3780181f87eb29d1
+  name: Lights are on
+  property: payload
+  propertyType: msg
+  rules:
+    - t: neq
+      v: ''
+      vt: str
+    - t: else
+  checkall: 'true'
+  repair: false
+  outputs: 2
+  x: 790
+  'y': 100
+  wires:
+    - - c4e13e1157f784ad
+    - - 69246e6a039ce7dd
+- id: c4e13e1157f784ad
+  type: change
+  z: 3780181f87eb29d1
+  name: Set status green
+  rules:
+    - t: set
+      p: payload
+      pt: msg
+      to: >-
+        {"fill":"green","shape":"dot","text":"found" & " at " &
+        $now('[H01]:[m01]:[s01]')}
+      tot: jsonata
+  action: ''
+  property: ''
+  from: ''
+  to: ''
+  reg: false
+  x: 980
+  'y': 80
+  wires:
+    - []
+- id: 69246e6a039ce7dd
+  type: change
+  z: 3780181f87eb29d1
+  name: Set status red
+  rules:
+    - t: set
+      p: payload
+      pt: msg
+      to: >-
+        {"fill":"red","shape":"ring","text":"not found" & " at " &
+        $now('[H01]:[m01]:[s01]')}
+      tot: jsonata
+  action: ''
+  property: ''
+  from: ''
+  to: ''
+  reg: false
+  x: 980
+  'y': 180
+  wires:
+    - []

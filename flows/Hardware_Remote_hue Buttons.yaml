@@ -1,0 +1,433 @@
+- id: 896a0d5fcfecae54
+  type: tab
+  label: Hardware_Remote_hue Buttons
+  disabled: false
+  info: ''
+  env: []
+- id: 69661e438e97bcc9
+  type: switch
+  z: 896a0d5fcfecae54
+  d: true
+  name: Switch state_machine
+  property: state_machine
+  propertyType: msg
+  rules:
+    - t: eq
+      v: complete
+      vt: str
+    - t: eq
+      v: start
+      vt: str
+  checkall: 'true'
+  repair: false
+  outputs: 2
+  x: 720
+  'y': 360
+  wires:
+    - - f8bdd95834bf2357
+    - - 27763f71aa5bdd6c
+- id: e1b30801495163a3
+  type: function
+  z: 896a0d5fcfecae54
+  d: true
+  name: Reset state machine
+  func: |-
+    msg.trigger = "reset"
+    return msg;
+  outputs: 1
+  noerr: 0
+  initialize: ''
+  finalize: ''
+  libs: []
+  x: 1140
+  'y': 360
+  wires:
+    - - 1434f5bb926fe387
+- id: 4aedb60ba3befd96
+  type: function
+  z: 896a0d5fcfecae54
+  d: true
+  name: Update trigger
+  func: |-
+    msg.trigger = msg.payload.event.type
+    return msg;
+  outputs: 1
+  noerr: 0
+  initialize: ''
+  finalize: ''
+  libs: []
+  x: 420
+  'y': 460
+  wires:
+    - - 1434f5bb926fe387
+- id: 27763f71aa5bdd6c
+  type: delay
+  z: 896a0d5fcfecae54
+  d: true
+  name: ''
+  pauseType: delay
+  timeout: '4'
+  timeoutUnits: seconds
+  rate: '1'
+  nbRateUnits: '6'
+  rateUnits: second
+  randomFirst: '1'
+  randomLast: '5'
+  randomUnits: seconds
+  drop: true
+  allowrate: false
+  outputs: 1
+  x: 940
+  'y': 360
+  wires:
+    - - e1b30801495163a3
+- id: 1434f5bb926fe387
+  type: state-machine
+  z: 896a0d5fcfecae54
+  d: true
+  name: Hue button security alarm state machine
+  triggerProperty: trigger
+  triggerPropertyType: msg
+  stateProperty: state_machine
+  statePropertyType: msg
+  initialDelay: '0'
+  persistOnReload: false
+  outputStateChangeOnly: true
+  throwException: false
+  states:
+    - idle
+    - start
+    - second
+    - third
+    - complete
+    - failed
+  transitions:
+    - name: repeat
+      from: idle
+      to: start
+    - name: repeat
+      from: start
+      to: second
+    - name: repeat
+      from: second
+      to: third
+    - name: long_release
+      from: third
+      to: complete
+    - name: reset
+      from: '*'
+      to: idle
+    - name: repeat
+      from: third
+      to: failed
+  x: 420
+  'y': 360
+  wires:
+    - - 69661e438e97bcc9
+- id: f8bdd95834bf2357
+  type: api-current-state
+  z: 896a0d5fcfecae54
+  d: true
+  name: Alarm disarmed?
+  server: 72832130.5db8f
+  version: 3
+  outputs: 2
+  halt_if: disarmed
+  halt_if_type: str
+  halt_if_compare: is
+  entity_id: alarm_control_panel.home
+  state_type: str
+  blockInputOverrides: true
+  outputProperties: []
+  for: '0'
+  forType: num
+  forUnits: minutes
+  override_topic: false
+  state_location: payload
+  override_payload: msg
+  entity_location: data
+  override_data: msg
+  x: 950
+  'y': 320
+  wires:
+    - []
+    - []
+- id: 7a43a4b123e79263
+  type: comment
+  z: 896a0d5fcfecae54
+  name: Hue Buttons over ZHA
+  info: ''
+  x: 100
+  'y': 40
+  wires: []
+- id: e3520e1c2e61fa0c
+  type: switch
+  z: 896a0d5fcfecae54
+  d: true
+  name: Switch hue smart button events
+  property: payload.event.type
+  propertyType: msg
+  rules:
+    - t: eq
+      v: initial_press
+      vt: str
+    - t: eq
+      v: short_release
+      vt: str
+    - t: eq
+      v: repeat
+      vt: str
+    - t: eq
+      v: long_release
+      vt: str
+  checkall: 'true'
+  repair: false
+  outputs: 4
+  x: 150
+  'y': 440
+  wires:
+    - - 4aedb60ba3befd96
+    - - 4aedb60ba3befd96
+    - - 4aedb60ba3befd96
+    - - 4aedb60ba3befd96
+- id: e5389b84417a6800
+  type: comment
+  z: 896a0d5fcfecae54
+  name: Hue as Security Button
+  info: ''
+  x: 100
+  'y': 320
+  wires: []
+- id: 0f8f5556fe8490ed
+  type: api-call-service
+  z: 896a0d5fcfecae54
+  name: Press Shower Party button
+  server: 72832130.5db8f
+  version: 5
+  debugenabled: false
+  domain: button
+  service: press
+  areaId: []
+  deviceId: []
+  entityId:
+    - button.kla_routine_shower_party
+  data: ''
+  dataType: jsonata
+  mergeContext: ''
+  mustacheAltTags: false
+  outputProperties: []
+  queue: none
+  x: 1100
+  'y': 180
+  wires:
+    - []
+- id: 9d8411dbdb144d56
+  type: server-state-changed
+  z: 896a0d5fcfecae54
+  name: Hue smart button event
+  server: 72832130.5db8f
+  version: 5
+  outputs: 1
+  exposeAsEntityConfig: ''
+  entityId: event.hue_smart_button
+  entityIdType: substring
+  outputInitially: false
+  stateType: str
+  ifState: ''
+  ifStateType: str
+  ifStateOperator: is
+  outputOnlyOnStateChange: true
+  for: '0'
+  forType: num
+  forUnits: minutes
+  ignorePrevStateNull: false
+  ignorePrevStateUnknown: false
+  ignorePrevStateUnavailable: false
+  ignoreCurrentStateUnknown: true
+  ignoreCurrentStateUnavailable: true
+  outputProperties:
+    - property: topic
+      propertyType: msg
+      value: ''
+      valueType: triggerId
+    - property: payload
+      propertyType: msg
+      value: ''
+      valueType: triggerId
+    - property: event
+      propertyType: msg
+      value: ''
+      valueType: eventData
+  x: 120
+  'y': 160
+  wires:
+    - - 5afb2e2568ac3bdf
+- id: 5afb2e2568ac3bdf
+  type: switch
+  z: 896a0d5fcfecae54
+  name: Check if button
+  property: event.new_state.attributes.device_class
+  propertyType: msg
+  rules:
+    - t: eq
+      v: button
+      vt: str
+  checkall: 'false'
+  repair: false
+  outputs: 1
+  x: 320
+  'y': 160
+  wires:
+    - - 898f1bbb3e6dacbd
+- id: 898f1bbb3e6dacbd
+  type: 'subflow:0a93237bafa3cedf'
+  z: 896a0d5fcfecae54
+  name: ''
+  env:
+    - name: check_not_hidden
+      type: bool
+      value: 'true'
+  x: 530
+  'y': 160
+  wires:
+    - - 2eb4aa4265c66957
+    - []
+- id: 2eb4aa4265c66957
+  type: switch
+  z: 896a0d5fcfecae54
+  name: Switch hue smart button command
+  property: event.new_state.attributes.event_type
+  propertyType: msg
+  rules:
+    - t: eq
+      v: initial_press
+      vt: str
+    - t: eq
+      v: repeat
+      vt: str
+    - t: eq
+      v: short_release
+      vt: str
+    - t: eq
+      v: long_press
+      vt: str
+    - t: eq
+      v: long_release
+      vt: str
+  checkall: 'false'
+  repair: false
+  outputs: 5
+  x: 800
+  'y': 160
+  wires:
+    - []
+    - - 0f8f5556fe8490ed
+      - 447a782a4b2e1cc1
+    - - 447a782a4b2e1cc1
+    - []
+    - []
+- id: 447a782a4b2e1cc1
+  type: change
+  z: 896a0d5fcfecae54
+  name: Set area
+  rules:
+    - t: set
+      p: action
+      pt: msg
+      to: on_all_100
+      tot: str
+    - t: set
+      p: area_id
+      pt: msg
+      to: bad
+      tot: str
+    - t: set
+      p: area_overwritten
+      pt: msg
+      to: 'true'
+      tot: bool
+  action: ''
+  property: ''
+  from: ''
+  to: ''
+  reg: false
+  x: 1040
+  'y': 140
+  wires:
+    - - bbff44590078f9ab
+- id: bbff44590078f9ab
+  type: link out
+  z: 896a0d5fcfecae54
+  name: hue Smart Button Long press
+  mode: link
+  links:
+    - 1d32227c7acc38cf
+    - aee26832556b4721
+  x: 1135
+  'y': 140
+  wires: []
+- id: 2f6993878cd9627c
+  type: server-events
+  z: 896a0d5fcfecae54
+  name: ZHA event
+  server: 72832130.5db8f
+  version: 3
+  exposeAsEntityConfig: ''
+  eventType: zha_event
+  eventData: ''
+  waitForRunning: true
+  outputProperties:
+    - property: payload
+      propertyType: msg
+      value: ''
+      valueType: eventData
+    - property: topic
+      propertyType: msg
+      value: $outputData("eventData").event_type
+      valueType: jsonata
+    - property: event_type
+      propertyType: msg
+      value: $outputData("eventData").event_type
+      valueType: jsonata
+  x: 80
+  'y': 80
+  wires:
+    - - 19c1c7982d409ae7
+- id: 19c1c7982d409ae7
+  type: switch
+  z: 896a0d5fcfecae54
+  name: Switch unique_id
+  property: payload.event.unique_id
+  propertyType: msg
+  rules:
+    - t: eq
+      v: '00:17:88:01:08:02:48:80:1:0x0006'
+      vt: str
+  checkall: 'false'
+  repair: false
+  outputs: 1
+  x: 250
+  'y': 80
+  wires:
+    - - c977afb1598a6d91
+- id: c977afb1598a6d91
+  type: switch
+  z: 896a0d5fcfecae54
+  name: Switch hue smart button events
+  property: payload.event.command
+  propertyType: msg
+  rules:
+    - t: eq
+      v: 'on'
+      vt: str
+    - t: eq
+      v: off_with_effect
+      vt: str
+  checkall: 'true'
+  repair: false
+  outputs: 2
+  x: 490
+  'y': 80
+  wires:
+    - []
+    - []

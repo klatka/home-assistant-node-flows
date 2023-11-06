@@ -1,0 +1,242 @@
+- id: 242db3abbc591443
+  type: tab
+  label: Extension_Sleep Mode
+  disabled: false
+  info: ''
+  env: []
+- id: 1416d7b618b64f06
+  type: comment
+  z: 242db3abbc591443
+  name: Turn on sleep mode when Alarm is set to night
+  info: ''
+  x: 170
+  'y': 40
+  wires: []
+- id: e57b7d120194cf9c
+  type: server-state-changed
+  z: 242db3abbc591443
+  name: Alarm is armed night
+  server: 72832130.5db8f
+  version: 5
+  outputs: 2
+  exposeAsEntityConfig: 85197789a1127d18
+  entityId: alarm_control_panel.home
+  entityIdType: exact
+  outputInitially: true
+  stateType: str
+  ifState: armed_night
+  ifStateType: str
+  ifStateOperator: is
+  outputOnlyOnStateChange: true
+  for: 0
+  forType: num
+  forUnits: minutes
+  ignorePrevStateNull: true
+  ignorePrevStateUnknown: true
+  ignorePrevStateUnavailable: true
+  ignoreCurrentStateUnknown: true
+  ignoreCurrentStateUnavailable: true
+  outputProperties:
+    - property: topic
+      propertyType: msg
+      value: ''
+      valueType: triggerId
+  x: 110
+  'y': 100
+  wires:
+    - - 00ae4fbef1ca2b4b
+    - - e0dee580fa86f4b9
+- id: 83fba3a5f7897ba5
+  type: api-call-service
+  z: 242db3abbc591443
+  name: Turn Sleep mode
+  server: 72832130.5db8f
+  version: 5
+  debugenabled: false
+  domain: switch
+  service: 'turn_{{ payload }}'
+  areaId: []
+  deviceId: []
+  entityId:
+    - switch.kla_sleep_mode
+  data: ''
+  dataType: json
+  mergeContext: ''
+  mustacheAltTags: false
+  outputProperties: []
+  queue: none
+  output_location: payload
+  output_location_type: none
+  x: 550
+  'y': 100
+  wires:
+    - []
+- id: e964f0cbcf1b4810
+  type: api-current-state
+  z: 242db3abbc591443
+  name: KLA Intelligent?
+  server: 72832130.5db8f
+  version: 3
+  outputs: 2
+  halt_if: 'on'
+  halt_if_type: str
+  halt_if_compare: is
+  entity_id: switch.kla_intelligent_automation
+  state_type: str
+  blockInputOverrides: true
+  outputProperties: []
+  for: 0
+  forType: num
+  forUnits: minutes
+  x: 420
+  'y': 240
+  wires:
+    - - 308241aa58777a2e
+    - []
+- id: 308241aa58777a2e
+  type: api-call-service
+  z: 242db3abbc591443
+  name: Turn off Sleep mode
+  server: 72832130.5db8f
+  version: 5
+  debugenabled: false
+  domain: switch
+  service: turn_off
+  areaId: []
+  deviceId: []
+  entityId:
+    - switch.kla_sleep_mode
+  data: ''
+  dataType: json
+  mergeContext: ''
+  mustacheAltTags: false
+  outputProperties: []
+  queue: none
+  output_location: payload
+  output_location_type: none
+  x: 620
+  'y': 240
+  wires:
+    - []
+- id: 19509aa16a874224
+  type: comment
+  z: 242db3abbc591443
+  name: Turn off sleep mode after sunrise
+  info: ''
+  x: 130
+  'y': 200
+  wires: []
+- id: 00ae4fbef1ca2b4b
+  type: change
+  z: 242db3abbc591443
+  name: Set payload to on
+  rules:
+    - t: set
+      p: payload
+      pt: msg
+      to: 'on'
+      tot: str
+  action: ''
+  property: ''
+  from: ''
+  to: ''
+  reg: false
+  x: 330
+  'y': 80
+  wires:
+    - - 83fba3a5f7897ba5
+- id: e0dee580fa86f4b9
+  type: change
+  z: 242db3abbc591443
+  name: Set payload to off
+  rules:
+    - t: set
+      p: payload
+      pt: msg
+      to: 'off'
+      tot: str
+  action: ''
+  property: ''
+  from: ''
+  to: ''
+  reg: false
+  x: 330
+  'y': 120
+  wires:
+    - - 83fba3a5f7897ba5
+- id: 2c565ad3eb2a51dd
+  type: eztimer
+  z: 242db3abbc591443
+  name: Sun events
+  debug: false
+  autoname: sunrise
+  tag: eztimer
+  topic: ''
+  suspended: false
+  sendEventsOnSuspend: false
+  latLongSource: manual
+  latLongHaZone: zone.home
+  lat: '51.478'
+  lon: '7.219'
+  timerType: '2'
+  startupMessage: false
+  ontype: '1'
+  ontimesun: sunrise
+  ontimetod: '17:00'
+  onpropertytype: msg
+  onproperty: payload
+  onvaluetype: str
+  onvalue: 'on'
+  onoffset: 0
+  onrandomoffset: 0
+  onsuppressrepeats: false
+  offtype: '1'
+  offtimesun: sunriseEnd
+  offtimetod: dusk
+  offduration: '00:01:00'
+  offpropertytype: msg
+  offproperty: payload
+  offvaluetype: str
+  offvalue: 'off'
+  offoffset: 0
+  offrandomoffset: 0
+  offsuppressrepeats: false
+  resend: false
+  resendInterval: 0s
+  mon: true
+  tue: true
+  wed: true
+  thu: true
+  fri: true
+  sat: true
+  sun: true
+  x: 90
+  'y': 240
+  wires:
+    - - d21ef9aaa0c724d3
+- id: d21ef9aaa0c724d3
+  type: ha-wait-until
+  z: 242db3abbc591443
+  name: Wait for HA
+  server: 72832130.5db8f
+  version: 2
+  outputs: 2
+  entityId: sensor.time
+  entityIdFilterType: exact
+  property: state
+  comparator: does_not_include
+  value: 'unavailable,unknown'
+  valueType: str
+  timeout: '1'
+  timeoutType: num
+  timeoutUnits: hours
+  checkCurrentState: true
+  blockInputOverrides: true
+  outputProperties: []
+  entityLocation: data
+  entityLocationType: none
+  x: 250
+  'y': 240
+  wires:
+    - - e964f0cbcf1b4810
+    - []

@@ -1,0 +1,1057 @@
+- id: 0b2c4dd8ef29e8a6
+  type: tab
+  label: Hardware_Remote_tint von Müller
+  disabled: false
+  info: ''
+  env: []
+- id: 93d333b7947a200c
+  type: server-events
+  z: 0b2c4dd8ef29e8a6
+  name: ZHA event
+  server: 72832130.5db8f
+  version: 3
+  exposeAsEntityConfig: ''
+  eventType: zha_event
+  eventData: ''
+  waitForRunning: true
+  outputProperties:
+    - property: payload
+      propertyType: msg
+      value: ''
+      valueType: eventData
+    - property: topic
+      propertyType: msg
+      value: $outputData("eventData").event_type
+      valueType: jsonata
+    - property: event_type
+      propertyType: msg
+      value: $outputData("eventData").event_type
+      valueType: jsonata
+  x: 80
+  'y': 80
+  wires:
+    - - e83c8823866babe0
+- id: e83c8823866babe0
+  type: switch
+  z: 0b2c4dd8ef29e8a6
+  name: Switch device_ieee
+  property: payload.event.device_ieee
+  propertyType: msg
+  rules:
+    - t: eq
+      v: '00:15:8d:00:03:8c:fe:e7'
+      vt: str
+  checkall: 'true'
+  repair: false
+  outputs: 1
+  x: 190
+  'y': 160
+  wires:
+    - - 69e4cc3bbbfadebb
+- id: 69e4cc3bbbfadebb
+  type: switch
+  z: 0b2c4dd8ef29e8a6
+  name: Switch tint von Müller remote command
+  property: payload.event.command
+  propertyType: msg
+  rules:
+    - t: eq
+      v: 'on'
+      vt: str
+    - t: eq
+      v: 'off'
+      vt: str
+    - t: eq
+      v: move_to_color
+      vt: str
+    - t: eq
+      v: move_to_color_temp
+      vt: str
+    - t: eq
+      v: step
+      vt: str
+    - t: eq
+      v: move
+      vt: str
+    - t: eq
+      v: attribute_updated
+      vt: str
+    - t: eq
+      v: stop
+      vt: str
+  checkall: 'true'
+  repair: false
+  outputs: 8
+  x: 240
+  'y': 340
+  wires:
+    - - 94297824abc402b4
+    - - 94297824abc402b4
+    - - 760588bf69750a3c
+    - - edd724ce08fa25bb
+    - - 5bd73aa17d5b9f89
+    - - 5bd73aa17d5b9f89
+    - - e3baff4b4c13991b
+    - []
+- id: 94297824abc402b4
+  type: api-call-service
+  z: 0b2c4dd8ef29e8a6
+  name: Toggle Arbeitsplatte
+  server: 72832130.5db8f
+  version: 5
+  debugenabled: false
+  domain: light
+  service: toggle
+  areaId: []
+  deviceId: []
+  entityId:
+    - light.arbeitsplatte
+  data: ''
+  dataType: json
+  mergeContext: ''
+  mustacheAltTags: false
+  outputProperties: []
+  queue: none
+  output_location: payload
+  output_location_type: none
+  x: 550
+  'y': 220
+  wires:
+    - []
+- id: 5bd73aa17d5b9f89
+  type: api-current-state
+  z: 0b2c4dd8ef29e8a6
+  name: Arbeitsplatte on?
+  server: 72832130.5db8f
+  version: 3
+  outputs: 2
+  halt_if: 'on'
+  halt_if_type: str
+  halt_if_compare: is
+  entity_id: light.arbeitsplatte
+  state_type: str
+  blockInputOverrides: true
+  outputProperties: []
+  for: 0
+  forType: num
+  forUnits: minutes
+  x: 550
+  'y': 400
+  wires:
+    - - 72cb8e20b02e0903
+    - []
+- id: d2989844e6afde31
+  type: api-current-state
+  z: 0b2c4dd8ef29e8a6
+  name: Get dimmer brightness step pct
+  server: 72832130.5db8f
+  version: 3
+  outputs: 1
+  halt_if: ''
+  halt_if_type: num
+  halt_if_compare: gt
+  entity_id: input_number.kla_lighting_dimmer_brightness_step_pct
+  state_type: str
+  blockInputOverrides: true
+  outputProperties:
+    - property: payload
+      propertyType: msg
+      value: ''
+      valueType: entityState
+    - property: data
+      propertyType: msg
+      value: ''
+      valueType: entity
+  for: 0
+  forType: num
+  forUnits: minutes
+  x: 1030
+  'y': 400
+  wires:
+    - - c9ce79c791604c38
+- id: df573909ae629dea
+  type: api-current-state
+  z: 0b2c4dd8ef29e8a6
+  name: Get dimmer brightness step pct
+  server: 72832130.5db8f
+  version: 3
+  outputs: 1
+  halt_if: ''
+  halt_if_type: num
+  halt_if_compare: gt
+  entity_id: input_number.kla_lighting_dimmer_brightness_step_pct
+  state_type: str
+  blockInputOverrides: true
+  outputProperties:
+    - property: payload
+      propertyType: msg
+      value: ''
+      valueType: entityState
+    - property: data
+      propertyType: msg
+      value: ''
+      valueType: entity
+  for: 0
+  forType: num
+  forUnits: minutes
+  x: 1030
+  'y': 460
+  wires:
+    - - 402acafb1a04f652
+- id: 402acafb1a04f652
+  type: function
+  z: 0b2c4dd8ef29e8a6
+  name: '*(-1)'
+  func: |-
+    msg.data = msg.data.state*(-1)
+    return msg;
+  outputs: 1
+  noerr: 0
+  initialize: ''
+  finalize: ''
+  libs: []
+  x: 1230
+  'y': 460
+  wires:
+    - - 5f5d8681c92aa7d4
+- id: c9ce79c791604c38
+  type: function
+  z: 0b2c4dd8ef29e8a6
+  name: '*(1)'
+  func: |-
+    msg.data = msg.data.state*1
+    return msg;
+  outputs: 1
+  noerr: 0
+  initialize: ''
+  finalize: ''
+  libs: []
+  x: 1230
+  'y': 400
+  wires:
+    - - 5f5d8681c92aa7d4
+- id: 5f5d8681c92aa7d4
+  type: api-call-service
+  z: 0b2c4dd8ef29e8a6
+  name: Arbeitsplatte set brightness
+  server: 72832130.5db8f
+  version: 5
+  debugenabled: false
+  domain: light
+  service: turn_on
+  areaId: []
+  deviceId: []
+  entityId:
+    - light.arbeitsplatte
+  data: '{"brightness_step_pct": msg.data}'
+  dataType: jsonata
+  mergeContext: ''
+  mustacheAltTags: false
+  outputProperties: []
+  queue: none
+  output_location: payload
+  output_location_type: none
+  x: 1440
+  'y': 420
+  wires:
+    - []
+- id: 760588bf69750a3c
+  type: api-call-service
+  z: 0b2c4dd8ef29e8a6
+  name: Arbeitsplatte set color
+  server: 72832130.5db8f
+  version: 5
+  debugenabled: false
+  domain: light
+  service: turn_on
+  areaId: []
+  deviceId: []
+  entityId:
+    - light.arbeitsplatte
+  data: >-
+    {"xy_color": [msg.payload.event.args[0]/45875,
+    msg.payload.event.args[1]/45875]}
+  dataType: jsonata
+  mergeContext: ''
+  mustacheAltTags: false
+  outputProperties: []
+  queue: none
+  output_location: payload
+  output_location_type: none
+  x: 560
+  'y': 280
+  wires:
+    - []
+- id: 8888815ff943f7dd
+  type: api-call-service
+  z: 0b2c4dd8ef29e8a6
+  name: Turn on Arbeitsplatte 'Nice'
+  server: 72832130.5db8f
+  version: 5
+  debugenabled: false
+  domain: light
+  service: turn_on
+  areaId: []
+  deviceId: []
+  entityId:
+    - light.arbeitsplatte
+  data: '{"hs_color": [345.405,58.039]}'
+  dataType: jsonata
+  mergeContext: ''
+  mustacheAltTags: false
+  outputProperties: []
+  queue: none
+  output_location: payload
+  output_location_type: none
+  x: 940
+  'y': 640
+  wires:
+    - []
+- id: 480bb3f58ca684bf
+  type: api-call-service
+  z: 0b2c4dd8ef29e8a6
+  name: Turn on Arbeitsplatte 'Pink'
+  server: 72832130.5db8f
+  version: 5
+  debugenabled: false
+  domain: light
+  service: turn_on
+  areaId: []
+  deviceId: []
+  entityId:
+    - light.arbeitsplatte
+  data: '{"hs_color": [345.273,100]}'
+  dataType: jsonata
+  mergeContext: ''
+  mustacheAltTags: false
+  outputProperties: []
+  queue: none
+  output_location: payload
+  output_location_type: none
+  x: 940
+  'y': 720
+  wires:
+    - []
+- id: 17a77f38429313dc
+  type: comment
+  z: 0b2c4dd8ef29e8a6
+  name: tint von Müller Remote over ZHA
+  info: ''
+  x: 130
+  'y': 40
+  wires: []
+- id: 4dc41631874b1398
+  type: api-call-service
+  z: 0b2c4dd8ef29e8a6
+  name: Turn on Arbeitsplatte 'Sun'
+  server: 72832130.5db8f
+  version: 5
+  debugenabled: false
+  domain: light
+  service: turn_on
+  areaId: []
+  deviceId: []
+  entityId:
+    - light.arbeitsplatte
+  data: '{"hs_color": [0,50.196]}'
+  dataType: jsonata
+  mergeContext: ''
+  mustacheAltTags: false
+  outputProperties: []
+  queue: none
+  output_location: payload
+  output_location_type: none
+  x: 930
+  'y': 560
+  wires:
+    - []
+- id: e50aabe9b24e7ec2
+  type: api-call-service
+  z: 0b2c4dd8ef29e8a6
+  name: Turn on Arbeitsplatte 'Disco'
+  server: 72832130.5db8f
+  version: 5
+  debugenabled: false
+  domain: light
+  service: turn_on
+  areaId: []
+  deviceId: []
+  entityId:
+    - light.arbeitsplatte
+  data: '{"hs_color": [292.5,78.431]}'
+  dataType: jsonata
+  mergeContext: ''
+  mustacheAltTags: false
+  outputProperties: []
+  queue: none
+  output_location: payload
+  output_location_type: none
+  x: 940
+  'y': 600
+  wires:
+    - []
+- id: 24bd828b1a5516a3
+  type: api-call-service
+  z: 0b2c4dd8ef29e8a6
+  name: Turn on Arbeitsplatte 'Night'
+  server: 72832130.5db8f
+  version: 5
+  debugenabled: false
+  domain: light
+  service: turn_on
+  areaId: []
+  deviceId: []
+  entityId:
+    - light.arbeitsplatte
+  data: '{"hs_color": [255.789,80.851]}'
+  dataType: jsonata
+  mergeContext: ''
+  mustacheAltTags: false
+  outputProperties: []
+  queue: none
+  output_location: payload
+  output_location_type: none
+  x: 940
+  'y': 760
+  wires:
+    - []
+- id: f138acf12a55342a
+  type: api-call-service
+  z: 0b2c4dd8ef29e8a6
+  name: Turn on Arbeitsplatte 'Fireplace'
+  server: 72832130.5db8f
+  version: 5
+  debugenabled: false
+  domain: light
+  service: turn_on
+  areaId: []
+  deviceId: []
+  entityId:
+    - light.arbeitsplatte
+  data: '{"hs_color": [7.294,100]}'
+  dataType: jsonata
+  mergeContext: ''
+  mustacheAltTags: false
+  outputProperties: []
+  queue: none
+  output_location: payload
+  output_location_type: none
+  x: 950
+  'y': 680
+  wires:
+    - []
+- id: 72cb8e20b02e0903
+  type: switch
+  z: 0b2c4dd8ef29e8a6
+  name: 'Switch event.args[0]'
+  property: 'payload.event.args[0]'
+  propertyType: msg
+  rules:
+    - t: eq
+      v: '0'
+      vt: num
+    - t: eq
+      v: '1'
+      vt: num
+  checkall: 'true'
+  repair: false
+  outputs: 2
+  x: 760
+  'y': 400
+  wires:
+    - - d2989844e6afde31
+    - - df573909ae629dea
+- id: e3baff4b4c13991b
+  type: switch
+  z: 0b2c4dd8ef29e8a6
+  name: Switch event.args.attribute_name
+  property: payload.event.args.attribute_name
+  propertyType: msg
+  rules:
+    - t: eq
+      v: current_scene
+      vt: str
+  checkall: 'true'
+  repair: false
+  outputs: 1
+  x: 600
+  'y': 460
+  wires:
+    - - b63d14a90a6e5c25
+- id: edd724ce08fa25bb
+  type: api-current-state
+  z: 0b2c4dd8ef29e8a6
+  name: Arbeitsplatte on?
+  server: 72832130.5db8f
+  version: 3
+  outputs: 2
+  halt_if: 'on'
+  halt_if_type: str
+  halt_if_compare: is
+  entity_id: light.arbeitsplatte
+  state_type: str
+  blockInputOverrides: true
+  outputProperties: []
+  for: 0
+  forType: num
+  forUnits: minutes
+  x: 550
+  'y': 340
+  wires:
+    - - e9060332c5497f11
+    - []
+- id: b63d14a90a6e5c25
+  type: switch
+  z: 0b2c4dd8ef29e8a6
+  name: Switch event.args.value
+  property: payload.event.args.value
+  propertyType: msg
+  rules:
+    - t: eq
+      v: '1'
+      vt: num
+    - t: eq
+      v: '2'
+      vt: num
+    - t: eq
+      v: '3'
+      vt: num
+    - t: eq
+      v: '4'
+      vt: num
+    - t: eq
+      v: '5'
+      vt: num
+    - t: eq
+      v: '6'
+      vt: num
+  checkall: 'true'
+  repair: false
+  outputs: 6
+  x: 630
+  'y': 660
+  wires:
+    - - 4dc41631874b1398
+    - - e50aabe9b24e7ec2
+    - - 8888815ff943f7dd
+    - - f138acf12a55342a
+    - - 480bb3f58ca684bf
+    - - 24bd828b1a5516a3
+- id: e9060332c5497f11
+  type: api-call-service
+  z: 0b2c4dd8ef29e8a6
+  name: Arbeitsplatte set color_temp
+  server: 72832130.5db8f
+  version: 5
+  debugenabled: false
+  domain: light
+  service: turn_on
+  areaId: []
+  deviceId: []
+  entityId:
+    - light.arbeitsplatte
+  data: '{"color_temp": payload.event.args[0]}'
+  dataType: jsonata
+  mergeContext: ''
+  mustacheAltTags: false
+  outputProperties: []
+  queue: none
+  output_location: payload
+  output_location_type: none
+  x: 780
+  'y': 340
+  wires:
+    - []
+- id: 1b2f51937e5a19e4
+  type: server-events
+  z: 0b2c4dd8ef29e8a6
+  name: deCONZ event
+  server: 72832130.5db8f
+  version: 3
+  exposeAsEntityConfig: ''
+  eventType: deconz_event
+  waitForRunning: true
+  outputProperties:
+    - property: payload
+      propertyType: msg
+      value: ''
+      valueType: eventData
+    - property: topic
+      propertyType: msg
+      value: $outputData("eventData").event_type
+      valueType: jsonata
+    - property: event_type
+      propertyType: msg
+      value: $outputData("eventData").event_type
+      valueType: jsonata
+  x: 100
+  'y': 860
+  wires:
+    - - 9b8c0fe1a2e2ca15
+- id: 9b8c0fe1a2e2ca15
+  type: switch
+  z: 0b2c4dd8ef29e8a6
+  name: Switch unique_id
+  property: payload.event.unique_id
+  propertyType: msg
+  rules:
+    - t: eq
+      v: '00:15:8d:00:03:8c:fe:e7'
+      vt: str
+  checkall: 'true'
+  repair: false
+  outputs: 1
+  x: 190
+  'y': 940
+  wires:
+    - - db0c28615ae74db2
+- id: db0c28615ae74db2
+  type: switch
+  z: 0b2c4dd8ef29e8a6
+  name: Switch tint von Müller remote
+  property: payload.event.event
+  propertyType: msg
+  rules:
+    - t: eq
+      v: '1002'
+      vt: num
+    - t: eq
+      v: '2002'
+      vt: num
+    - t: eq
+      v: '3002'
+      vt: num
+    - t: eq
+      v: '4002'
+      vt: num
+    - t: eq
+      v: '5002'
+      vt: num
+    - t: eq
+      v: '6002'
+      vt: num
+    - t: eq
+      v: '7002'
+      vt: num
+    - t: eq
+      v: '8002'
+      vt: num
+    - t: eq
+      v: '9002'
+      vt: num
+    - t: eq
+      v: '10002'
+      vt: num
+    - t: eq
+      v: '11002'
+      vt: num
+    - t: eq
+      v: '12002'
+      vt: num
+  checkall: 'true'
+  repair: false
+  outputs: 12
+  x: 200
+  'y': 1120
+  wires:
+    - - a977652ad7c86660
+    - - b5a75ab92941e0c2
+    - - c9df2227c09b6076
+    - []
+    - []
+    - - 3846f3615ff912b0
+    - - 76fc970f9bd5550c
+    - - 7ad0758a385ab051
+    - - 7cbcf85e9f73d157
+    - - 75d980f3fb9d946b
+    - - 23b69d750a46c472
+    - - 8b54cb0b5095f854
+- id: a977652ad7c86660
+  type: api-call-service
+  z: 0b2c4dd8ef29e8a6
+  name: Toggle Arbeitsplatte
+  server: 72832130.5db8f
+  version: 5
+  debugenabled: false
+  domain: light
+  service: toggle
+  areaId: []
+  deviceId: []
+  entityId:
+    - light.arbeitsplatte
+  data: ''
+  dataType: json
+  mergeContext: ''
+  mustacheAltTags: false
+  outputProperties: []
+  queue: none
+  output_location: payload
+  output_location_type: none
+  x: 490
+  'y': 980
+  wires:
+    - []
+- id: b5a75ab92941e0c2
+  type: api-current-state
+  z: 0b2c4dd8ef29e8a6
+  name: Arbeitsplatte on?
+  server: 72832130.5db8f
+  version: 3
+  outputs: 2
+  halt_if: 'on'
+  halt_if_type: str
+  halt_if_compare: is
+  entity_id: light.arbeitsplatte
+  state_type: str
+  blockInputOverrides: true
+  outputProperties: []
+  for: 0
+  forType: num
+  forUnits: minutes
+  x: 490
+  'y': 1040
+  wires:
+    - - 9607bc3586cea019
+    - []
+- id: c9df2227c09b6076
+  type: api-current-state
+  z: 0b2c4dd8ef29e8a6
+  name: Arbeitsplatte on?
+  server: 72832130.5db8f
+  version: 3
+  outputs: 2
+  halt_if: 'on'
+  halt_if_type: str
+  halt_if_compare: is
+  entity_id: light.arbeitsplatte
+  state_type: str
+  blockInputOverrides: true
+  outputProperties: []
+  for: 0
+  forType: num
+  forUnits: minutes
+  x: 490
+  'y': 1080
+  wires:
+    - - bac88020c929812a
+    - []
+- id: 3846f3615ff912b0
+  type: api-current-state
+  z: 0b2c4dd8ef29e8a6
+  name: Arbeitsplatte on?
+  server: 72832130.5db8f
+  version: 3
+  outputs: 2
+  halt_if: 'on'
+  halt_if_type: str
+  halt_if_compare: is
+  entity_id: light.arbeitsplatte
+  state_type: str
+  blockInputOverrides: true
+  outputProperties: []
+  for: 0
+  forType: num
+  forUnits: minutes
+  x: 490
+  'y': 1140
+  wires:
+    - - 0ac1c50fdd5f2207
+    - []
+- id: 9607bc3586cea019
+  type: api-current-state
+  z: 0b2c4dd8ef29e8a6
+  name: Get dimmer brightness step pct
+  server: 72832130.5db8f
+  version: 3
+  outputs: 1
+  halt_if: ''
+  halt_if_type: num
+  halt_if_compare: gt
+  entity_id: input_number.kla_lighting_dimmer_brightness_step_pct
+  state_type: str
+  blockInputOverrides: true
+  outputProperties:
+    - property: payload
+      propertyType: msg
+      value: ''
+      valueType: entityState
+    - property: data
+      propertyType: msg
+      value: ''
+      valueType: entity
+  for: 0
+  forType: num
+  forUnits: minutes
+  x: 730
+  'y': 1040
+  wires:
+    - - 52853ad3b8dca1ca
+- id: bac88020c929812a
+  type: api-current-state
+  z: 0b2c4dd8ef29e8a6
+  name: Get dimmer brightness step pct
+  server: 72832130.5db8f
+  version: 3
+  outputs: 1
+  halt_if: ''
+  halt_if_type: num
+  halt_if_compare: gt
+  entity_id: input_number.kla_lighting_dimmer_brightness_step_pct
+  state_type: str
+  blockInputOverrides: true
+  outputProperties:
+    - property: payload
+      propertyType: msg
+      value: ''
+      valueType: entityState
+    - property: data
+      propertyType: msg
+      value: ''
+      valueType: entity
+  for: 0
+  forType: num
+  forUnits: minutes
+  x: 730
+  'y': 1080
+  wires:
+    - - b38a77c1451d9842
+- id: b38a77c1451d9842
+  type: function
+  z: 0b2c4dd8ef29e8a6
+  name: '*(-1)'
+  func: |-
+    msg.data = msg.data.state*(-1)
+    return msg;
+  outputs: 1
+  noerr: 0
+  initialize: ''
+  finalize: ''
+  libs: []
+  x: 930
+  'y': 1080
+  wires:
+    - - 1259ad151afb2bc8
+- id: 52853ad3b8dca1ca
+  type: function
+  z: 0b2c4dd8ef29e8a6
+  name: '*(1)'
+  func: |-
+    msg.data = msg.data.state*1
+    return msg;
+  outputs: 1
+  noerr: 0
+  initialize: ''
+  finalize: ''
+  libs: []
+  x: 930
+  'y': 1040
+  wires:
+    - - 1259ad151afb2bc8
+- id: 1259ad151afb2bc8
+  type: api-call-service
+  z: 0b2c4dd8ef29e8a6
+  name: Arbeitsplatte set brightness
+  server: 72832130.5db8f
+  version: 5
+  debugenabled: false
+  domain: light
+  service: turn_on
+  areaId: []
+  deviceId: []
+  entityId:
+    - light.arbeitsplatte
+  data: '{"brightness_step_pct": msg.data}'
+  dataType: jsonata
+  mergeContext: ''
+  mustacheAltTags: false
+  outputProperties: []
+  queue: none
+  output_location: payload
+  output_location_type: none
+  x: 1140
+  'y': 1060
+  wires:
+    - []
+- id: 0ac1c50fdd5f2207
+  type: api-call-service
+  z: 0b2c4dd8ef29e8a6
+  name: Arbeitsplatte set color
+  server: 72832130.5db8f
+  version: 5
+  debugenabled: false
+  domain: light
+  service: turn_on
+  areaId: []
+  deviceId: []
+  entityId:
+    - light.arbeitsplatte
+  data: '{"xy_color": [msg.payload.event.xy[0], msg.payload.event.xy[1]]}'
+  dataType: jsonata
+  mergeContext: ''
+  mustacheAltTags: false
+  outputProperties: []
+  queue: none
+  output_location: payload
+  output_location_type: none
+  x: 700
+  'y': 1140
+  wires:
+    - []
+- id: 76fc970f9bd5550c
+  type: api-call-service
+  z: 0b2c4dd8ef29e8a6
+  name: Turn on Arbeitsplatte 'Nice'
+  server: 72832130.5db8f
+  version: 5
+  debugenabled: false
+  domain: light
+  service: turn_on
+  areaId: []
+  deviceId: []
+  entityId:
+    - light.arbeitsplatte
+  data: '{"hs_color": [345.405,58.039]}'
+  dataType: jsonata
+  mergeContext: ''
+  mustacheAltTags: false
+  outputProperties: []
+  queue: none
+  output_location: payload
+  output_location_type: none
+  x: 520
+  'y': 1240
+  wires:
+    - []
+- id: 8b54cb0b5095f854
+  type: api-call-service
+  z: 0b2c4dd8ef29e8a6
+  name: Turn on Arbeitsplatte 'Pink'
+  server: 72832130.5db8f
+  version: 5
+  debugenabled: false
+  domain: light
+  service: turn_on
+  areaId: []
+  deviceId: []
+  entityId:
+    - light.arbeitsplatte
+  data: '{"hs_color": [345.273,100]}'
+  dataType: jsonata
+  mergeContext: ''
+  mustacheAltTags: false
+  outputProperties: []
+  queue: none
+  output_location: payload
+  output_location_type: none
+  x: 520
+  'y': 1540
+  wires:
+    - []
+- id: a7ecad95f79f877e
+  type: comment
+  z: 0b2c4dd8ef29e8a6
+  name: Remote event
+  info: ''
+  x: 70
+  'y': 820
+  wires: []
+- id: 7ad0758a385ab051
+  type: api-call-service
+  z: 0b2c4dd8ef29e8a6
+  name: Turn on Arbeitsplatte 'Sun'
+  server: 72832130.5db8f
+  version: 5
+  debugenabled: false
+  domain: light
+  service: turn_on
+  areaId: []
+  deviceId: []
+  entityId:
+    - light.arbeitsplatte
+  data: '{"hs_color": [0,50.196]}'
+  dataType: jsonata
+  mergeContext: ''
+  mustacheAltTags: false
+  outputProperties: []
+  queue: none
+  output_location: payload
+  output_location_type: none
+  x: 510
+  'y': 1300
+  wires:
+    - []
+- id: 7cbcf85e9f73d157
+  type: api-call-service
+  z: 0b2c4dd8ef29e8a6
+  name: Turn on Arbeitsplatte 'Disco'
+  server: 72832130.5db8f
+  version: 5
+  debugenabled: false
+  domain: light
+  service: turn_on
+  areaId: []
+  deviceId: []
+  entityId:
+    - light.arbeitsplatte
+  data: '{"hs_color": [292.5,78.431]}'
+  dataType: jsonata
+  mergeContext: ''
+  mustacheAltTags: false
+  outputProperties: []
+  queue: none
+  output_location: payload
+  output_location_type: none
+  x: 520
+  'y': 1360
+  wires:
+    - []
+- id: 75d980f3fb9d946b
+  type: api-call-service
+  z: 0b2c4dd8ef29e8a6
+  name: Turn on Arbeitsplatte 'Night'
+  server: 72832130.5db8f
+  version: 5
+  debugenabled: false
+  domain: light
+  service: turn_on
+  areaId: []
+  deviceId: []
+  entityId:
+    - light.arbeitsplatte
+  data: '{"hs_color": [255.789,80.851]}'
+  dataType: jsonata
+  mergeContext: ''
+  mustacheAltTags: false
+  outputProperties: []
+  queue: none
+  output_location: payload
+  output_location_type: none
+  x: 520
+  'y': 1420
+  wires:
+    - []
+- id: 23b69d750a46c472
+  type: api-call-service
+  z: 0b2c4dd8ef29e8a6
+  name: Turn on Arbeitsplatte 'Fireplace'
+  server: 72832130.5db8f
+  version: 5
+  debugenabled: false
+  domain: light
+  service: turn_on
+  areaId: []
+  deviceId: []
+  entityId:
+    - light.arbeitsplatte
+  data: '{"hs_color": [7.294,100]}'
+  dataType: jsonata
+  mergeContext: ''
+  mustacheAltTags: false
+  outputProperties: []
+  queue: none
+  output_location: payload
+  output_location_type: none
+  x: 530
+  'y': 1480
+  wires:
+    - []

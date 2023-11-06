@@ -1,0 +1,95 @@
+- id: 314f0a195ffd6abc
+  type: tab
+  label: Extension_Not Home
+  disabled: false
+  info: ''
+  env: []
+- id: 1bd3b85f20cb7e14
+  type: server-state-changed
+  z: 314f0a195ffd6abc
+  name: Anyone home
+  server: 72832130.5db8f
+  version: 5
+  outputs: 2
+  exposeAsEntityConfig: 85197789a1127d18
+  entityId: binary_sensor.kla_anyone_home
+  entityIdType: exact
+  outputInitially: false
+  stateType: str
+  ifState: 'on'
+  ifStateType: str
+  ifStateOperator: is
+  outputOnlyOnStateChange: true
+  for: '0'
+  forType: num
+  forUnits: seconds
+  ignorePrevStateNull: true
+  ignorePrevStateUnknown: true
+  ignorePrevStateUnavailable: true
+  ignoreCurrentStateUnknown: true
+  ignoreCurrentStateUnavailable: true
+  outputProperties:
+    - property: topic
+      propertyType: msg
+      value: ''
+      valueType: triggerId
+  x: 90
+  'y': 80
+  wires:
+    - []
+    - - bafb48bdfaf0c9e1
+      - 432122bd1c7d7621
+- id: bafb48bdfaf0c9e1
+  type: api-call-service
+  z: 314f0a195ffd6abc
+  name: Press Fall Asleep button
+  server: 72832130.5db8f
+  version: 5
+  debugenabled: false
+  domain: button
+  service: press
+  areaId: []
+  deviceId: []
+  entityId:
+    - button.kla_routine_fall_asleep
+  data: ''
+  dataType: jsonata
+  mergeContext: ''
+  mustacheAltTags: false
+  outputProperties: []
+  queue: none
+  x: 310
+  'y': 80
+  wires:
+    - []
+- id: 42ee0f4a51bfd0c4
+  type: comment
+  z: 314f0a195ffd6abc
+  name: Fall Asleep if no one home
+  info: ''
+  x: 110
+  'y': 40
+  wires: []
+- id: 432122bd1c7d7621
+  type: api-call-service
+  z: 314f0a195ffd6abc
+  name: Press Presence Hold Global off button
+  server: 72832130.5db8f
+  version: 5
+  debugenabled: false
+  domain: button
+  service: press
+  areaId: []
+  deviceId: []
+  entityId:
+    - button.kla_area_presence_hold_global_off
+  data: ''
+  dataType: jsonata
+  mergeContext: ''
+  mustacheAltTags: false
+  outputProperties: []
+  queue: none
+  x: 350
+  'y': 140
+  wires:
+    - []

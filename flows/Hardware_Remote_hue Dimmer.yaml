@@ -1,0 +1,644 @@
+- id: 917bc7f6cdb9c78a
+  type: tab
+  label: Hardware_Remote_hue Dimmer
+  disabled: false
+  info: ''
+  env: []
+- id: 9fcd4f56ba6c185f
+  type: server-events
+  z: 917bc7f6cdb9c78a
+  name: ZHA event
+  server: 72832130.5db8f
+  version: 3
+  exposeAsEntityConfig: ''
+  eventType: zha_event
+  eventData: ''
+  waitForRunning: true
+  outputProperties:
+    - property: data
+      propertyType: msg
+      value: ''
+      valueType: eventData
+    - property: topic
+      propertyType: msg
+      value: $outputData("eventData").event_type
+      valueType: jsonata
+    - property: payload
+      propertyType: msg
+      value: $outputData("eventData").event.device_id
+      valueType: jsonata
+  x: 80
+  'y': 80
+  wires:
+    - - 0e029a103c534f4f
+- id: 640e81f25f6ae85e
+  type: switch
+  z: 917bc7f6cdb9c78a
+  name: Switch hue dimmer v2 command
+  property: data.event.command
+  propertyType: msg
+  rules:
+    - t: eq
+      v: on_press
+      vt: str
+    - t: eq
+      v: on_hold
+      vt: str
+    - t: eq
+      v: on_short_release
+      vt: str
+    - t: eq
+      v: on_long_release
+      vt: str
+    - t: eq
+      v: up_press
+      vt: str
+    - t: eq
+      v: up_hold
+      vt: str
+    - t: eq
+      v: up_short_release
+      vt: str
+    - t: eq
+      v: up_long_release
+      vt: str
+    - t: eq
+      v: down_press
+      vt: str
+    - t: eq
+      v: down_hold
+      vt: str
+    - t: eq
+      v: down_short_release
+      vt: str
+    - t: eq
+      v: down_long_release
+      vt: str
+    - t: eq
+      v: off_press
+      vt: str
+    - t: eq
+      v: off_hold
+      vt: str
+    - t: eq
+      v: off_short_release
+      vt: str
+    - t: eq
+      v: off_long_release
+      vt: str
+  checkall: 'false'
+  repair: false
+  outputs: 16
+  x: 210
+  'y': 320
+  wires:
+    - []
+    - - e9d84cd1e0527b59
+    - - e20d2bad0d701e5c
+    - []
+    - []
+    - - 5000d0240a45a7f3
+    - - 5000d0240a45a7f3
+    - []
+    - []
+    - - 5000d0240a45a7f3
+    - - 5000d0240a45a7f3
+    - []
+    - []
+    - - 3e489ae388bb50cb
+    - - b6e4f2aa2945621e
+    - []
+- id: 0e029a103c534f4f
+  type: function
+  z: 917bc7f6cdb9c78a
+  name: Map hue dimmer version
+  func: |
+    msg.version = 2
+    return msg
+  outputs: 1
+  noerr: 0
+  initialize: ''
+  finalize: ''
+  libs: []
+  x: 270
+  'y': 80
+  wires:
+    - - c4e6282c0fc4b57e
+- id: b8ee57a4456d0b93
+  type: comment
+  z: 917bc7f6cdb9c78a
+  name: Hue Dimmer via ZHA
+  info: ''
+  x: 100
+  'y': 40
+  wires: []
+- id: 1dd8235d2a4f6c48
+  type: switch
+  z: 917bc7f6cdb9c78a
+  name: Switch version
+  property: version
+  propertyType: msg
+  rules:
+    - t: eq
+      v: '1'
+      vt: str
+    - t: eq
+      v: '2'
+      vt: str
+  checkall: 'true'
+  repair: false
+  outputs: 2
+  x: 1020
+  'y': 240
+  wires:
+    - - f70881da778e39b8
+    - - b1c7bc2f1e54bf67
+- id: b6e4f2aa2945621e
+  type: switch
+  z: 917bc7f6cdb9c78a
+  name: Switch version
+  property: version
+  propertyType: msg
+  rules:
+    - t: eq
+      v: '1'
+      vt: str
+    - t: eq
+      v: '2'
+      vt: str
+  checkall: 'true'
+  repair: false
+  outputs: 2
+  x: 1020
+  'y': 420
+  wires:
+    - - b1c7bc2f1e54bf67
+    - - f70881da778e39b8
+- id: ed4c392dfa480664
+  type: comment
+  z: 917bc7f6cdb9c78a
+  name: Random scene
+  info: ''
+  x: 1300
+  'y': 420
+  wires: []
+- id: 188f8d9a59c925b6
+  type: change
+  z: 917bc7f6cdb9c78a
+  name: Set dim
+  rules:
+    - t: set
+      p: dim
+      pt: msg
+      to: 'true'
+      tot: bool
+  action: ''
+  property: ''
+  from: ''
+  to: ''
+  reg: false
+  x: 1240
+  'y': 340
+  wires:
+    - - 1865310518d74fc7
+- id: 1865310518d74fc7
+  type: link out
+  z: 917bc7f6cdb9c78a
+  name: hue Dimmer Brightness +/-
+  mode: link
+  links:
+    - f266c4777bb6bb06
+    - a60f72e43d11b16c
+  x: 1355
+  'y': 320
+  wires: []
+- id: 4d989c178f4bfbcd
+  type: change
+  z: 917bc7f6cdb9c78a
+  name: Set dim
+  rules:
+    - t: set
+      p: dim
+      pt: msg
+      to: 'false'
+      tot: bool
+  action: ''
+  property: ''
+  from: ''
+  to: ''
+  reg: false
+  x: 1240
+  'y': 300
+  wires:
+    - - 1865310518d74fc7
+- id: 5000d0240a45a7f3
+  type: switch
+  z: 917bc7f6cdb9c78a
+  name: +/-
+  property: data.event.command
+  propertyType: msg
+  rules:
+    - t: cont
+      v: up
+      vt: str
+    - t: cont
+      v: down
+      vt: str
+  checkall: 'false'
+  repair: false
+  outputs: 2
+  x: 450
+  'y': 320
+  wires:
+    - - 4d989c178f4bfbcd
+    - - 188f8d9a59c925b6
+- id: f70881da778e39b8
+  type: link out
+  z: 917bc7f6cdb9c78a
+  name: Activate scene
+  mode: link
+  links:
+    - e14171d92bdf8a2a
+    - a2553ee98285fbe7
+  x: 1195
+  'y': 420
+  wires: []
+- id: b1c7bc2f1e54bf67
+  type: change
+  z: 917bc7f6cdb9c78a
+  name: Set action
+  rules:
+    - t: set
+      p: action
+      pt: msg
+      to: 'off'
+      tot: str
+  action: ''
+  property: ''
+  from: ''
+  to: ''
+  reg: false
+  x: 1240
+  'y': 520
+  wires:
+    - - ae60a3a57ca3f4e6
+- id: ae60a3a57ca3f4e6
+  type: link out
+  z: 917bc7f6cdb9c78a
+  name: Control lights by remote control
+  mode: link
+  links:
+    - aee26832556b4721
+  x: 1465
+  'y': 620
+  wires: []
+- id: 11b67680b5f728c8
+  type: comment
+  z: 917bc7f6cdb9c78a
+  name: Turn off
+  info: ''
+  x: 1230
+  'y': 480
+  wires: []
+- id: adb5ce51d8a22f85
+  type: comment
+  z: 917bc7f6cdb9c78a
+  name: Apply adaptive lighting on all lights
+  info: ''
+  x: 1320
+  'y': 800
+  wires: []
+- id: e9d84cd1e0527b59
+  type: change
+  z: 917bc7f6cdb9c78a
+  name: Set action
+  rules:
+    - t: set
+      p: action
+      pt: msg
+      to: on_all_100
+      tot: str
+  action: ''
+  property: ''
+  from: ''
+  to: ''
+  reg: false
+  x: 1240
+  'y': 720
+  wires:
+    - - ae60a3a57ca3f4e6
+- id: 86d824937cb0ecc4
+  type: comment
+  z: 917bc7f6cdb9c78a
+  name: Turn on all lights
+  info: ''
+  x: 1260
+  'y': 680
+  wires: []
+- id: e2a7ed1171219f36
+  type: change
+  z: 917bc7f6cdb9c78a
+  name: Set action
+  rules:
+    - t: set
+      p: action
+      pt: msg
+      to: 'on'
+      tot: str
+  action: ''
+  property: ''
+  from: ''
+  to: ''
+  reg: false
+  x: 1240
+  'y': 620
+  wires:
+    - - ae60a3a57ca3f4e6
+- id: 1244081327624c9b
+  type: comment
+  z: 917bc7f6cdb9c78a
+  name: Turn on lights
+  info: ''
+  x: 1250
+  'y': 580
+  wires: []
+- id: 3e489ae388bb50cb
+  type: link out
+  z: 917bc7f6cdb9c78a
+  name: Apply adaptive lighting on all lights
+  mode: link
+  links:
+    - fea915f1c816f653
+  x: 1195
+  'y': 840
+  wires: []
+- id: e20d2bad0d701e5c
+  type: 'subflow:c7fb159f2ed649a3'
+  z: 917bc7f6cdb9c78a
+  name: ''
+  x: 780
+  'y': 240
+  wires:
+    - - 1dd8235d2a4f6c48
+    - - e2a7ed1171219f36
+- id: ffcf4078674c1629
+  type: comment
+  z: 917bc7f6cdb9c78a
+  name: ToDo Make sure to only reacht on hue dimmer
+  info: ''
+  x: 250
+  'y': 140
+  wires: []
+- id: c4e6282c0fc4b57e
+  type: 'subflow:0a93237bafa3cedf'
+  z: 917bc7f6cdb9c78a
+  name: ''
+  env:
+    - name: check_not_hidden
+      type: bool
+      value: 'true'
+  x: 510
+  'y': 80
+  wires:
+    - - 640e81f25f6ae85e
+    - []
+- id: fd62d37e3220a497
+  type: server-state-changed
+  z: 917bc7f6cdb9c78a
+  name: Hue dimmer event
+  server: 72832130.5db8f
+  version: 5
+  outputs: 1
+  exposeAsEntityConfig: ''
+  entityId: event.hue_dimmer
+  entityIdType: substring
+  outputInitially: false
+  stateType: str
+  ifState: ''
+  ifStateType: str
+  ifStateOperator: is
+  outputOnlyOnStateChange: true
+  for: '0'
+  forType: num
+  forUnits: minutes
+  ignorePrevStateNull: false
+  ignorePrevStateUnknown: false
+  ignorePrevStateUnavailable: false
+  ignoreCurrentStateUnknown: true
+  ignoreCurrentStateUnavailable: true
+  outputProperties:
+    - property: topic
+      propertyType: msg
+      value: ''
+      valueType: triggerId
+    - property: payload
+      propertyType: msg
+      value: ''
+      valueType: triggerId
+    - property: event
+      propertyType: msg
+      value: ''
+      valueType: eventData
+  x: 110
+  'y': 580
+  wires:
+    - - 3eb42def0a525dab
+- id: 240565af678bc34b
+  type: comment
+  z: 917bc7f6cdb9c78a
+  name: Hue Dimmer via hue integration
+  info: ''
+  x: 130
+  'y': 540
+  wires: []
+- id: 4a7ee0fc567e86e6
+  type: function
+  z: 917bc7f6cdb9c78a
+  name: Map hue dimmer version
+  func: |
+    msg.version = 2
+    return msg
+  outputs: 1
+  noerr: 0
+  initialize: ''
+  finalize: ''
+  libs: []
+  x: 190
+  'y': 660
+  wires:
+    - - f99a7bfebcc9c526
+- id: f99a7bfebcc9c526
+  type: 'subflow:0a93237bafa3cedf'
+  z: 917bc7f6cdb9c78a
+  name: ''
+  env:
+    - name: check_not_hidden
+      type: bool
+      value: 'true'
+  x: 430
+  'y': 660
+  wires:
+    - - 0d9182053a59785b
+    - []
+- id: 883b919c777cb065
+  type: switch
+  z: 917bc7f6cdb9c78a
+  name: Switch hue dimmer v2 command
+  property: event.new_state.attributes.event_type
+  propertyType: msg
+  rules:
+    - t: eq
+      v: initial_press
+      vt: str
+    - t: eq
+      v: repeat
+      vt: str
+    - t: eq
+      v: short_release
+      vt: str
+    - t: eq
+      v: long_release
+      vt: str
+  checkall: 'false'
+  repair: false
+  outputs: 4
+  x: 530
+  'y': 740
+  wires:
+    - []
+    - - e9d84cd1e0527b59
+    - - e20d2bad0d701e5c
+    - []
+- id: 3eb42def0a525dab
+  type: switch
+  z: 917bc7f6cdb9c78a
+  name: Check if button
+  property: event.new_state.attributes.device_class
+  propertyType: msg
+  rules:
+    - t: eq
+      v: button
+      vt: str
+  checkall: 'false'
+  repair: false
+  outputs: 1
+  x: 300
+  'y': 580
+  wires:
+    - - 4a7ee0fc567e86e6
+- id: 0d9182053a59785b
+  type: switch
+  z: 917bc7f6cdb9c78a
+  name: Switch hue dimmer button
+  property: topic
+  propertyType: msg
+  rules:
+    - t: cont
+      v: button_1
+      vt: str
+    - t: cont
+      v: button_2
+      vt: str
+    - t: cont
+      v: button_3
+      vt: str
+    - t: cont
+      v: button_4
+      vt: str
+  checkall: 'false'
+  repair: false
+  outputs: 4
+  x: 210
+  'y': 860
+  wires:
+    - - 883b919c777cb065
+    - - 20e791b2e016b1d4
+    - - 314902f836bf6eca
+    - - 396b20327c9fc909
+- id: 20e791b2e016b1d4
+  type: switch
+  z: 917bc7f6cdb9c78a
+  name: Switch hue dimmer v2 command
+  property: event.new_state.attributes.event_type
+  propertyType: msg
+  rules:
+    - t: eq
+      v: initial_press
+      vt: str
+    - t: eq
+      v: repeat
+      vt: str
+    - t: eq
+      v: short_release
+      vt: str
+    - t: eq
+      v: long_release
+      vt: str
+  checkall: 'false'
+  repair: false
+  outputs: 4
+  x: 530
+  'y': 820
+  wires:
+    - - 4d989c178f4bfbcd
+    - - 4d989c178f4bfbcd
+    - []
+    - []
+- id: 314902f836bf6eca
+  type: switch
+  z: 917bc7f6cdb9c78a
+  name: Switch hue dimmer v2 command
+  property: event.new_state.attributes.event_type
+  propertyType: msg
+  rules:
+    - t: eq
+      v: initial_press
+      vt: str
+    - t: eq
+      v: repeat
+      vt: str
+    - t: eq
+      v: short_release
+      vt: str
+    - t: eq
+      v: long_release
+      vt: str
+  checkall: 'false'
+  repair: false
+  outputs: 4
+  x: 530
+  'y': 900
+  wires:
+    - - 188f8d9a59c925b6
+    - - 188f8d9a59c925b6
+    - []
+    - []
+- id: 396b20327c9fc909
+  type: switch
+  z: 917bc7f6cdb9c78a
+  name: Switch hue dimmer v2 command
+  property: event.new_state.attributes.event_type
+  propertyType: msg
+  rules:
+    - t: eq
+      v: initial_press
+      vt: str
+    - t: eq
+      v: repeat
+      vt: str
+    - t: eq
+      v: short_release
+      vt: str
+    - t: eq
+      v: long_release
+      vt: str
+  checkall: 'false'
+  repair: false
+  outputs: 4
+  x: 530
+  'y': 980
+  wires:
+    - []
+    - []
+    - - b6e4f2aa2945621e
+    - - 3e489ae388bb50cb

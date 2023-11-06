@@ -1,0 +1,914 @@
+- id: 7ffc2d140cfdf258
+  type: subflow
+  name: Notify
+  info: |
+    # Input
+
+    ## `msg.notify_message` _string_
+
+    Overwrites `env.message`
+  category: KlaHome
+  in:
+    - x: 40
+      'y': 40
+      wires:
+        - id: 7d030267e2f4bcd7
+  out: []
+  env:
+    - name: message
+      type: str
+      value: ''
+      ui:
+        label:
+          de: Nachricht (wird von msg.notify_message überschrieben)
+    - name: title
+      type: str
+      value: KlaHome
+      ui:
+        label:
+          de: Titel
+    - name: alert
+      type: bool
+      value: 'false'
+      ui:
+        label:
+          de: Nachricht als Alarm zustellen
+        type: checkbox
+    - name: home
+      type: str
+      value: ''
+      ui:
+        label:
+          de: Empfänger-Filter
+        type: select
+        opts:
+          opts:
+            - l:
+                de: alle
+              v: ''
+            - l:
+                de: nur anwesende Personen
+              v: 'true'
+            - l:
+                de: nur abwesende Personen
+              v: 'false'
+    - name: tts_output
+      type: bool
+      value: 'false'
+      ui:
+        icon: font-awesome/fa-volume-up
+        label:
+          de: Sprachausgabe
+        type: checkbox
+    - name: tts_message
+      type: str
+      value: ''
+      ui:
+        label:
+          de: 'Sprachausgabe (leer lassen, um Nachricht auszugeben)'
+    - name: tts_player
+      type: str
+      value: ''
+      ui:
+        label:
+          de: Gerät für Sprachausgabe
+    - name: tts_ignore_dnd
+      type: bool
+      value: 'false'
+      ui:
+        label:
+          de: Nicht stören umgehen
+        type: checkbox
+    - name: ha_notification
+      type: bool
+      value: 'false'
+      ui:
+        label:
+          de: In Home Assistant anzeigen
+        type: checkbox
+    - name: only_admin
+      type: bool
+      value: 'false'
+      ui:
+        label:
+          de: >-
+            Nur KlaHome Admin benachrichtigen (Empfänger-Filter werden
+            ignoriert)
+        type: checkbox
+    - name: debug
+      type: bool
+      value: 'false'
+      ui:
+        label:
+          de: >-
+            DEBUG (Alle anderen Einstellungen werden ignoriert; sendet
+            Nachricht, falls Debug Flow eingeschaltet ist)
+        type: checkbox
+  meta:
+    module: klahome
+    version: 1.1.0
+    author: KlaHome <dev@klahome.de>
+    license: Apache-2.0
+  color: '#B7DBDA'
+  icon: node-red/comment.svg
+- id: 33628c0a884b0d46
+  type: api-call-service
+  z: 7ffc2d140cfdf258
+  name: Alexa Play
+  server: 72832130.5db8f
+  version: 5
+  debugenabled: false
+  domain: script
+  service: kla_alexa_play
+  areaId: []
+  deviceId: []
+  entityId: []
+  data: >-
+    {"message": notify_message, "alexa": $env('tts_player'), "force":
+    $env('tts_ignore_dnd')}
+  dataType: jsonata
+  mergeContext: ''
+  mustacheAltTags: false
+  outputProperties: []
+  queue: none
+  output_location: payload
+  output_location_type: none
+  x: 1070
+  'y': 500
+  wires:
+    - []
+- id: 3b5a9fa1c9df0ff2
+  type: switch
+  z: 7ffc2d140cfdf258
+  name: tts message not empty
+  property: tts_message
+  propertyType: env
+  rules:
+    - t: nempty
+    - t: else
+  checkall: 'false'
+  repair: false
+  outputs: 2
+  x: 700
+  'y': 500
+  wires:
+    - - f80ffaec6fd5049a
+    - - 33628c0a884b0d46
+- id: cacb12083453ef04
+  type: api-call-service
+  z: 7ffc2d140cfdf258
+  name: Persistent notification
+  server: 72832130.5db8f
+  version: 5
+  debugenabled: false
+  domain: notify
+  service: persistent_notification
+  areaId: []
+  deviceId: []
+  entityId: []
+  data: '{"message": notify_message, "title": $env(''title'')}'
+  dataType: jsonata
+  mergeContext: ''
+  mustacheAltTags: false
+  outputProperties: []
+  queue: none
+  output_location: payload
+  output_location_type: none
+  x: 740
+  'y': 400
+  wires:
+    - []
+- id: 33e2697a051d2cff
+  type: switch
+  z: 7ffc2d140cfdf258
+  name: message not null
+  property: message
+  propertyType: env
+  rules:
+    - t: nempty
+  checkall: 'true'
+  repair: false
+  outputs: 1
+  x: 470
+  'y': 40
+  wires:
+    - - 83cdbe7035c7ec08
+- id: 33dedafa7c4991b5
+  type: switch
+  z: 7ffc2d140cfdf258
+  name: ha notification is true
+  property: ha_notification
+  propertyType: env
+  rules:
+    - t: 'true'
+  checkall: 'true'
+  repair: false
+  outputs: 1
+  x: 520
+  'y': 400
+  wires:
+    - - cacb12083453ef04
+- id: ba64f4ad7bcc0240
+  type: api-current-state
+  z: 7ffc2d140cfdf258
+  name: Push Notifications?
+  server: 72832130.5db8f
+  version: 3
+  outputs: 2
+  halt_if: 'on'
+  halt_if_type: str
+  halt_if_compare: is
+  entity_id: switch.kla_notifications_app_push
+  state_type: str
+  blockInputOverrides: true
+  outputProperties: []
+  for: '0'
+  forType: num
+  forUnits: minutes
+  override_topic: false
+  state_location: payload
+  override_payload: msg
+  entity_location: data
+  override_data: msg
+  x: 510
+  'y': 700
+  wires:
+    - - e03ba4b08fd55a15
+    - []
+- id: aa8aadd21a2f44e1
+  type: switch
+  z: 7ffc2d140cfdf258
+  name: Switch home
+  property: home
+  propertyType: env
+  rules:
+    - t: empty
+    - t: eq
+      v: 'true'
+      vt: str
+    - t: eq
+      v: 'false'
+      vt: str
+  checkall: 'true'
+  repair: false
+  outputs: 3
+  x: 890
+  'y': 840
+  wires:
+    - - 205ce060a66d698b
+    - - 7e8fa592e42036cf
+    - - 41df41213f7088fa
+- id: 7e8fa592e42036cf
+  type: api-current-state
+  z: 7ffc2d140cfdf258
+  name: Person is home?
+  server: 72832130.5db8f
+  version: 3
+  outputs: 2
+  halt_if: home
+  halt_if_type: str
+  halt_if_compare: is
+  entity_id: '{{ person }}'
+  state_type: str
+  blockInputOverrides: true
+  outputProperties: []
+  for: '0'
+  forType: num
+  forUnits: minutes
+  override_topic: false
+  state_location: payload
+  override_payload: msg
+  entity_location: data
+  override_data: msg
+  x: 1130
+  'y': 840
+  wires:
+    - - 205ce060a66d698b
+    - []
+- id: af2c2601b28d25fe
+  type: switch
+  z: 7ffc2d140cfdf258
+  name: only_admin is true
+  property: only_admin
+  propertyType: env
+  rules:
+    - t: 'true'
+    - t: 'false'
+  checkall: 'true'
+  repair: false
+  outputs: 2
+  x: 210
+  'y': 280
+  wires:
+    - - 0d3d8820c38314d8
+    - - 33dedafa7c4991b5
+      - ba64f4ad7bcc0240
+      - 5d31ad30eb46d508
+      - 5a380dee82a55608
+- id: e260f00ac243d2cb
+  type: change
+  z: 7ffc2d140cfdf258
+  name: Set critical notification Android
+  rules:
+    - t: set
+      p: notify_mobile_app_service_data_android
+      pt: msg
+      to: '{"ttl":0,"priority":"high","channel":"alarm_stream"}'
+      tot: jsonata
+  action: ''
+  property: ''
+  from: ''
+  to: ''
+  reg: false
+  x: 930
+  'y': 680
+  wires:
+    - - a23f0b1975bfedb4
+- id: e03ba4b08fd55a15
+  type: switch
+  z: 7ffc2d140cfdf258
+  name: alert is true
+  property: alert
+  propertyType: env
+  rules:
+    - t: 'true'
+    - t: 'false'
+  checkall: 'true'
+  repair: false
+  outputs: 2
+  x: 690
+  'y': 700
+  wires:
+    - - e260f00ac243d2cb
+    - - e9b30ef964714462
+- id: e9b30ef964714462
+  type: change
+  z: 7ffc2d140cfdf258
+  name: Set empty service data Android
+  rules:
+    - t: set
+      p: notify_mobile_app_service_data_android
+      pt: msg
+      to: '{}'
+      tot: jsonata
+  action: ''
+  property: ''
+  from: ''
+  to: ''
+  reg: false
+  x: 930
+  'y': 720
+  wires:
+    - - 0f52d8c3bfe89251
+- id: a23f0b1975bfedb4
+  type: change
+  z: 7ffc2d140cfdf258
+  name: Set critical notification iOS
+  rules:
+    - t: set
+      p: notify_mobile_app_service_data_ios
+      pt: msg
+      to: '{"push":{"sound":{"name":"default","critical":1,"volume":1.0}}}'
+      tot: jsonata
+  action: ''
+  property: ''
+  from: ''
+  to: ''
+  reg: false
+  x: 1190
+  'y': 680
+  wires:
+    - - 7a6832f025e3d871
+- id: 0f52d8c3bfe89251
+  type: change
+  z: 7ffc2d140cfdf258
+  name: Set empty service data iOS
+  rules:
+    - t: set
+      p: notify_mobile_app_service_data_ios
+      pt: msg
+      to: '{}'
+      tot: jsonata
+  action: ''
+  property: ''
+  from: ''
+  to: ''
+  reg: false
+  x: 1200
+  'y': 720
+  wires:
+    - - 7a6832f025e3d871
+- id: b3a42e07df418ede
+  type: api-call-service
+  z: 7ffc2d140cfdf258
+  d: true
+  name: Twilio Call
+  server: 72832130.5db8f
+  version: 5
+  debugenabled: false
+  domain: notify
+  service: twilio_call
+  areaId: []
+  deviceId: []
+  entityId: []
+  data: '{"message":$env(''message''),"target":[''+4915736476471'']}'
+  dataType: jsonata
+  mergeContext: ''
+  mustacheAltTags: false
+  outputProperties: []
+  queue: none
+  x: 640
+  'y': 600
+  wires:
+    - []
+- id: 5a380dee82a55608
+  type: api-call-service
+  z: 7ffc2d140cfdf258
+  d: true
+  name: Twilio SMS
+  server: 72832130.5db8f
+  version: 5
+  debugenabled: false
+  domain: notify
+  service: twilio_sms
+  areaId: []
+  deviceId: []
+  entityId: []
+  data: '{"message":$env(''message''),"target":[''+4915736476471'']}'
+  dataType: jsonata
+  mergeContext: ''
+  mustacheAltTags: false
+  outputProperties: []
+  queue: none
+  x: 490
+  'y': 600
+  wires:
+    - []
+- id: 7d030267e2f4bcd7
+  type: switch
+  z: 7ffc2d140cfdf258
+  name: notify_message not null
+  property: notify_message
+  propertyType: msg
+  rules:
+    - t: nnull
+    - t: else
+  checkall: 'false'
+  repair: false
+  outputs: 2
+  x: 190
+  'y': 40
+  wires:
+    - - 401481ca7b1879f0
+    - - 33e2697a051d2cff
+- id: 83cdbe7035c7ec08
+  type: change
+  z: 7ffc2d140cfdf258
+  name: Set message
+  rules:
+    - t: set
+      p: notify_message
+      pt: msg
+      to: message
+      tot: env
+  action: ''
+  property: ''
+  from: ''
+  to: ''
+  reg: false
+  x: 650
+  'y': 40
+  wires:
+    - - 401481ca7b1879f0
+- id: 401481ca7b1879f0
+  type: switch
+  z: 7ffc2d140cfdf258
+  name: debug is true
+  property: debug
+  propertyType: env
+  rules:
+    - t: 'true'
+    - t: 'false'
+  checkall: 'false'
+  repair: false
+  outputs: 2
+  x: 190
+  'y': 160
+  wires:
+    - - c235cdfe0a19b5f7
+    - - af2c2601b28d25fe
+- id: 4db9cf80837262c8
+  type: change
+  z: 7ffc2d140cfdf258
+  name: Set Client
+  rules:
+    - t: set
+      p: notify_message
+      pt: msg
+      to: '''(xxxxx) '' & notify_message'
+      tot: jsonata
+    - t: change
+      p: notify_message
+      pt: msg
+      from: xxxxx
+      fromt: str
+      to: secrets.kla_client_id
+      tot: global
+    - t: set
+      p: target_room
+      pt: msg
+      to: secrets.nextcloud_talk_room_token_debug
+      tot: global
+  action: ''
+  property: ''
+  from: ''
+  to: ''
+  reg: false
+  x: 560
+  'y': 160
+  wires:
+    - - 2e239db3d150f818
+- id: c235cdfe0a19b5f7
+  type: api-current-state
+  z: 7ffc2d140cfdf258
+  name: Debug active?
+  server: 72832130.5db8f
+  version: 3
+  outputs: 2
+  halt_if: 'on'
+  halt_if_type: str
+  halt_if_compare: is
+  entity_id: switch.kla_debug_flows
+  state_type: str
+  blockInputOverrides: true
+  outputProperties: []
+  for: '0'
+  forType: num
+  forUnits: minutes
+  override_topic: false
+  state_location: payload
+  override_payload: msg
+  entity_location: data
+  override_data: msg
+  x: 400
+  'y': 160
+  wires:
+    - - 4db9cf80837262c8
+    - []
+- id: 0d3d8820c38314d8
+  type: change
+  z: 7ffc2d140cfdf258
+  name: Set Client
+  rules:
+    - t: set
+      p: notify_message
+      pt: msg
+      to: '''(xxxxx) '' & notify_message'
+      tot: jsonata
+    - t: change
+      p: notify_message
+      pt: msg
+      from: xxxxx
+      fromt: str
+      to: secrets.kla_client_id
+      tot: global
+    - t: set
+      p: target_room
+      pt: msg
+      to: secrets.nextcloud_talk_room_token_report
+      tot: global
+  action: ''
+  property: ''
+  from: ''
+  to: ''
+  reg: false
+  x: 420
+  'y': 280
+  wires:
+    - - 2e239db3d150f818
+- id: 7a6832f025e3d871
+  type: ha-get-entities
+  z: 7ffc2d140cfdf258
+  name: Foreach person
+  server: 72832130.5db8f
+  version: 0
+  rules:
+    - property: entity_id
+      logic: starts_with
+      value: person.
+      valueType: str
+  output_type: split
+  output_empty_results: false
+  output_location_type: msg
+  output_location: payload
+  output_results_count: 1
+  x: 560
+  'y': 840
+  wires:
+    - - 6a4e740481983da1
+- id: 41df41213f7088fa
+  type: api-current-state
+  z: 7ffc2d140cfdf258
+  name: Person is home?
+  server: 72832130.5db8f
+  version: 3
+  outputs: 2
+  halt_if: home
+  halt_if_type: str
+  halt_if_compare: is
+  entity_id: '{{ person }}'
+  state_type: str
+  blockInputOverrides: true
+  outputProperties: []
+  for: '0'
+  forType: num
+  forUnits: minutes
+  override_topic: false
+  state_location: payload
+  override_payload: msg
+  entity_location: data
+  override_data: msg
+  x: 1130
+  'y': 880
+  wires:
+    - []
+    - - 205ce060a66d698b
+- id: 0d3a714a380f37c1
+  type: comment
+  z: 7ffc2d140cfdf258
+  name: Notify all device trackers of a person
+  info: ''
+  x: 600
+  'y': 920
+  wires: []
+- id: 205ce060a66d698b
+  type: change
+  z: 7ffc2d140cfdf258
+  name: Get device trackers of person
+  rules:
+    - t: set
+      p: template
+      pt: msg
+      to: >-
+        {{ states.person       | selectattr('entity_id', 'eq', 'xxxxx')       |
+        selectattr('attributes.device_trackers', 'defined')       |
+        map(attribute='attributes.device_trackers')       | first       |
+        default([])       | join(',') }}
+      tot: str
+    - t: change
+      p: template
+      pt: msg
+      from: xxxxx
+      fromt: str
+      to: person
+      tot: msg
+  action: ''
+  property: ''
+  from: ''
+  to: ''
+  reg: false
+  x: 600
+  'y': 1000
+  wires:
+    - - f4bcb1a61f4b6d86
+- id: f4bcb1a61f4b6d86
+  type: api-render-template
+  z: 7ffc2d140cfdf258
+  name: Render template
+  server: 72832130.5db8f
+  version: 0
+  template: ''
+  resultsLocation: payload
+  resultsLocationType: msg
+  templateLocation: template
+  templateLocationType: msg
+  x: 830
+  'y': 1000
+  wires:
+    - - faddf78fd9a86757
+- id: faddf78fd9a86757
+  type: change
+  z: 7ffc2d140cfdf258
+  name: Remove template
+  rules:
+    - t: delete
+      p: template
+      pt: msg
+  action: ''
+  property: ''
+  from: ''
+  to: ''
+  reg: false
+  x: 1030
+  'y': 1000
+  wires:
+    - - 43d12f6e09e309a5
+- id: 43d12f6e09e309a5
+  type: switch
+  z: 7ffc2d140cfdf258
+  name: Person has devices
+  property: devices
+  propertyType: msg
+  rules:
+    - t: neq
+      v: ''
+      vt: str
+    - t: else
+  checkall: 'false'
+  repair: false
+  outputs: 2
+  x: 1230
+  'y': 1000
+  wires:
+    - - 3994febc98a17f9d
+    - []
+- id: 3994febc98a17f9d
+  type: split
+  z: 7ffc2d140cfdf258
+  name: Foreach device
+  splt: ','
+  spltType: str
+  arraySplt: 1
+  arraySpltType: len
+  stream: false
+  addname: ''
+  x: 1420
+  'y': 1000
+  wires:
+    - - 268e257355a23598
+- id: 6a4e740481983da1
+  type: change
+  z: 7ffc2d140cfdf258
+  name: Set person
+  rules:
+    - t: set
+      p: person
+      pt: msg
+      to: payload.entity_id
+      tot: msg
+  action: ''
+  property: ''
+  from: ''
+  to: ''
+  reg: false
+  x: 730
+  'y': 840
+  wires:
+    - - aa8aadd21a2f44e1
+- id: 6655d9ce7a537978
+  type: comment
+  z: 7ffc2d140cfdf258
+  name: Notify via Home Assistant Mobile App
+  info: ''
+  x: 550
+  'y': 660
+  wires: []
+- id: bba1b5b609cf1c03
+  type: comment
+  z: 7ffc2d140cfdf258
+  name: Get persons
+  info: ''
+  x: 530
+  'y': 780
+  wires: []
+- id: 268e257355a23598
+  type: change
+  z: 7ffc2d140cfdf258
+  name: Cast service name
+  rules:
+    - t: set
+      p: service
+      pt: msg
+      to: '"mobile_app_" & $substringAfter(payload, "device_tracker.")'
+      tot: jsonata
+  action: ''
+  property: ''
+  from: ''
+  to: ''
+  reg: false
+  x: 1450
+  'y': 1060
+  wires:
+    - - a892d92b7075519e
+- id: a892d92b7075519e
+  type: api-call-service
+  z: 7ffc2d140cfdf258
+  name: Notify device
+  server: 72832130.5db8f
+  version: 5
+  debugenabled: false
+  domain: notify
+  service: '{{ service }}'
+  areaId: []
+  deviceId: []
+  entityId: []
+  data: >-
+    {"message": msg.notify_message, "title": $env('title'), "data":
+    msg.notify_mobile_app_service_data_android}
+  dataType: jsonata
+  mergeContext: ''
+  mustacheAltTags: false
+  outputProperties: []
+  queue: none
+  x: 1630
+  'y': 1060
+  wires:
+    - []
+- id: be72dba29f842a72
+  type: comment
+  z: 7ffc2d140cfdf258
+  name: Notify via devices
+  info: ''
+  x: 480
+  'y': 460
+  wires: []
+- id: 5d31ad30eb46d508
+  type: switch
+  z: 7ffc2d140cfdf258
+  name: tts output is true
+  property: tts_output
+  propertyType: env
+  rules:
+    - t: 'true'
+    - t: 'false'
+  checkall: 'false'
+  repair: false
+  outputs: 2
+  x: 500
+  'y': 500
+  wires:
+    - - 3b5a9fa1c9df0ff2
+    - []
+- id: f80ffaec6fd5049a
+  type: change
+  z: 7ffc2d140cfdf258
+  name: Set message
+  rules:
+    - t: set
+      p: notify_message
+      pt: msg
+      to: tts_message
+      tot: env
+  action: ''
+  property: ''
+  from: ''
+  to: ''
+  reg: false
+  x: 890
+  'y': 480
+  wires:
+    - - 33628c0a884b0d46
+- id: 654793d34f3303eb
+  type: comment
+  z: 7ffc2d140cfdf258
+  name: Notify KlaHome Team
+  info: ''
+  x: 200
+  'y': 240
+  wires: []
+- id: 4c2a54280b7d135b
+  type: comment
+  z: 7ffc2d140cfdf258
+  name: Notify Home Assistant UI
+  info: ''
+  x: 510
+  'y': 360
+  wires: []
+- id: d539486ff8e94f37
+  type: comment
+  z: 7ffc2d140cfdf258
+  name: Notify for debugging purposes
+  info: ''
+  x: 220
+  'y': 120
+  wires: []
+- id: 4d217b0233593587
+  type: comment
+  z: 7ffc2d140cfdf258
+  name: ToDo Twilio
+  info: ''
+  x: 470
+  'y': 560
+  wires: []
+- id: 2e239db3d150f818
+  type: api-call-service
+  z: 7ffc2d140cfdf258
+  name: Notify Nextcloud Talk
+  server: 72832130.5db8f
+  version: 5
+  debugenabled: false
+  domain: notify
+  service: nctalkbot
+  areaId: []
+  deviceId: []
+  entityId: []
+  data: '{"message": notify_message, "target": target_room}'
+  dataType: jsonata
+  mergeContext: ''
+  mustacheAltTags: false
+  outputProperties: []
+  queue: none
+  x: 760
+  'y': 220
+  wires:
+    - []

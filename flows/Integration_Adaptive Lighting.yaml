@@ -1,0 +1,585 @@
+- id: 2e185d8447b1bcb7
+  type: tab
+  label: Integration_Adaptive Lighting
+  disabled: false
+  info: ''
+  env: []
+- id: 44d2cb937692cc0b
+  type: server-state-changed
+  z: 2e185d8447b1bcb7
+  name: Sleep mode changed
+  server: 72832130.5db8f
+  version: 5
+  outputs: 1
+  exposeAsEntityConfig: 85197789a1127d18
+  entityId: switch.kla_sleep_mode
+  entityIdType: exact
+  outputInitially: false
+  stateType: str
+  ifState: ''
+  ifStateType: str
+  ifStateOperator: is
+  outputOnlyOnStateChange: true
+  for: 0
+  forType: num
+  forUnits: minutes
+  ignorePrevStateNull: true
+  ignorePrevStateUnknown: true
+  ignorePrevStateUnavailable: true
+  ignoreCurrentStateUnknown: true
+  ignoreCurrentStateUnavailable: true
+  outputProperties:
+    - property: payload
+      propertyType: msg
+      value: ''
+      valueType: entityState
+    - property: data
+      propertyType: msg
+      value: ''
+      valueType: eventData
+    - property: topic
+      propertyType: msg
+      value: ''
+      valueType: triggerId
+  x: 120
+  'y': 80
+  wires:
+    - - 10215112509044cc
+- id: 8ab2da661d18b6eb
+  type: link in
+  z: 2e185d8447b1bcb7
+  name: Turn off Adaptive Lighting
+  links:
+    - 1a2f7f80ca51617e
+    - 1b62584dcb045aef
+  x: 35
+  'y': 200
+  wires:
+    - - 9c0fad3e1a1f9825
+- id: efd9543e8c8f14de
+  type: comment
+  z: 2e185d8447b1bcb7
+  name: Reset Adaptive Lighting
+  info: ''
+  x: 100
+  'y': 160
+  wires: []
+- id: 84e3ead5f19ff360
+  type: api-call-service
+  z: 2e185d8447b1bcb7
+  name: Turn off switch from entities
+  server: 72832130.5db8f
+  version: 5
+  debugenabled: false
+  domain: switch
+  service: turn_off
+  areaId: []
+  deviceId: []
+  entityId: []
+  data: '{ "entity_id": $join(entities.entity_id, ",") }'
+  dataType: jsonata
+  mergeContext: ''
+  mustacheAltTags: false
+  outputProperties: []
+  queue: none
+  output_location: payload
+  output_location_type: none
+  x: 480
+  'y': 200
+  wires:
+    - []
+- id: bca0bf0489e691b6
+  type: comment
+  z: 2e185d8447b1bcb7
+  name: Passthrough sleep mode to Adaptive Lighting
+  info: ''
+  x: 170
+  'y': 40
+  wires: []
+- id: fea915f1c816f653
+  type: link in
+  z: 2e185d8447b1bcb7
+  name: Apply settings for all lights in area (msg.area_id)
+  links:
+    - 3e489ae388bb50cb
+    - 5842a1c9432b18bb
+  x: 35
+  'y': 320
+  wires:
+    - - 2f50ab65620d542b
+- id: 372eae6c5ebe6bd9
+  type: comment
+  z: 2e185d8447b1bcb7
+  name: Apply settings for all lights in area
+  info: ''
+  x: 130
+  'y': 280
+  wires: []
+- id: 9c0fad3e1a1f9825
+  type: ha-get-entities
+  z: 2e185d8447b1bcb7
+  name: Get Adaptive Lighting switches
+  server: 72832130.5db8f
+  version: 0
+  rules:
+    - property: entity_id
+      logic: is
+      value: '^switch\.adaptive_lighting_(?!(zuhause|interior|exterior|global)$)[^_]+$'
+      valueType: re
+  output_type: array
+  output_empty_results: false
+  output_location_type: msg
+  output_location: entities
+  output_results_count: 1
+  x: 210
+  'y': 200
+  wires:
+    - - 84e3ead5f19ff360
+- id: 10215112509044cc
+  type: ha-get-entities
+  z: 2e185d8447b1bcb7
+  name: 'Get Adaptive Lighting: Sleep mode switches'
+  server: 72832130.5db8f
+  version: 0
+  rules:
+    - property: entity_id
+      logic: is
+      value: >-
+        ^switch\.adaptive_lighting_sleep_mode_(?!(zuhause|interior|exterior|global)$)[^_]+$
+      valueType: re
+  output_type: array
+  output_empty_results: false
+  output_location_type: msg
+  output_location: entities
+  output_results_count: 1
+  x: 410
+  'y': 80
+  wires:
+    - - 5999574b5c5a9c1e
+- id: 5999574b5c5a9c1e
+  type: api-call-service
+  z: 2e185d8447b1bcb7
+  name: Turn switch from entities
+  server: 72832130.5db8f
+  version: 5
+  debugenabled: false
+  domain: switch
+  service: 'turn_{{ payload }}'
+  areaId: []
+  deviceId: []
+  entityId: []
+  data: '{ "entity_id": $join(entities.entity_id, ",") }'
+  dataType: jsonata
+  mergeContext: ''
+  mustacheAltTags: false
+  outputProperties: []
+  queue: none
+  output_location: payload
+  output_location_type: none
+  x: 710
+  'y': 80
+  wires:
+    - []
+- id: 0c93d1f80fd2e0fe
+  type: 'subflow:5a54e3ce6cf424e8'
+  z: 2e185d8447b1bcb7
+  name: ''
+  x: 720
+  'y': 320
+  wires:
+    - - 4358158b5a6c16b8
+    - []
+- id: 4358158b5a6c16b8
+  type: api-call-service
+  z: 2e185d8447b1bcb7
+  name: Apply adaptive lighting
+  server: 72832130.5db8f
+  version: 5
+  debugenabled: false
+  domain: adaptive_lighting
+  service: apply
+  areaId: []
+  deviceId: []
+  entityId: []
+  data: >-
+    {"entity_id": adaptive_lighting.entity_id, "lights": payload,
+    "turn_on_lights": false}
+  dataType: jsonata
+  mergeContext: ''
+  mustacheAltTags: false
+  outputProperties: []
+  queue: none
+  x: 920
+  'y': 320
+  wires:
+    - []
+- id: 2f50ab65620d542b
+  type: ha-get-entities
+  z: 2e185d8447b1bcb7
+  name: Area has adaptive lighting
+  server: 72832130.5db8f
+  version: 0
+  rules:
+    - property: entity_id
+      logic: is
+      value: '"switch.adaptive_lighting_" & area_id'
+      valueType: jsonata
+  output_type: random
+  output_empty_results: true
+  output_location_type: msg
+  output_location: adaptive_lighting
+  output_results_count: 1
+  x: 190
+  'y': 320
+  wires:
+    - - 5f38633c7ca4abd3
+- id: 5f38633c7ca4abd3
+  type: switch
+  z: 2e185d8447b1bcb7
+  name: Switch found
+  property: adaptive_lighting
+  propertyType: msg
+  rules:
+    - t: nempty
+    - t: else
+  checkall: 'false'
+  repair: false
+  outputs: 2
+  x: 390
+  'y': 320
+  wires:
+    - - dedf8e00d2b86a33
+    - []
+- id: 4b57dd31fb57961d
+  type: link in
+  z: 2e185d8447b1bcb7
+  name: Turn on specified lights with correct setting (msg.area_id)
+  links: []
+  x: 35
+  'y': 420
+  wires:
+    - - da33ee0e8ed93b6a
+- id: f851c5db312872a9
+  type: comment
+  z: 2e185d8447b1bcb7
+  name: Turn on specified lights with correct setting
+  info: ''
+  x: 160
+  'y': 380
+  wires: []
+- id: 3cc9f42b01f5004e
+  type: api-call-service
+  z: 2e185d8447b1bcb7
+  name: Apply adaptive lighting
+  server: 72832130.5db8f
+  version: 5
+  debugenabled: false
+  domain: adaptive_lighting
+  service: apply
+  areaId: []
+  deviceId: []
+  entityId: []
+  data: '{"entity_id": adaptive_lighting[0].entity_id, "turn_on_lights": true}'
+  dataType: jsonata
+  mergeContext: ''
+  mustacheAltTags: false
+  outputProperties: []
+  queue: none
+  x: 580
+  'y': 420
+  wires:
+    - - 6e838b48197792be
+- id: da33ee0e8ed93b6a
+  type: ha-get-entities
+  z: 2e185d8447b1bcb7
+  name: Area has adaptive lighting
+  server: 72832130.5db8f
+  version: 0
+  rules:
+    - property: entity_id
+      logic: is
+      value: '"switch.adaptive_lighting_" & area_id'
+      valueType: jsonata
+  output_type: array
+  output_empty_results: true
+  output_location_type: msg
+  output_location: adaptive_lighting
+  output_results_count: 1
+  x: 190
+  'y': 420
+  wires:
+    - - 51f72c6333d4801a
+- id: 51f72c6333d4801a
+  type: switch
+  z: 2e185d8447b1bcb7
+  name: Switch found
+  property: adaptive_lighting
+  propertyType: msg
+  rules:
+    - t: nempty
+    - t: else
+  checkall: 'false'
+  repair: false
+  outputs: 2
+  x: 390
+  'y': 420
+  wires:
+    - - 3cc9f42b01f5004e
+    - - b955f76bc8ef5952
+- id: b955f76bc8ef5952
+  type: change
+  z: 2e185d8447b1bcb7
+  name: ''
+  rules:
+    - t: set
+      p: exitcode
+      pt: msg
+      to: '-1'
+      tot: num
+  action: ''
+  property: ''
+  from: ''
+  to: ''
+  reg: false
+  x: 790
+  'y': 460
+  wires:
+    - - a89597ecea410ef2
+- id: a89597ecea410ef2
+  type: link out
+  z: 2e185d8447b1bcb7
+  name: Adaptive Lighting call out
+  mode: return
+  links: []
+  x: 915
+  'y': 440
+  wires: []
+- id: 6e838b48197792be
+  type: change
+  z: 2e185d8447b1bcb7
+  name: ''
+  rules:
+    - t: set
+      p: exitcode
+      pt: msg
+      to: '0'
+      tot: num
+  action: ''
+  property: ''
+  from: ''
+  to: ''
+  reg: false
+  x: 790
+  'y': 420
+  wires:
+    - - a89597ecea410ef2
+- id: 7a9feea97f5c26e8
+  type: api-call-service
+  z: 2e185d8447b1bcb7
+  name: Set lights to manual (Adaptive Lighting)
+  server: 72832130.5db8f
+  version: 5
+  debugenabled: false
+  domain: adaptive_lighting
+  service: set_manual_control
+  areaId: []
+  deviceId: []
+  entityId: []
+  data: '{"entity_id": adaptive_lighting.entity_id, "manual_control": "true"}'
+  dataType: jsonata
+  mergeContext: ''
+  mustacheAltTags: false
+  outputProperties: []
+  queue: none
+  x: 1580
+  'y': 580
+  wires:
+    - []
+- id: 857c624693f286c8
+  type: comment
+  z: 2e185d8447b1bcb7
+  name: Apply scene after setting adaptive lighting to manual
+  info: ''
+  x: 190
+  'y': 540
+  wires: []
+- id: e06fc0a9e7febbd9
+  type: server-state-changed
+  z: 2e185d8447b1bcb7
+  name: Scene was activated trough scene.turn_on
+  server: 72832130.5db8f
+  version: 5
+  outputs: 1
+  exposeAsEntityConfig: ''
+  entityId: sensor.scene_last_activated
+  entityIdType: exact
+  outputInitially: false
+  stateType: str
+  ifState: ''
+  ifStateType: str
+  ifStateOperator: is
+  outputOnlyOnStateChange: false
+  for: '0'
+  forType: num
+  forUnits: minutes
+  ignorePrevStateNull: false
+  ignorePrevStateUnknown: false
+  ignorePrevStateUnavailable: false
+  ignoreCurrentStateUnknown: true
+  ignoreCurrentStateUnavailable: true
+  outputProperties:
+    - property: payload
+      propertyType: msg
+      value: ''
+      valueType: entityState
+    - property: topic
+      propertyType: msg
+      value: ''
+      valueType: triggerId
+  x: 180
+  'y': 580
+  wires:
+    - - c2db097002c653b2
+- id: 36431fe2bb4cb66a
+  type: api-render-template
+  z: 2e185d8447b1bcb7
+  name: Get area id
+  server: 72832130.5db8f
+  version: 0
+  template: ''
+  resultsLocation: area_id
+  resultsLocationType: msg
+  templateLocation: template
+  templateLocationType: msg
+  x: 590
+  'y': 580
+  wires:
+    - - 877e5da4bc556d26
+- id: c2db097002c653b2
+  type: change
+  z: 2e185d8447b1bcb7
+  name: Set template
+  rules:
+    - t: set
+      p: template
+      pt: msg
+      to: '{{area_id(''xxxxx'')}}'
+      tot: str
+    - t: change
+      p: template
+      pt: msg
+      from: xxxxx
+      fromt: str
+      to: payload
+      tot: msg
+  action: ''
+  property: ''
+  from: ''
+  to: ''
+  reg: false
+  x: 430
+  'y': 580
+  wires:
+    - - 36431fe2bb4cb66a
+- id: f7bd56ad6e7d50f7
+  type: comment
+  z: 2e185d8447b1bcb7
+  name: Not working for area Zuhause
+  info: ''
+  x: 780
+  'y': 540
+  wires: []
+- id: 877e5da4bc556d26
+  type: switch
+  z: 2e185d8447b1bcb7
+  name: Switch area
+  property: area_id
+  propertyType: msg
+  rules:
+    - t: eq
+      v: zuhause
+      vt: str
+    - t: nempty
+  checkall: 'false'
+  repair: false
+  outputs: 2
+  x: 750
+  'y': 580
+  wires:
+    - []
+    - - bd02d41bf73d7051
+- id: bd02d41bf73d7051
+  type: ha-get-entities
+  z: 2e185d8447b1bcb7
+  name: Area has adaptive lighting
+  server: 72832130.5db8f
+  version: 0
+  rules:
+    - property: entity_id
+      logic: is
+      value: '"switch.adaptive_lighting_" & area_id'
+      valueType: jsonata
+  output_type: random
+  output_empty_results: true
+  output_location_type: msg
+  output_location: adaptive_lighting
+  output_results_count: 1
+  x: 950
+  'y': 580
+  wires:
+    - - 84bffa705bc162d6
+- id: 84bffa705bc162d6
+  type: switch
+  z: 2e185d8447b1bcb7
+  name: Switch found
+  property: adaptive_lighting
+  propertyType: msg
+  rules:
+    - t: nempty
+    - t: else
+  checkall: 'false'
+  repair: false
+  outputs: 2
+  x: 1150
+  'y': 580
+  wires:
+    - - 1c58342fbe55e514
+    - []
+- id: 1c58342fbe55e514
+  type: switch
+  z: 2e185d8447b1bcb7
+  name: Switch enabled
+  property: adaptive_lighting.state
+  propertyType: msg
+  rules:
+    - t: eq
+      v: 'on'
+      vt: str
+    - t: else
+  checkall: 'false'
+  repair: false
+  outputs: 2
+  x: 1320
+  'y': 580
+  wires:
+    - - 7a9feea97f5c26e8
+    - []
+- id: dedf8e00d2b86a33
+  type: change
+  z: 2e185d8447b1bcb7
+  name: Set domain
+  rules:
+    - t: set
+      p: domain
+      pt: msg
+      to: light
+      tot: str
+  action: ''
+  property: ''
+  from: ''
+  to: ''
+  reg: false
+  x: 550
+  'y': 320
+  wires:
+    - - 0c93d1f80fd2e0fe

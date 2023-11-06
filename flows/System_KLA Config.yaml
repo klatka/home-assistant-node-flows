@@ -1,0 +1,617 @@
+- id: 4b1cccd1830e280f
+  type: tab
+  label: System_KLA Config
+  disabled: false
+  info: ''
+  env: []
+- id: 122f27168a992642
+  type: ha-switch
+  z: 4b1cccd1830e280f
+  name: KLA Intelligent Automation
+  version: 0
+  debugenabled: false
+  inputs: 0
+  outputs: 2
+  entityConfig: 85197789a1127d18
+  enableInput: false
+  outputOnStateChange: true
+  outputProperties:
+    - property: payload
+      propertyType: msg
+      value: ''
+      valueType: entityState
+  x: 130
+  'y': 80
+  wires:
+    - - dcdfaec02fe8535c
+    - - dcdfaec02fe8535c
+- id: a2dbbb24602473a7
+  type: comment
+  z: 4b1cccd1830e280f
+  name: KLA Hauptschalter für Automatisierungen
+  info: ''
+  x: 160
+  'y': 40
+  wires: []
+- id: 733b8aee9ab3d101
+  type: ha-switch
+  z: 4b1cccd1830e280f
+  name: Guests
+  version: 0
+  debugenabled: false
+  inputs: 0
+  outputs: 2
+  entityConfig: 96489c45eb18e284
+  enableInput: false
+  outputOnStateChange: true
+  outputProperties:
+    - property: payload
+      propertyType: msg
+      value: ''
+      valueType: entityState
+  x: 70
+  'y': 520
+  wires:
+    - - da20be6e4a5141ca
+    - - fda63dfe04ae9ee8
+- id: 79f75372075e90e6
+  type: ha-switch
+  z: 4b1cccd1830e280f
+  name: Sleep Mode
+  version: 0
+  debugenabled: false
+  inputs: 0
+  outputs: 2
+  entityConfig: 9ca356a09320ac58
+  enableInput: false
+  outputOnStateChange: true
+  outputProperties:
+    - property: payload
+      propertyType: msg
+      value: ''
+      valueType: entityState
+  x: 90
+  'y': 820
+  wires:
+    - - ab0ade7f49484843
+    - - ab0ade7f49484843
+- id: 7bd353eb00732ea7
+  type: server-state-changed
+  z: 4b1cccd1830e280f
+  name: People Group not home
+  server: 72832130.5db8f
+  version: 5
+  outputs: 2
+  exposeAsEntityConfig: ''
+  entityId: group.kla_people
+  entityIdType: exact
+  outputInitially: true
+  stateType: str
+  ifState: home
+  ifStateType: str
+  ifStateOperator: is_not
+  outputOnlyOnStateChange: false
+  for: '0'
+  forType: num
+  forUnits: minutes
+  ignorePrevStateNull: false
+  ignorePrevStateUnknown: false
+  ignorePrevStateUnavailable: false
+  ignoreCurrentStateUnknown: false
+  ignoreCurrentStateUnavailable: false
+  outputProperties:
+    - property: topic
+      propertyType: msg
+      value: ''
+      valueType: triggerId
+  x: 120
+  'y': 440
+  wires:
+    - - db7bad57a38158da
+    - - ef77c81afdcfd4c2
+- id: db7bad57a38158da
+  type: change
+  z: 4b1cccd1830e280f
+  name: Set payload to off
+  rules:
+    - t: set
+      p: payload
+      pt: msg
+      to: 'off'
+      tot: str
+  action: ''
+  property: ''
+  from: ''
+  to: ''
+  reg: false
+  x: 530
+  'y': 440
+  wires:
+    - - 0473a4eaa1e59b32
+- id: 641e227fbd47afd1
+  type: comment
+  z: 4b1cccd1830e280f
+  name: Who ist home?
+  info: ''
+  x: 80
+  'y': 400
+  wires: []
+- id: da20be6e4a5141ca
+  type: ha-binary-sensor
+  z: 4b1cccd1830e280f
+  name: Anyone Home
+  entityConfig: 0e99356bdd3bb901
+  version: 0
+  state: payload
+  stateType: msg
+  attributes: []
+  inputOverride: allow
+  outputProperties: []
+  x: 1220
+  'y': 520
+  wires:
+    - []
+- id: fda63dfe04ae9ee8
+  type: api-current-state
+  z: 4b1cccd1830e280f
+  name: People not home?
+  server: 72832130.5db8f
+  version: 3
+  outputs: 2
+  halt_if: home
+  halt_if_type: str
+  halt_if_compare: is_not
+  entity_id: group.kla_people
+  state_type: str
+  blockInputOverrides: true
+  outputProperties: []
+  for: '0'
+  forType: num
+  forUnits: minutes
+  override_topic: false
+  state_location: payload
+  override_payload: msg
+  entity_location: data
+  override_data: msg
+  x: 290
+  'y': 540
+  wires:
+    - - db7bad57a38158da
+    - - ef77c81afdcfd4c2
+- id: 98422e03a5ef3903
+  type: 'subflow:7ffc2d140cfdf258'
+  z: 4b1cccd1830e280f
+  name: ''
+  x: 490
+  'y': 80
+  wires: []
+- id: 2250fb6e62bf139c
+  type: comment
+  z: 4b1cccd1830e280f
+  name: Config Switches
+  info: ''
+  x: 80
+  'y': 600
+  wires: []
+- id: 54b59180d980ab49
+  type: ha-switch
+  z: 4b1cccd1830e280f
+  name: WhatsApp Notifications
+  version: 0
+  debugenabled: false
+  inputs: 0
+  outputs: 2
+  entityConfig: d80a8449f075598c
+  enableInput: false
+  outputOnStateChange: true
+  outputProperties:
+    - property: payload
+      propertyType: msg
+      value: ''
+      valueType: entityState
+  x: 120
+  'y': 760
+  wires:
+    - - e1e779a543801b19
+    - - e1e779a543801b19
+- id: ef5546070aa5a3b7
+  type: ha-switch
+  z: 4b1cccd1830e280f
+  name: App Push Notifications
+  version: 0
+  debugenabled: false
+  inputs: 0
+  outputs: 2
+  entityConfig: 3ed9ad0916afdf83
+  enableInput: false
+  outputOnStateChange: true
+  outputProperties:
+    - property: payload
+      propertyType: msg
+      value: ''
+      valueType: entityState
+  x: 120
+  'y': 700
+  wires:
+    - - efc72c79782dabe5
+    - - efc72c79782dabe5
+- id: d44631c2f361e161
+  type: api-current-state
+  z: 4b1cccd1830e280f
+  name: Get Guests home
+  server: 72832130.5db8f
+  version: 3
+  outputs: 2
+  halt_if: 'on,off'
+  halt_if_type: str
+  halt_if_compare: includes
+  entity_id: switch.kla_guests_home
+  state_type: str
+  blockInputOverrides: true
+  outputProperties:
+    - property: payload
+      propertyType: msg
+      value: ''
+      valueType: entityState
+  for: '0'
+  forType: num
+  forUnits: minutes
+  override_topic: false
+  state_location: payload
+  override_payload: msg
+  entity_location: data
+  override_data: msg
+  x: 970
+  'y': 460
+  wires:
+    - - da20be6e4a5141ca
+    - - ef77c81afdcfd4c2
+- id: ef77c81afdcfd4c2
+  type: change
+  z: 4b1cccd1830e280f
+  name: Set paylight to on
+  rules:
+    - t: set
+      p: payload
+      pt: msg
+      to: 'on'
+      tot: str
+  action: ''
+  property: ''
+  from: ''
+  to: ''
+  reg: false
+  x: 950
+  'y': 520
+  wires:
+    - - da20be6e4a5141ca
+- id: 0167c2320188866b
+  type: ha-switch
+  z: 4b1cccd1830e280f
+  name: Debug Flows
+  version: 0
+  debugenabled: false
+  inputs: 0
+  outputs: 2
+  entityConfig: 7cd1286266548e31
+  enableInput: false
+  outputOnStateChange: true
+  outputProperties:
+    - property: payload
+      propertyType: msg
+      value: ''
+      valueType: entityState
+  x: 90
+  'y': 640
+  wires:
+    - - 64085de5f460af36
+    - - f47cdaa6179bbfe6
+- id: 0473a4eaa1e59b32
+  type: ha-wait-until
+  z: 4b1cccd1830e280f
+  name: Wait for status update
+  server: 72832130.5db8f
+  version: 2
+  outputs: 2
+  entityId: group.kla_people
+  entityIdFilterType: exact
+  property: state
+  comparator: is
+  value: home
+  valueType: str
+  timeout: '1'
+  timeoutType: num
+  timeoutUnits: minutes
+  checkCurrentState: true
+  blockInputOverrides: true
+  outputProperties: []
+  entityLocation: data
+  entityLocationType: none
+  x: 740
+  'y': 440
+  wires:
+    - - ef77c81afdcfd4c2
+    - - d44631c2f361e161
+- id: 5e5bf43b34b1c845
+  type: api-call-service
+  z: 4b1cccd1830e280f
+  name: Create group
+  server: 72832130.5db8f
+  version: 5
+  debugenabled: false
+  domain: group
+  service: set
+  areaId: []
+  deviceId: []
+  entityId: []
+  data: '{"object_id": object_id, "name": name, "icon": icon, "entities": entities}'
+  dataType: jsonata
+  mergeContext: ''
+  mustacheAltTags: false
+  outputProperties: []
+  queue: none
+  x: 870
+  'y': 200
+  wires:
+    - []
+- id: 91e00229d6a78861
+  type: link in
+  z: 4b1cccd1830e280f
+  name: Init entities
+  links:
+    - 9db5e781e04a0719
+  x: 35
+  'y': 200
+  wires:
+    - - 3aab0f315789c168
+- id: 3aab0f315789c168
+  type: change
+  z: 4b1cccd1830e280f
+  name: Set group name
+  rules:
+    - t: set
+      p: object_id
+      pt: msg
+      to: kla_people
+      tot: str
+    - t: set
+      p: name
+      pt: msg
+      to: Haushalt
+      tot: str
+    - t: set
+      p: icon
+      pt: msg
+      to: 'mdi:account-multiple'
+      tot: str
+  action: ''
+  property: ''
+  from: ''
+  to: ''
+  reg: false
+  x: 340
+  'y': 200
+  wires:
+    - - a0d59957a61d5352
+- id: a0d59957a61d5352
+  type: change
+  z: 4b1cccd1830e280f
+  name: Get people
+  rules:
+    - t: set
+      p: template
+      pt: msg
+      to: >-
+        {{ states.person               | sort(attribute="name")               |
+        map(attribute='entity_id')               | list               | default
+        | join(',') }}
+      tot: str
+  action: ''
+  property: ''
+  from: ''
+  to: ''
+  reg: false
+  x: 510
+  'y': 200
+  wires:
+    - - 753bfac56029a648
+- id: 753bfac56029a648
+  type: api-render-template
+  z: 4b1cccd1830e280f
+  name: Render template
+  server: 72832130.5db8f
+  version: 0
+  template: ''
+  resultsLocation: entities
+  resultsLocationType: msg
+  templateLocation: template
+  templateLocationType: msg
+  x: 690
+  'y': 200
+  wires:
+    - - 5e5bf43b34b1c845
+- id: 3b4455f62fde3694
+  type: comment
+  z: 4b1cccd1830e280f
+  name: Set People Group
+  info: ''
+  x: 90
+  'y': 160
+  wires: []
+- id: 6365645a31211654
+  type: server-events
+  z: 4b1cccd1830e280f
+  name: ''
+  server: 72832130.5db8f
+  version: 3
+  exposeAsEntityConfig: ''
+  eventType: user_added
+  eventData: ''
+  waitForRunning: true
+  outputProperties:
+    - property: data
+      propertyType: msg
+      value: ''
+      valueType: eventData
+    - property: topic
+      propertyType: msg
+      value: $outputData("eventData").event_type
+      valueType: jsonata
+  x: 110
+  'y': 260
+  wires:
+    - - 3aab0f315789c168
+- id: 8e1b27f3f2f34fca
+  type: server-events
+  z: 4b1cccd1830e280f
+  name: ''
+  server: 72832130.5db8f
+  version: 3
+  exposeAsEntityConfig: ''
+  eventType: user_removed
+  eventData: ''
+  waitForRunning: true
+  outputProperties:
+    - property: data
+      propertyType: msg
+      value: ''
+      valueType: eventData
+    - property: topic
+      propertyType: msg
+      value: $outputData("eventData").event_type
+      valueType: jsonata
+  x: 120
+  'y': 320
+  wires:
+    - - 3aab0f315789c168
+- id: b1ac1b94fc092a59
+  type: 'subflow:7ffc2d140cfdf258'
+  z: 4b1cccd1830e280f
+  name: DEBUG
+  env:
+    - name: message
+      value: DEBUG
+      type: str
+    - name: debug
+      type: bool
+      value: 'true'
+  x: 700
+  'y': 720
+  wires: []
+- id: f47cdaa6179bbfe6
+  type: change
+  z: 4b1cccd1830e280f
+  name: Set message
+  rules:
+    - t: set
+      p: notify_message
+      pt: msg
+      to: '"Debug Flows is now " & $string(payload)'
+      tot: jsonata
+  action: ''
+  property: ''
+  from: ''
+  to: ''
+  reg: false
+  x: 450
+  'y': 640
+  wires:
+    - - b1ac1b94fc092a59
+- id: dcdfaec02fe8535c
+  type: change
+  z: 4b1cccd1830e280f
+  name: Set message
+  rules:
+    - t: set
+      p: notify_message
+      pt: msg
+      to: >-
+        "Die intelligente Steuerung deines Zuhause ist " & $string(payload) ~>
+        $replace("true", "aktiv") ~> $replace("false", "inaktiv")
+      tot: jsonata
+  action: ''
+  property: ''
+  from: ''
+  to: ''
+  reg: false
+  x: 350
+  'y': 80
+  wires:
+    - - 98422e03a5ef3903
+- id: e1e779a543801b19
+  type: change
+  z: 4b1cccd1830e280f
+  name: Set message
+  rules:
+    - t: set
+      p: notify_message
+      pt: msg
+      to: '"WhatsApp Notifications is now " & $string(payload)'
+      tot: jsonata
+  action: ''
+  property: ''
+  from: ''
+  to: ''
+  reg: false
+  x: 330
+  'y': 760
+  wires:
+    - - b1ac1b94fc092a59
+- id: efc72c79782dabe5
+  type: change
+  z: 4b1cccd1830e280f
+  name: Set message
+  rules:
+    - t: set
+      p: notify_message
+      pt: msg
+      to: '"App Push Notifications is now " & $string(payload)'
+      tot: jsonata
+  action: ''
+  property: ''
+  from: ''
+  to: ''
+  reg: false
+  x: 330
+  'y': 700
+  wires:
+    - - b1ac1b94fc092a59
+- id: ab0ade7f49484843
+  type: change
+  z: 4b1cccd1830e280f
+  name: Set message
+  rules:
+    - t: set
+      p: notify_message
+      pt: msg
+      to: '"Sleep Mode is now " & $string(payload)'
+      tot: jsonata
+  action: ''
+  property: ''
+  from: ''
+  to: ''
+  reg: false
+  x: 330
+  'y': 820
+  wires:
+    - - b1ac1b94fc092a59
+- id: 64085de5f460af36
+  type: delay
+  z: 4b1cccd1830e280f
+  name: ''
+  pauseType: delay
+  timeout: '1'
+  timeoutUnits: seconds
+  rate: '1'
+  nbRateUnits: '1'
+  rateUnits: second
+  randomFirst: '1'
+  randomLast: '5'
+  randomUnits: seconds
+  drop: false
+  allowrate: false
+  outputs: 1
+  x: 280
+  'y': 600
+  wires:
+    - - f47cdaa6179bbfe6

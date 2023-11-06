@@ -1,20 +1,20 @@
 - id: 7551147dd66fb7ac
   type: subflow
-  name: KLA Area dark
+  name: Area dark
   info: "# Requirements\r\n\r\nFlow `Extension_Area_Dark` needed\r\n\r\n# Input\r\n\r\n## `msg.area_id` _string_\r\n\r\nId of an area in Home Assistant\r\n\r\n# Output\r\n\r\n1. `area_id` is considered dark\r\n2. else\r\n\r\n## `msg.area_dark_state` _boolean_\r\n\r\n`true` if `msg.kla_areas_dark` contains\r\n`area_id` in `areas_dark` else `false`\r\n"
-  category: ''
+  category: KlaHome
   in:
     - x: 50
       'y': 30
       wires:
         - id: 060e9f3453855cdf
   out:
-    - x: 600
+    - x: 630
       'y': 40
       wires:
         - id: 5d01b38a8d994827
           port: 0
-    - x: 600
+    - x: 650
       'y': 160
       wires:
         - id: ce3df40b5815c988
@@ -25,7 +25,13 @@
     version: 1.0.0
     author: KlaHome <dev@klahome.de>
     license: Apache-2.0
-  color: '#DDAA99'
+  color: '#3FADB5'
+  inputLabels:
+    - area id
+  outputLabels:
+    - is dark
+    - is not dark
+  icon: font-awesome/fa-check-circle
   status:
     x: 820
     'y': 140

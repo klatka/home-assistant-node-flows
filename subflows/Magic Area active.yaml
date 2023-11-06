@@ -1,0 +1,129 @@
+- id: 521c2143ae3bf6fd
+  type: subflow
+  name: Magic Area active
+  info: |
+    # Requirements
+
+    Integration `Magic Areas` needed
+
+    # Input
+
+    ## `msg.area_id` _string_
+
+    Id of an area in Home Assistant
+
+    # Output
+
+    1. `msg.area_state` equals `on`
+    2. else
+
+    ## `msg.area_state` _string_
+
+    State of Magic Areas binary_sensor of given area
+
+    ## `msg.area` _object_
+
+    Magic Areas binary_sensor as Home Assistant object
+  category: ''
+  in:
+    - x: 50
+      'y': 30
+      wires:
+        - id: 81dc8586b998cdcd
+  out:
+    - x: 640
+      'y': 80
+      wires:
+        - id: 821390dbbc2cf5e6
+          port: 0
+    - x: 640
+      'y': 160
+      wires:
+        - id: 821390dbbc2cf5e6
+          port: 1
+  env: []
+  meta:
+    module: klahome
+    version: 1.0.0
+    author: KlaHome <dev@klahome.de>
+    license: Apache-2.0
+  color: '#DDAA99'
+- id: 821390dbbc2cf5e6
+  type: switch
+  z: 521c2143ae3bf6fd
+  name: Switch area state
+  property: area_state
+  propertyType: msg
+  rules:
+    - t: eq
+      v: 'on'
+      vt: str
+    - t: else
+  checkall: 'false'
+  repair: false
+  outputs: 2
+  x: 490
+  'y': 120
+  wires:
+    - []
+    - []
+- id: 81dc8586b998cdcd
+  type: change
+  z: 521c2143ae3bf6fd
+  name: Get Magic Area object id
+  rules:
+    - t: set
+      p: payload
+      pt: msg
+      to: binary_sensor.area_xxxxx
+      tot: str
+    - t: change
+      p: payload
+      pt: msg
+      from: xxxxx
+      fromt: str
+      to: area_id
+      tot: msg
+  action: ''
+  property: ''
+  from: ''
+  to: ''
+  reg: false
+  x: 210
+  'y': 60
+  wires:
+    - - b34e76578290b0a6
+- id: b34e76578290b0a6
+  type: api-current-state
+  z: 521c2143ae3bf6fd
+  name: Get Magic Area object
+  server: 72832130.5db8f
+  version: 3
+  outputs: 1
+  halt_if: ''
+  halt_if_type: str
+  halt_if_compare: is
+  entity_id: '{{ payload }}'
+  state_type: str
+  blockInputOverrides: true
+  outputProperties:
+    - property: area_state
+      propertyType: msg
+      value: ''
+      valueType: entityState
+    - property: area
+      propertyType: msg
+      value: ''
+      valueType: entity
+  for: '0'
+  forType: num
+  forUnits: minutes
+  override_topic: false
+  state_location: payload
+  override_payload: msg
+  entity_location: data
+  override_data: msg
+  x: 280
+  'y': 120
+  wires:
+    - - 821390dbbc2cf5e6

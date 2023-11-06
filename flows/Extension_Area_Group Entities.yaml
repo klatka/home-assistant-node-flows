@@ -1,0 +1,588 @@
+- id: c7036928148c9854
+  type: tab
+  label: Extension_Area_Group Entities
+  disabled: false
+  info: ''
+  env: []
+- id: 128e86e33b19f565
+  type: link in
+  z: c7036928148c9854
+  name: Create Area entity groups
+  links:
+    - 9db5e781e04a0719
+  x: 55
+  'y': 80
+  wires:
+    - - 5f83df1038e154d5
+- id: 77d211d89524089d
+  type: server-events
+  z: c7036928148c9854
+  name: ''
+  server: 72832130.5db8f
+  version: 3
+  exposeAsEntityConfig: ''
+  eventType: entity_registry_updated
+  eventData: ''
+  waitForRunning: true
+  outputProperties:
+    - property: data
+      propertyType: msg
+      value: ''
+      valueType: eventData
+    - property: topic
+      propertyType: msg
+      value: $outputData("eventData").event_type
+      valueType: jsonata
+  x: 170
+  'y': 140
+  wires:
+    - - 736f48d4f6ef1e0f
+- id: 736f48d4f6ef1e0f
+  type: switch
+  z: c7036928148c9854
+  name: Area id changed
+  property: data.event.changes
+  propertyType: msg
+  rules:
+    - t: hask
+      v: area_id
+      vt: str
+  checkall: 'false'
+  repair: false
+  outputs: 1
+  x: 420
+  'y': 180
+  wires:
+    - - 5f83df1038e154d5
+- id: a1a55b278022ecbe
+  type: server-events
+  z: c7036928148c9854
+  name: ''
+  server: 72832130.5db8f
+  version: 3
+  exposeAsEntityConfig: ''
+  eventType: device_registry_updated
+  eventData: ''
+  waitForRunning: true
+  outputProperties:
+    - property: data
+      propertyType: msg
+      value: ''
+      valueType: eventData
+    - property: topic
+      propertyType: msg
+      value: $outputData("eventData").event_type
+      valueType: jsonata
+  x: 170
+  'y': 200
+  wires:
+    - - 736f48d4f6ef1e0f
+- id: 672a09958b17b904
+  type: change
+  z: c7036928148c9854
+  name: Set group name
+  rules:
+    - t: set
+      p: object_id
+      pt: msg
+      to: kla_area_lights
+      tot: str
+    - t: set
+      p: name
+      pt: msg
+      to: Beleuchtung
+      tot: str
+    - t: set
+      p: icon
+      pt: msg
+      to: 'mdi:lightbulb-group'
+      tot: str
+  action: ''
+  property: ''
+  from: ''
+  to: ''
+  reg: false
+  x: 760
+  'y': 140
+  wires:
+    - - de921f3731c9100a
+- id: de921f3731c9100a
+  type: change
+  z: c7036928148c9854
+  name: Get lights in all areas
+  rules:
+    - t: set
+      p: template
+      pt: msg
+      to: >-
+        {% set ns = namespace(x=[]) %}{% for e in states.light |
+        sort(attribute="name") | map(attribute='entity_id') |
+        reject('is_hidden_entity') if area_name(e) != None %} {% set ns.x = ns.x
+        + [e] %} {% endfor %} {{ ns.x | join(',') }}
+      tot: str
+  action: ''
+  property: ''
+  from: ''
+  to: ''
+  reg: false
+  x: 960
+  'y': 140
+  wires:
+    - - 5905f2dbd5191074
+- id: 5905f2dbd5191074
+  type: api-render-template
+  z: c7036928148c9854
+  name: Render template
+  server: 72832130.5db8f
+  version: 0
+  template: ''
+  resultsLocation: entities
+  resultsLocationType: msg
+  templateLocation: template
+  templateLocationType: msg
+  x: 1170
+  'y': 140
+  wires:
+    - - 23b84fea0a4f3161
+- id: efb939a9b459d30a
+  type: api-call-service
+  z: c7036928148c9854
+  name: Create group
+  server: 72832130.5db8f
+  version: 5
+  debugenabled: false
+  domain: group
+  service: set
+  areaId: []
+  deviceId: []
+  entityId: []
+  data: '{"object_id": object_id, "name": name, "icon": icon, "entities": entities}'
+  dataType: jsonata
+  mergeContext: ''
+  mustacheAltTags: false
+  outputProperties: []
+  queue: none
+  x: 1910
+  'y': 240
+  wires:
+    - []
+- id: 14c8018eaf667699
+  type: change
+  z: c7036928148c9854
+  name: Set group name
+  rules:
+    - t: set
+      p: object_id
+      pt: msg
+      to: kla_area_covers
+      tot: str
+    - t: set
+      p: name
+      pt: msg
+      to: Rollläden
+      tot: str
+    - t: set
+      p: icon
+      pt: msg
+      to: 'mdi:window-shutter'
+      tot: str
+  action: ''
+  property: ''
+  from: ''
+  to: ''
+  reg: false
+  x: 760
+  'y': 240
+  wires:
+    - - efc41d7f411b90fa
+- id: efc41d7f411b90fa
+  type: change
+  z: c7036928148c9854
+  name: Get covers in all areas
+  rules:
+    - t: set
+      p: template
+      pt: msg
+      to: >-
+        {% set ns = namespace(x=[]) %}{% for e in states.cover |
+        sort(attribute="name") | map(attribute='entity_id') |
+        reject('is_hidden_entity') if area_name(e) != None %} {% set ns.x = ns.x
+        + [e] %} {% endfor %} {{ ns.x | join(',') }}
+      tot: str
+  action: ''
+  property: ''
+  from: ''
+  to: ''
+  reg: false
+  x: 960
+  'y': 240
+  wires:
+    - - e2671f3015a6a03a
+- id: e2671f3015a6a03a
+  type: api-render-template
+  z: c7036928148c9854
+  name: Render template
+  server: 72832130.5db8f
+  version: 0
+  template: ''
+  resultsLocation: entities
+  resultsLocationType: msg
+  templateLocation: template
+  templateLocationType: msg
+  x: 1170
+  'y': 240
+  wires:
+    - - 23b84fea0a4f3161
+- id: bd45da4ce6e24e0f
+  type: change
+  z: c7036928148c9854
+  name: Set group name
+  rules:
+    - t: set
+      p: object_id
+      pt: msg
+      to: kla_area_climate
+      tot: str
+    - t: set
+      p: name
+      pt: msg
+      to: Klima
+      tot: str
+    - t: set
+      p: icon
+      pt: msg
+      to: 'mdi:home-thermometer-outline'
+      tot: str
+  action: ''
+  property: ''
+  from: ''
+  to: ''
+  reg: false
+  x: 760
+  'y': 340
+  wires:
+    - - 27c03e2351321904
+- id: 27c03e2351321904
+  type: change
+  z: c7036928148c9854
+  name: Get climate entities in all areas
+  rules:
+    - t: set
+      p: template
+      pt: msg
+      to: >-
+        {% set ns = namespace(x=[]) %}{% for e in states.climate |
+        sort(attribute="name") | map(attribute='entity_id') |
+        reject('is_hidden_entity') if area_name(e) != None %} {% set ns.x = ns.x
+        + [e] %} {% endfor %} {{ ns.x | join(',') }}
+      tot: str
+  action: ''
+  property: ''
+  from: ''
+  to: ''
+  reg: false
+  x: 990
+  'y': 340
+  wires:
+    - - 07dfbacf721bb14e
+- id: 07dfbacf721bb14e
+  type: api-render-template
+  z: c7036928148c9854
+  name: Render template
+  server: 72832130.5db8f
+  version: 0
+  template: ''
+  resultsLocation: entities
+  resultsLocationType: msg
+  templateLocation: template
+  templateLocationType: msg
+  x: 1230
+  'y': 340
+  wires:
+    - - 23b84fea0a4f3161
+- id: a8caa8a58c3f1178
+  type: comment
+  z: c7036928148c9854
+  name: Group entity domains for areas
+  info: ''
+  x: 130
+  'y': 40
+  wires: []
+- id: 820a910418b9053c
+  type: comment
+  z: c7036928148c9854
+  name: Create all lights group
+  info: ''
+  x: 760
+  'y': 100
+  wires: []
+- id: ade7ae6841981d42
+  type: comment
+  z: c7036928148c9854
+  name: Create all covers group
+  info: ''
+  x: 760
+  'y': 200
+  wires: []
+- id: 1a078d080307e72c
+  type: comment
+  z: c7036928148c9854
+  name: Create all climate entities group
+  info: ''
+  x: 790
+  'y': 300
+  wires: []
+- id: 23b84fea0a4f3161
+  type: delay
+  z: c7036928148c9854
+  name: ''
+  pauseType: rate
+  timeout: '5'
+  timeoutUnits: seconds
+  rate: '1'
+  nbRateUnits: '1'
+  rateUnits: second
+  randomFirst: '1'
+  randomLast: '5'
+  randomUnits: seconds
+  drop: false
+  allowrate: false
+  outputs: 1
+  x: 1720
+  'y': 240
+  wires:
+    - - efb939a9b459d30a
+- id: 29d3ad389370c7f8
+  type: change
+  z: c7036928148c9854
+  name: Get areas
+  rules:
+    - t: set
+      p: template
+      pt: msg
+      to: '{{ areas() | sort() | join('','') }}'
+      tot: str
+  action: ''
+  property: ''
+  from: ''
+  to: ''
+  reg: false
+  x: 740
+  'y': 480
+  wires:
+    - - 91cb57553d1d71f7
+- id: 91cb57553d1d71f7
+  type: api-render-template
+  z: c7036928148c9854
+  name: Render template
+  server: 72832130.5db8f
+  version: 0
+  template: ''
+  resultsLocation: payload
+  resultsLocationType: msg
+  templateLocation: template
+  templateLocationType: msg
+  x: 910
+  'y': 480
+  wires:
+    - - d260c1a21a16d8bb
+- id: d260c1a21a16d8bb
+  type: split
+  z: c7036928148c9854
+  name: Foreach area
+  splt: ','
+  spltType: str
+  arraySplt: 1
+  arraySpltType: len
+  stream: false
+  addname: ''
+  x: 1090
+  'y': 480
+  wires:
+    - - 8cd222c4dd5f9c90
+- id: a9c0ad1404f18239
+  type: comment
+  z: c7036928148c9854
+  name: Create light groups foreach area
+  info: ''
+  x: 790
+  'y': 440
+  wires: []
+- id: 5f83df1038e154d5
+  type: delay
+  z: c7036928148c9854
+  name: ''
+  pauseType: rate
+  timeout: '5'
+  timeoutUnits: seconds
+  rate: '1'
+  nbRateUnits: '1'
+  rateUnits: second
+  randomFirst: '1'
+  randomLast: '5'
+  randomUnits: seconds
+  drop: true
+  allowrate: false
+  outputs: 1
+  x: 500
+  'y': 100
+  wires:
+    - - 29d3ad389370c7f8
+      - bd45da4ce6e24e0f
+      - 14c8018eaf667699
+      - 672a09958b17b904
+- id: 7bc1a38c442c9162
+  type: inject
+  z: c7036928148c9854
+  name: ''
+  props:
+    - p: payload
+    - p: topic
+      vt: str
+  repeat: ''
+  crontab: ''
+  once: false
+  onceDelay: 0.1
+  topic: ''
+  payload: ''
+  payloadType: date
+  x: 120
+  'y': 280
+  wires:
+    - - 5f83df1038e154d5
+- id: 07293fe3f42cac50
+  type: change
+  z: c7036928148c9854
+  name: Set group name
+  rules:
+    - t: set
+      p: object_id
+      pt: msg
+      to: '''kla_area_lights_'' & area_id'
+      tot: jsonata
+    - t: set
+      p: name
+      pt: msg
+      to: '''Beleuchtung '' & area_name'
+      tot: jsonata
+    - t: set
+      p: icon
+      pt: msg
+      to: 'mdi:lightbulb-group'
+      tot: str
+  action: ''
+  property: ''
+  from: ''
+  to: ''
+  reg: false
+  x: 1440
+  'y': 560
+  wires:
+    - - 90ee762a8a70afa5
+- id: 506fcc82efec73c7
+  type: api-render-template
+  z: c7036928148c9854
+  name: Render template
+  server: 72832130.5db8f
+  version: 0
+  template: ''
+  resultsLocation: area_name
+  resultsLocationType: msg
+  templateLocation: template
+  templateLocationType: msg
+  x: 1250
+  'y': 560
+  wires:
+    - - 07293fe3f42cac50
+- id: 791cb8d424194bec
+  type: change
+  z: c7036928148c9854
+  name: Get area name
+  rules:
+    - t: set
+      p: template
+      pt: msg
+      to: '{{ area_name(''xxxxx'') }}'
+      tot: str
+    - t: change
+      p: template
+      pt: msg
+      from: xxxxx
+      fromt: str
+      to: area_id
+      tot: msg
+  action: ''
+  property: ''
+  from: ''
+  to: ''
+  reg: false
+  x: 1060
+  'y': 560
+  wires:
+    - - 506fcc82efec73c7
+- id: ac52256380a283db
+  type: 'subflow:5a54e3ce6cf424e8'
+  z: c7036928148c9854
+  name: ''
+  x: 1780
+  'y': 560
+  wires:
+    - - 7f6655bb90ddfa07
+    - []
+- id: 8cd222c4dd5f9c90
+  type: change
+  z: c7036928148c9854
+  name: Set current area_id
+  rules:
+    - t: move
+      p: payload
+      pt: msg
+      to: area_id
+      tot: msg
+  action: ''
+  property: ''
+  from: ''
+  to: ''
+  reg: false
+  x: 1270
+  'y': 480
+  wires:
+    - - 791cb8d424194bec
+- id: 7f6655bb90ddfa07
+  type: change
+  z: c7036928148c9854
+  name: Set entities
+  rules:
+    - t: move
+      p: payload
+      pt: msg
+      to: entities
+      tot: msg
+  action: ''
+  property: ''
+  from: ''
+  to: ''
+  reg: false
+  x: 1950
+  'y': 560
+  wires:
+    - - 23b84fea0a4f3161
+- id: 90ee762a8a70afa5
+  type: change
+  z: c7036928148c9854
+  name: Set domain
+  rules:
+    - t: set
+      p: domain
+      pt: msg
+      to: light
+      tot: str
+  action: ''
+  property: ''
+  from: ''
+  to: ''
+  reg: false
+  x: 1610
+  'y': 560
+  wires:
+    - - ac52256380a283db

@@ -1,0 +1,194 @@
+- id: 3b70dea5bcdc7946
+  type: subflow
+  name: Illuminance in area
+  info: "# Input\r\n\r\n## `msg.area_id` _string_\r\n\r\nId of an area in Home Assistant\r\n\r\n# Output\r\n\r\n1. `msg.area_light_level` valid number\r\n2. else (no existing sensors in this area)\r\n\r\n## `msg.area_light_level` _number_\r\n\r\nFloat value of average of all not hidden illuminance sensors assigned to `area_id`\r\n\r\nNote: Existing `msg.template` will be removed!\r\n"
+  category: home_assistant
+  in:
+    - x: 60
+      'y': 40
+      wires:
+        - id: 0d31d8036944120a
+  out:
+    - x: 1200
+      'y': 200
+      wires:
+        - id: 9289fa9b82b20b94
+          port: 0
+    - x: 1240
+      'y': 40
+      wires:
+        - id: be3cb53bd0f824e0
+          port: 0
+  env: []
+  meta:
+    module: klahome
+    version: 1.1.0
+    author: KlaHome <dev@klahome.de>
+    license: Apache-2.0
+  color: '#3FADB5'
+  inputLabels:
+    - area_id
+  outputLabels:
+    - light level
+    - sensors not existing
+  icon: node-red/status.svg
+  status:
+    x: 1360
+    'y': 120
+    wires:
+      - id: 539cb0fd10477a42
+        port: 0
+      - id: a83ae7085c9cab89
+        port: 0
+- id: 0d31d8036944120a
+  type: change
+  z: 3b70dea5bcdc7946
+  name: Get illuminance of lx sensors in area
+  rules:
+    - t: set
+      p: template
+      pt: msg
+      to: >-
+        {% set ns = namespace(x=[]) %}           {% for e in
+        states.sensor               | selectattr('attributes.device_class',
+        'defined')               | selectattr('attributes.device_class', 'in',
+        ['illuminance'])               | selectattr('attributes.state_class',
+        'defined')               | selectattr('attributes.state_class', 'eq',
+        'measurement')               |
+        selectattr('attributes.unit_of_measurement', 'defined')               |
+        selectattr('attributes.unit_of_measurement', 'eq', 'lx')               |
+        map(attribute='entity_id')               |
+        select('has_value')               |
+        reject('is_hidden_entity')               if area_id(e) == 'xxxxx'
+        %}             {% set ns.x = ns.x + [states(e) | float(0) ] %}          
+        {% endfor %}           {% if ns.x | count > 0 %}             {{ ns.x |
+        sum / ns.x | count }}           {% else %}{{ none }}{% endif %}
+      tot: str
+    - t: change
+      p: template
+      pt: msg
+      from: xxxxx
+      fromt: str
+      to: area_id
+      tot: msg
+  action: ''
+  property: ''
+  from: ''
+  to: ''
+  reg: false
+  x: 270
+  'y': 60
+  wires:
+    - - 8b09e154c4b29856
+- id: 8b09e154c4b29856
+  type: api-render-template
+  z: 3b70dea5bcdc7946
+  name: Render template
+  server: 72832130.5db8f
+  version: 0
+  template: ''
+  resultsLocation: area_light_level
+  resultsLocationType: msg
+  templateLocation: template
+  templateLocationType: msg
+  x: 530
+  'y': 60
+  wires:
+    - - 2b5f60b08ed5ae2e
+- id: be3cb53bd0f824e0
+  type: switch
+  z: 3b70dea5bcdc7946
+  name: Switch unknown light level
+  property: area_light_level
+  propertyType: msg
+  rules:
+    - t: eq
+      v: None
+      vt: str
+    - t: else
+  checkall: 'false'
+  repair: false
+  outputs: 2
+  x: 950
+  'y': 60
+  wires:
+    - - 539cb0fd10477a42
+    - - 9289fa9b82b20b94
+- id: 9289fa9b82b20b94
+  type: change
+  z: 3b70dea5bcdc7946
+  name: Cast output
+  rules:
+    - t: set
+      p: area_light_level
+      pt: msg
+      to: $number(area_light_level)
+      tot: jsonata
+  action: ''
+  property: ''
+  from: ''
+  to: ''
+  reg: false
+  x: 1030
+  'y': 200
+  wires:
+    - - a83ae7085c9cab89
+- id: 2b5f60b08ed5ae2e
+  type: change
+  z: 3b70dea5bcdc7946
+  name: Remove template
+  rules:
+    - t: delete
+      p: template
+      pt: msg
+  action: ''
+  property: ''
+  from: ''
+  to: ''
+  reg: false
+  x: 730
+  'y': 60
+  wires:
+    - - be3cb53bd0f824e0
+- id: 539cb0fd10477a42
+  type: change
+  z: 3b70dea5bcdc7946
+  name: Set status red
+  rules:
+    - t: set
+      p: payload
+      pt: msg
+      to: >-
+        {"fill":"red","shape":"ring","text":"No illuminance in " & area_id & "
+        at " & $now('[H01]:[m01]:[s01]')}
+      tot: jsonata
+  action: ''
+  property: ''
+  from: ''
+  to: ''
+  reg: false
+  x: 1220
+  'y': 100
+  wires:
+    - []
+- id: a83ae7085c9cab89
+  type: change
+  z: 3b70dea5bcdc7946
+  name: Set status green
+  rules:
+    - t: set
+      p: payload
+      pt: msg
+      to: >-
+        {"fill":"green","shape":"dot","text":area_light_level & " lx in " &
+        area_id & " at " & $now('[H01]:[m01]:[s01]')}
+      tot: jsonata
+  action: ''
+  property: ''
+  from: ''
+  to: ''
+  reg: false
+  x: 1220
+  'y': 140
+  wires:
+    - []

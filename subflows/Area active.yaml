@@ -1,20 +1,20 @@
 - id: b5f5e83ddce73814
   type: subflow
-  name: KLA Area active
+  name: Area active
   info: "# Requirements\r\n\r\nFlow `Module_Area` enabled\r\n\r\n# Input\r\n\r\n## `msg.area_id` _string_\r\n\r\nId of an area in Home Assistant\r\n\r\n# Output\r\n\r\n1. `area_id` is considered active\r\n2. else\r\n\r\n## `msg.area_state` _boolean_\r\n\r\n`true` if `msg.kla_areas` contains\r\n`area_id` in `areas_active` else `false`\r\n"
-  category: ''
+  category: KlaHome
   in:
     - x: 50
       'y': 30
       wires:
         - id: bcd1725e41e973fd
   out:
-    - x: 580
+    - x: 620
       'y': 40
       wires:
         - id: 0a2a1590d3952c3c
           port: 0
-    - x: 580
+    - x: 630
       'y': 160
       wires:
         - id: 345300e3907efd5b
@@ -25,7 +25,13 @@
     version: 1.0.0
     author: KlaHome <dev@klahome.de>
     license: Apache-2.0
-  color: '#DDAA99'
+  color: '#3FADB5'
+  inputLabels:
+    - area id
+  outputLabels:
+    - is active
+    - is not active
+  icon: font-awesome/fa-check-circle
   status:
     x: 800
     'y': 140
@@ -99,7 +105,9 @@
     - t: set
       p: payload
       pt: msg
-      to: '{"fill":"red","shape":"ring","text":msg.area_id}'
+      to: >-
+        {"fill":"red","shape":"ring","text":msg.area_id & " at " &
+        $now('[H01]:[m01]:[s01]')}
       tot: jsonata
   action: ''
   property: ''
@@ -118,7 +126,9 @@
     - t: set
       p: payload
       pt: msg
-      to: '{"fill":"green","shape":"dot","text":msg.area_id}'
+      to: >-
+        {"fill":"green","shape":"dot","text":msg.area_id & " at " &
+        $now('[H01]:[m01]:[s01]')}
       tot: jsonata
   action: ''
   property: ''

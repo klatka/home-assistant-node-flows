@@ -1,0 +1,264 @@
+- id: de5209fc556413a5
+  type: tab
+  label: Hardware_Remote_Aqara Button
+  disabled: false
+  info: ''
+  env: []
+- id: ef784c3317d27a1f
+  type: server-events
+  z: de5209fc556413a5
+  name: ZHA event
+  server: 72832130.5db8f
+  version: 3
+  exposeAsEntityConfig: ''
+  eventType: zha_event
+  eventData: ''
+  waitForRunning: true
+  outputProperties:
+    - property: payload
+      propertyType: msg
+      value: ''
+      valueType: eventData
+    - property: topic
+      propertyType: msg
+      value: $outputData("eventData").event_type
+      valueType: jsonata
+    - property: event_type
+      propertyType: msg
+      value: $outputData("eventData").event_type
+      valueType: jsonata
+  x: 80
+  'y': 80
+  wires:
+    - - 5fc079136b43d3c5
+- id: 5fc079136b43d3c5
+  type: switch
+  z: de5209fc556413a5
+  name: Switch unique_id
+  property: payload.event.unique_id
+  propertyType: msg
+  rules:
+    - t: eq
+      v: '00:15:8d:00:06:d4:c5:ad:1:0x0012'
+      vt: str
+  checkall: 'false'
+  repair: false
+  outputs: 1
+  x: 170
+  'y': 140
+  wires:
+    - - ca1e56b9b116351b
+- id: ca1e56b9b116351b
+  type: switch
+  z: de5209fc556413a5
+  name: Switch aqara button events
+  property: payload.event.command
+  propertyType: msg
+  rules:
+    - t: eq
+      v: single
+      vt: str
+    - t: eq
+      v: hold
+      vt: str
+    - t: eq
+      v: release
+      vt: str
+  checkall: 'true'
+  repair: false
+  outputs: 3
+  x: 400
+  'y': 140
+  wires:
+    - - e8ac443450c2a2ec
+    - - c87fe2747d344ce8
+    - []
+- id: b8e4f4704d6561bd
+  type: comment
+  z: de5209fc556413a5
+  name: Aqara Buttons over ZHA
+  info: ''
+  x: 110
+  'y': 40
+  wires: []
+- id: 9fb160edd56cc704
+  type: comment
+  z: de5209fc556413a5
+  name: Turn off
+  info: ''
+  x: 1090
+  'y': 120
+  wires: []
+- id: '8304632681614453'
+  type: change
+  z: de5209fc556413a5
+  name: Set action
+  rules:
+    - t: set
+      p: action
+      pt: msg
+      to: 'off'
+      tot: str
+  action: ''
+  property: ''
+  from: ''
+  to: ''
+  reg: false
+  x: 1100
+  'y': 160
+  wires:
+    - - 85c3a4824489aac1
+- id: de86a244e325382b
+  type: comment
+  z: de5209fc556413a5
+  name: Turn on lights
+  info: ''
+  x: 1110
+  'y': 220
+  wires: []
+- id: 10c6e36faec1fc88
+  type: change
+  z: de5209fc556413a5
+  name: Set action
+  rules:
+    - t: set
+      p: action
+      pt: msg
+      to: 'on'
+      tot: str
+  action: ''
+  property: ''
+  from: ''
+  to: ''
+  reg: false
+  x: 1100
+  'y': 260
+  wires:
+    - - 85c3a4824489aac1
+- id: 3a9849f7e940d567
+  type: 'subflow:c7fb159f2ed649a3'
+  z: de5209fc556413a5
+  name: ''
+  x: 870
+  'y': 180
+  wires:
+    - - '8304632681614453'
+    - - 10c6e36faec1fc88
+- id: 85c3a4824489aac1
+  type: link out
+  z: de5209fc556413a5
+  name: Control lights by remote control
+  mode: link
+  links:
+    - aee26832556b4721
+  x: 1325
+  'y': 260
+  wires: []
+- id: e8ac443450c2a2ec
+  type: change
+  z: de5209fc556413a5
+  name: Set area
+  rules:
+    - t: set
+      p: area_id
+      pt: msg
+      to: terrasse
+      tot: str
+  action: ''
+  property: ''
+  from: ''
+  to: ''
+  reg: false
+  x: 660
+  'y': 180
+  wires:
+    - - 3a9849f7e940d567
+- id: 6b70675f02efc608
+  type: server-state-changed
+  z: de5209fc556413a5
+  name: Aqara wireless switch action
+  server: 72832130.5db8f
+  version: 5
+  outputs: 1
+  exposeAsEntityConfig: ''
+  entityId: sensor.aqara_wireless_switch_1_action
+  entityIdType: exact
+  outputInitially: false
+  stateType: str
+  ifState: ''
+  ifStateType: str
+  ifStateOperator: is_not
+  outputOnlyOnStateChange: true
+  for: '0'
+  forType: num
+  forUnits: minutes
+  ignorePrevStateNull: false
+  ignorePrevStateUnknown: false
+  ignorePrevStateUnavailable: false
+  ignoreCurrentStateUnknown: true
+  ignoreCurrentStateUnavailable: true
+  outputProperties:
+    - property: payload
+      propertyType: msg
+      value: ''
+      valueType: entityState
+    - property: data
+      propertyType: msg
+      value: ''
+      valueType: eventData
+    - property: topic
+      propertyType: msg
+      value: ''
+      valueType: triggerId
+  x: 140
+  'y': 240
+  wires:
+    - - 197d6cb2cf0bc147
+- id: 197d6cb2cf0bc147
+  type: switch
+  z: de5209fc556413a5
+  name: Switch aqara button events
+  property: payload
+  propertyType: msg
+  rules:
+    - t: eq
+      v: single
+      vt: str
+    - t: eq
+      v: hold
+      vt: str
+    - t: eq
+      v: release
+      vt: str
+  checkall: 'true'
+  repair: false
+  outputs: 3
+  x: 400
+  'y': 240
+  wires:
+    - - e8ac443450c2a2ec
+    - - c87fe2747d344ce8
+    - []
+- id: c87fe2747d344ce8
+  type: api-call-service
+  z: de5209fc556413a5
+  name: Toggle OSRAM Smart Plug 1
+  server: 72832130.5db8f
+  version: 5
+  debugenabled: false
+  domain: switch
+  service: toggle
+  areaId: []
+  deviceId:
+    - 5d92df87734a0b27dc2b87bea4bc0998
+  entityId: []
+  data: ''
+  dataType: jsonata
+  mergeContext: ''
+  mustacheAltTags: false
+  outputProperties: []
+  queue: none
+  x: 720
+  'y': 280
+  wires:
+    - []

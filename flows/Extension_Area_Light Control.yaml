@@ -135,10 +135,11 @@
   links:
     - ae60a3a57ca3f4e6
     - 85c3a4824489aac1
+    - bbff44590078f9ab
   x: 35
   'y': 740
   wires:
-    - - 3749b62c01d79198
+    - - c5c52ce40da29f78
 - id: 1e8b7fb2901f0569
   type: ha-number
   z: e4c8b5c6603e36fc
@@ -529,7 +530,7 @@
   type: 'subflow:c7fb159f2ed649a3'
   z: e4c8b5c6603e36fc
   name: ''
-  x: 560
+  x: 540
   'y': 1080
   wires:
     - - 5f0ef085ed844833
@@ -629,10 +630,10 @@
   type: 'subflow:7551147dd66fb7ac'
   z: e4c8b5c6603e36fc
   name: ''
-  x: 620
+  x: 600
   'y': 560
   wires:
-    - - c9b4fa3085750738
+    - - 533c0493cda799e2
     - []
 - id: 6cb6ba4d1587a189
   type: api-call-service
@@ -671,7 +672,7 @@
   type: 'subflow:5a54e3ce6cf424e8'
   z: e4c8b5c6603e36fc
   name: ''
-  x: 820
+  x: 960
   'y': 560
   wires:
     - - fe6c25628ba1c7c8
@@ -688,10 +689,10 @@
   type: 'subflow:5a54e3ce6cf424e8'
   z: e4c8b5c6603e36fc
   name: ''
-  x: 160
+  x: 320
   'y': 740
   wires:
-    - - 83ae960b615b2570
+    - - 84bbc02e5d9ef157
     - []
 - id: 8b07940e2c341f3d
   type: api-call-service
@@ -837,7 +838,7 @@
   initialize: ''
   finalize: ''
   libs: []
-  x: 1220
+  x: 1360
   'y': 620
   wires:
     - - 33c6126da641027a
@@ -864,7 +865,7 @@
   initialize: ''
   finalize: ''
   libs: []
-  x: 1210
+  x: 1350
   'y': 560
   wires:
     - - 33c6126da641027a
@@ -900,7 +901,7 @@
   z: e4c8b5c6603e36fc
   name: Auto Lights handling
   info: ''
-  x: 1150
+  x: 1290
   'y': 520
   wires: []
 - id: bdcacfd6a85c5dfa
@@ -913,12 +914,11 @@
   'y': 1660
   wires:
     - - 141fdf7f759677d4
-      - c8f2dc787aac7086
 - id: de02503727ecd900
   type: 'subflow:c7fb159f2ed649a3'
   z: e4c8b5c6603e36fc
   name: ''
-  x: 1060
+  x: 1040
   'y': 1680
   wires:
     - - 16c50b8c7e821b8a
@@ -976,7 +976,7 @@
   type: 'subflow:c7fb159f2ed649a3'
   z: e4c8b5c6603e36fc
   name: ''
-  x: 660
+  x: 640
   'y': 620
   wires:
     - - 3978d120b37bb976
@@ -1054,7 +1054,7 @@
   mode: link
   links:
     - 99f9864ca39958eb
-  x: 295
+  x: 575
   'y': 740
   wires: []
 - id: fe6c25628ba1c7c8
@@ -1072,7 +1072,7 @@
   from: ''
   to: ''
   reg: false
-  x: 980
+  x: 1120
   'y': 560
   wires:
     - - 2e6f6d61a43c739f
@@ -1091,10 +1091,10 @@
   from: ''
   to: ''
   reg: false
-  x: 980
+  x: 1120
   'y': 620
   wires:
-    - - cec51188f387a6bc
+    - - 2e6f6d61a43c739f
 - id: 33c6126da641027a
   type: link out
   z: e4c8b5c6603e36fc
@@ -1102,13 +1102,13 @@
   mode: link
   links:
     - 99f9864ca39958eb
-  x: 1405
+  x: 1555
   'y': 580
   wires: []
 - id: 79444cc4ee148924
   type: link in
   z: e4c8b5c6603e36fc
-  name: Turn off lights when area became active (msg.area_id)
+  name: Turn off lights when area became inactive (msg.area_id)
   links:
     - 4be08b6a1d142db3
   x: 35
@@ -1356,7 +1356,7 @@
   type: 'subflow:b5f5e83ddce73814'
   z: e4c8b5c6603e36fc
   name: ''
-  x: 620
+  x: 610
   'y': 480
   wires:
     - - 34dcc42f733942a8
@@ -1375,11 +1375,11 @@
   type: 'subflow:c7fb159f2ed649a3'
   z: e4c8b5c6603e36fc
   name: ''
-  x: 860
+  x: 840
   'y': 480
   wires:
     - []
-    - - c9b4fa3085750738
+    - - 533c0493cda799e2
 - id: b96b1677513dd9ca
   type: switch
   z: e4c8b5c6603e36fc
@@ -1460,18 +1460,97 @@
   wires:
     - - de02503727ecd900
     - []
-- id: c8f2dc787aac7086
-  type: debug
+- id: 533c0493cda799e2
+  type: change
   z: e4c8b5c6603e36fc
-  name: Dim lights if area is going to be inactive
-  active: true
-  tosidebar: true
-  console: false
-  tostatus: false
-  complete: 'true'
-  targetType: full
-  statusVal: ''
-  statusType: auto
-  x: 230
+  name: Set domain
+  rules:
+    - t: set
+      p: domain
+      pt: msg
+      to: light
+      tot: str
+  action: ''
+  property: ''
+  from: ''
+  to: ''
+  reg: false
+  x: 790
+  'y': 560
+  wires:
+    - - c9b4fa3085750738
+- id: c5c52ce40da29f78
+  type: change
+  z: e4c8b5c6603e36fc
+  name: Set domain
+  rules:
+    - t: set
+      p: domain
+      pt: msg
+      to: light
+      tot: str
+  action: ''
+  property: ''
+  from: ''
+  to: ''
+  reg: false
+  x: 150
+  'y': 740
+  wires:
+    - - 3749b62c01d79198
+- id: 84bbc02e5d9ef157
+  type: change
+  z: e4c8b5c6603e36fc
+  name: Lock area
+  rules:
+    - t: set
+      p: area_locked
+      pt: msg
+      to: 'true'
+      tot: bool
+  action: ''
+  property: ''
+  from: ''
+  to: ''
+  reg: false
+  x: 480
+  'y': 740
+  wires:
+    - - 83ae960b615b2570
+- id: 1a2f7f80ca51617e
+  type: link out
+  z: e4c8b5c6603e36fc
+  name: Auto lighting global off
+  mode: link
+  links:
+    - 8ab2da661d18b6eb
+    - ade07de7b55799aa
+    - 754a351b40dedf0c
+  x: 355
   'y': 1740
   wires: []
+- id: e469ebd473c6cf14
+  type: ha-button
+  z: e4c8b5c6603e36fc
+  name: Auto lighting global off button pressed
+  version: 0
+  debugenabled: false
+  outputs: 1
+  entityConfig: 205732f04584ab9b
+  outputProperties:
+    - property: payload
+      propertyType: msg
+      value: ''
+      valueType: entityState
+    - property: topic
+      propertyType: msg
+      value: ''
+      valueType: triggerId
+    - property: data
+      propertyType: msg
+      value: ''
+      valueType: entity
+  x: 170
+  'y': 1740
+  wires:
+    - - 1a2f7f80ca51617e

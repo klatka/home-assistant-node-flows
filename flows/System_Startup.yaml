@@ -1,0 +1,320 @@
+- id: faf065d7047f86e3
+  type: tab
+  label: System_Startup
+  disabled: false
+  info: ''
+  env: []
+- id: 6da19bf202232ec7
+  type: server-events
+  z: faf065d7047f86e3
+  name: Home Assistant Node-RED client events
+  server: 72832130.5db8f
+  version: 3
+  exposeAsEntityConfig: ''
+  eventType: home_assistant_client
+  eventData: ''
+  waitForRunning: true
+  outputProperties:
+    - property: payload
+      propertyType: msg
+      value: ''
+      valueType: eventData
+    - property: topic
+      propertyType: msg
+      value: $outputData("eventData").event_type
+      valueType: jsonata
+  event_type: ''
+  x: 180
+  'y': 80
+  wires:
+    - - 3c5b9b3818d1e82e
+- id: b4d0867b970cd7a0
+  type: comment
+  z: faf065d7047f86e3
+  name: Node-RED connected with HA
+  info: ''
+  x: 130
+  'y': 40
+  wires: []
+- id: b607f81dd9298f3c
+  type: 'subflow:7ffc2d140cfdf258'
+  z: faf065d7047f86e3
+  name: Notify Debug
+  env:
+    - name: message
+      value: Node-RED connected to HomeAssistant
+      type: str
+    - name: debug
+      type: bool
+      value: 'true'
+  x: 750
+  'y': 140
+  wires: []
+- id: 3c5b9b3818d1e82e
+  type: switch
+  z: faf065d7047f86e3
+  name: Switch running state
+  property: payload
+  propertyType: msg
+  rules:
+    - t: eq
+      v: running
+      vt: str
+    - t: neq
+      v: running
+      vt: str
+  checkall: 'true'
+  repair: false
+  outputs: 2
+  x: 460
+  'y': 80
+  wires:
+    - - b607f81dd9298f3c
+      - 9eb1cb4ffbf260c3
+    - []
+- id: 9db5e781e04a0719
+  type: link out
+  z: faf065d7047f86e3
+  name: Home Assistant connected
+  mode: link
+  links:
+    - dcfe78e79c450ff8
+    - 0d3b25aac9f53427
+    - 1a7ebefabb27313a
+    - 5e957caea96baec3
+    - 72b9e0ceb4427327
+    - 5eb039a9bed2f193
+    - 5142c5525f1f634f
+    - e0114ceb29432cb2
+    - 134d5e3453f2d58f
+    - 5c6e7444618fbd28
+    - 68755ae6c19204ae
+    - 21eb800f3a232696
+    - 7b73585431ce531e
+    - 128e86e33b19f565
+    - 91e00229d6a78861
+  x: 875
+  'y': 80
+  wires: []
+- id: 3a9638260ad7c662
+  type: http in
+  z: faf065d7047f86e3
+  name: HA Start
+  url: /hastart
+  method: get
+  upload: false
+  swaggerDoc: ''
+  x: 80
+  'y': 200
+  wires:
+    - - 14d2b050912be690
+- id: 46cdb54e04c7b96c
+  type: comment
+  z: faf065d7047f86e3
+  name: Endpoint for HA Readiness
+  info: ''
+  x: 110
+  'y': 160
+  wires: []
+- id: 48226e4016e66f76
+  type: link out
+  z: faf065d7047f86e3
+  name: Home Assistant started
+  mode: link
+  links:
+    - a10bdc46c2dfd763
+    - 2f6b1f7990686b6c
+    - a406d9a192e14ef9
+  x: 355
+  'y': 200
+  wires: []
+- id: d4bf0a503813f4ae
+  type: 'subflow:7ffc2d140cfdf258'
+  z: faf065d7047f86e3
+  name: Notify Debug
+  env:
+    - name: message
+      value: Home Assistant started
+      type: str
+    - name: debug
+      type: bool
+      value: 'true'
+  x: 410
+  'y': 240
+  wires: []
+- id: cb6805dbd04bc742
+  type: inject
+  z: faf065d7047f86e3
+  name: Node-RED Start
+  props:
+    - p: payload
+    - p: topic
+      vt: str
+  repeat: ''
+  crontab: ''
+  once: true
+  onceDelay: 0.1
+  topic: ''
+  payload: ''
+  payloadType: date
+  x: 120
+  'y': 400
+  wires:
+    - - 00062fb71e867254
+      - 93f126797e0d2e94
+      - 832891183042561f
+- id: c895c1882c10b067
+  type: comment
+  z: faf065d7047f86e3
+  name: Node-RED started
+  info: ''
+  x: 90
+  'y': 360
+  wires: []
+- id: 00062fb71e867254
+  type: link out
+  z: faf065d7047f86e3
+  name: Node-RED started (no connection to HA)
+  mode: link
+  links:
+    - 0a6452aebb114492
+    - a73c0bf9801962f7
+  x: 255
+  'y': 400
+  wires: []
+- id: 9eb1cb4ffbf260c3
+  type: delay
+  z: faf065d7047f86e3
+  name: ''
+  pauseType: delay
+  timeout: '1'
+  timeoutUnits: seconds
+  rate: '1'
+  nbRateUnits: '1'
+  rateUnits: second
+  randomFirst: '1'
+  randomLast: '5'
+  randomUnits: seconds
+  drop: false
+  allowrate: false
+  outputs: 1
+  x: 760
+  'y': 80
+  wires:
+    - - 9db5e781e04a0719
+- id: 832891183042561f
+  type: ha-wait-until
+  z: faf065d7047f86e3
+  name: Wait for HA
+  server: 72832130.5db8f
+  version: 2
+  outputs: 2
+  entityId: sensor.time
+  entityIdFilterType: exact
+  property: state
+  comparator: does_not_include
+  value: 'unavailable,unknown'
+  valueType: str
+  timeout: '10'
+  timeoutType: num
+  timeoutUnits: seconds
+  checkCurrentState: true
+  blockInputOverrides: true
+  outputProperties: []
+  entityLocation: data
+  entityLocationType: none
+  x: 310
+  'y': 480
+  wires:
+    - - 066170b972ac622b
+    - []
+- id: f0e7c6eb82492e7e
+  type: comment
+  z: faf065d7047f86e3
+  name: Notify without the need of HA
+  info: ''
+  x: 720
+  'y': 280
+  wires: []
+- id: 93f126797e0d2e94
+  type: change
+  z: faf065d7047f86e3
+  name: Init global KLA object
+  rules:
+    - t: set
+      p: kla
+      pt: global
+      to: '{"version":"1.0.0"}'
+      tot: json
+  action: ''
+  property: ''
+  from: ''
+  to: ''
+  reg: false
+  x: 340
+  'y': 440
+  wires:
+    - []
+- id: d761cc49cc8703f0
+  type: http response
+  z: faf065d7047f86e3
+  name: ''
+  statusCode: ''
+  headers: {}
+  x: 510
+  'y': 280
+  wires: []
+- id: 76405acebda8740d
+  type: switch
+  z: faf065d7047f86e3
+  name: Ready
+  property: kla
+  propertyType: global
+  rules:
+    - t: hask
+      v: version
+      vt: str
+  checkall: 'false'
+  repair: false
+  outputs: 1
+  x: 390
+  'y': 280
+  wires:
+    - - d761cc49cc8703f0
+- id: 066170b972ac622b
+  type: link out
+  z: faf065d7047f86e3
+  name: Node-RED started (with connection to HA)
+  mode: link
+  links: []
+  x: 415
+  'y': 480
+  wires: []
+- id: 14d2b050912be690
+  type: ha-wait-until
+  z: faf065d7047f86e3
+  name: Wait for HA
+  server: 72832130.5db8f
+  version: 2
+  outputs: 2
+  entityId: sensor.time
+  entityIdFilterType: exact
+  property: state
+  comparator: does_not_include
+  value: 'unavailable,unknown'
+  valueType: str
+  timeout: '10'
+  timeoutType: num
+  timeoutUnits: seconds
+  checkCurrentState: true
+  blockInputOverrides: true
+  outputProperties: []
+  entityLocation: data
+  entityLocationType: none
+  x: 230
+  'y': 200
+  wires:
+    - - 76405acebda8740d
+      - d4bf0a503813f4ae
+      - 48226e4016e66f76
+    - []
